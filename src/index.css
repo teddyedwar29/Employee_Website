@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.45s ease-out;
+}
+
+@keyframes modal-backdrop-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-backdrop {
+  animation: modal-backdrop-fade 0.2s ease-out;
+}
+
+.modal-pop {
+  animation: modal-pop 0.22s ease-out;
+}
+
+/* OUT animations */
+.modal-backdrop-out {
+  animation: modal-backdrop-fade-out 0.2s ease-in forwards;
+}
+.modal-pop-out {
+  animation: modal-pop-out 0.22s ease-in forwards;
+}
+
+/* Keyframes keluar */
+@keyframes modal-backdrop-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes modal-pop-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+}
+
