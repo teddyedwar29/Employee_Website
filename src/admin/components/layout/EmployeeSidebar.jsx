@@ -1,21 +1,54 @@
+// File: src/admin/components/layout/EmployeeSidebar.jsx
 import React, { useState } from 'react';
-import { LayoutDashboard, Users, X, Settings, UserX } from 'lucide-react'; // 1. Import X
-import { Link } from 'react-router-dom'; 
+import {
+  LayoutDashboard,
+  Users,
+  X,
+  Settings,
+  UserX,
+  ChevronDown,
+  ChevronRight,
+  Briefcase,
+  Clock,
+  Heart,
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const menuItems = [
   { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
   { id: 'karyawan',  name: 'Data Karyawan', icon: Users, path: '/admin/karyawan' },
-  { id: 'berhenti', label: 'Karyawan Berhenti', icon: UserX, path: '/admin/karyawan-berhenti' },
-
-
-  { id: 'master-jabatan', name: 'Master Jabatan', icon: Settings, path: '/admin/master/jabatan' },
+  { id: 'berhenti',  name: 'Karyawan Berhenti', icon: UserX, path: '/admin/karyawan-berhenti' },
 ];
 
-// 2. Terima 'isOpen' dan 'setIsOpen'
+const masterMenus = [
+  {
+    id: 'master-jabatan',
+    name: 'Jabatan',
+    icon: Briefcase,
+    path: '/admin/master/jabatan',
+  },
+    {
+    id: 'master-status-kerja',
+    name: 'Status Kerja',
+    icon: Clock,
+    path: '/admin/master/status-kerja',
+  },
+  {
+    id: 'master-status-pernikahan',
+    name: 'Status Pernikahan',
+    icon: Heart,                    // atau icon lain
+    path: '/admin/master/status-pernikahan',
+  },
+];
+
 export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {
+  // buka/tutup dropdown Data Master
+  const [isMasterOpen, setIsMasterOpen] = useState(
+    window.location.pathname.startsWith('/admin/master')
+  );
+
   return (
-    // 3. Ubah total class di sini
-    <div 
+    <div
       className={`
         fixed inset-y-0 left-0 z-50
         w-48 bg-white/70 backdrop-blur-xl p-6 shadow-2xl
@@ -25,8 +58,8 @@ export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}
     >
-      {/* 4. Tombol Close (HANYA muncul di HP) */}
-      <button 
+      {/* Tombol Close (mobile) */}
+      <button
         onClick={() => setIsOpen(false)}
         className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 md:hidden"
       >
@@ -35,18 +68,18 @@ export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {
 
       {/* Logo */}
       <div className="mb-10">
-        <h1 className="text-xl font-bold text-gray-800">EmployeePro</h1>
+        <h1 className="text-xl font-bold text-gray-800">Alaska Employee</h1>
       </div>
 
-      {/* Menu Items (Tidak diubah) */}
+      {/* Menu utama */}
       <nav className="space-y-1">
         {menuItems.map((item) => (
           <Link
             key={item.id}
-            to={item.path} 
+            to={item.path}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               activeMenu === item.id
-                ? 'bg-linear-to-r from-[#800020] to-[#a0002a] text-white shadow-lg'
+                ? 'bg-gradient-to-r from-[#800020] to-[#a0002a] text-white shadow-lg'
                 : 'text-gray-600 hover:bg-white/50'
             }`}
           >
@@ -54,7 +87,61 @@ export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {
             <span className="text-sm font-medium">{item.name}</span>
           </Link>
         ))}
+
+        {/* ====== DATA MASTER + DROPDOWN ====== */}
+        <div className="mt-4">
+          {/* Tombol utama Data Master */}
+          <button
+            type="button"
+            onClick={() => setIsMasterOpen((prev) => !prev)}
+            className="
+              w-full flex items-center justify-between
+              px-3 py-2.5 rounded-lg
+              border border-gray-300
+              text-gray-700 text-sm font-medium
+              hover:bg-white/60 transition-all
+            "
+          >
+            <span className="flex items-center gap-2">
+              <Settings size={18} />
+              <span>Data Master</span>
+            </span>
+            <ChevronDown
+              size={16}
+              className={`transition-transform duration-300 ${
+                isMasterOpen ? 'rotate-180' : 'rotate-0'
+              }`}
+            />
+          </button>
+
+          {/* Dropdown submenu (dianimasikan) */}
+          <div
+            className={`
+              mt-1 ml-2 space-y-1
+              overflow-hidden
+              transition-all duration-300
+              ${isMasterOpen ? 'max-h-96 opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-1 pointer-events-none'}
+            `}
+          >
+            {masterMenus.map((submenu) => (
+              <Link
+                key={submenu.id}
+                to={submenu.path}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all ${
+                  activeMenu === submenu.id
+                    ? 'bg-gradient-to-r from-[#800020] to-[#a0002a] text-white shadow-md'
+                    : 'text-gray-600 hover:bg-white/60'
+                }`}
+              >
+                <submenu.icon size={14} />
+                <span className="font-medium">{submenu.name}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+        {/* ====== END DATA MASTER ====== */}
       </nav>
     </div>
   );
 }
+

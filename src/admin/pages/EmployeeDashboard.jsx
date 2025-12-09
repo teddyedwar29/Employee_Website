@@ -7,6 +7,9 @@ import AddEmployeeModal from '../components/AddEmployeeModal';
 import EditEmployeeModal from '../components/EditEmployeeModal';
 import DetailEmployeeModal from '../components/DetailEmployeeModal';
 import ResignedEmployeePage from './ResignedEmployeePage';
+import MasterJabatanPage from './master/MasterJabatanPage';
+import MasterStatusKerjaPage from './master/MasterStatusKerjaPage';
+import MasterStatusPernikahanPage from './master/MasterStatusPernikahanPage';
 
 import { 
   getEmployees, 
@@ -121,7 +124,15 @@ export default function EmployeeDashboard() {
   const path = location.pathname;
   if (path.includes('/karyawan-berhenti')) {
     setActiveMenu('berhenti');
-  } else if (path.includes('/karyawan')) {
+  } else if (path.includes('/master/jabatan')) {
+    setActiveMenu('master-jabatan');
+  } else if (path.includes('/master/status-pernikahan')) {
+    setActiveMenu('master-status-pernikahan');
+  } 
+  else if (path.includes('/master/status-kerja')) {
+    setActiveMenu('master-status-kerja');
+  } 
+  else if (path.includes('/karyawan')) {
     setActiveMenu('karyawan');
   } else {
     setActiveMenu('dashboard');
@@ -318,50 +329,84 @@ export default function EmployeeDashboard() {
       {/* 6. Ubah class 'flex-1' */}
       <div className="flex-1 overflow-auto p-4 md:p-8">
         <div key={activeMenu} className="fade-in-up">
-          {activeMenu === 'dashboard' ? (
-            <DashboardPage
-              employees={employees} 
+          {(() => {
+            if (activeMenu === 'dashboard') {
+              return (
+                <DashboardPage
+                  employees={employees}
+                  totalEmployees={totalEmployees}
+                  activeEmployees={activeEmployees}
+                  departments={DEPARTMENTS_CONFIG}
+                  onSeeAllEmployees={() => navigate('/admin/karyawan')}
+                  jabatanOptions={jabatanOptions}
+                  statusKerjaOptions={statusKerjaOptions}
+                  onMenuClick={() => setIsSidebarOpen(true)}
+                />
+              );
+            }
+
+            if (activeMenu === 'karyawan') {
+              return (
+                <DataEmployee
+                  searchTerm={searchTerm}
+                  onChangeSearch={setSearchTerm}
+                  filterDepartment={filterDepartment}
+                  onChangeDepartment={setFilterDepartment}
+                  filterStatus={filterStatus}
+                  onChangeStatus={setFilterStatus}
+                  totalEmployees={totalEmployees}
+                  filteredEmployees={filteredEmployees}
+                  allDepartments={allJabatanOptions}
+                  allStatusOptions={allStatusKerjaOptions}
+                  jabatanOptions={jabatanOptions}
+                  statusKerjaOptions={statusKerjaOptions}
+                  onAddClick={() => setIsAddModalOpen(true)}
+                  onDeleteEmployee={handleDeleteEmployee}
+                  onEditClick={handleEditClick}
+                  onDetailClick={handleDetailClick}
+                  isLoading={isLoading}
+                  onMenuClick={() => setIsSidebarOpen(true)}
+                />
+              );
+            }
+
+            if (activeMenu === 'berhenti') {
+              return (
+                <ResignedEmployeePage
+                  employeesBerhenti={employeesBerhenti}
+                  jabatanOptions={jabatanOptions}
+                />
+              );
+            }
+
+            if (activeMenu === 'master-jabatan') {
+              return <MasterJabatanPage />;
+            }
+
+            if (activeMenu === 'master-status-kerja') {
+              return <MasterStatusKerjaPage />;
+            }
+
+            if (activeMenu === 'master-status-pernikahan') {
+              return <MasterStatusPernikahanPage />;
+            }
+
+            // fallback
+            return <DashboardPage
+              employees={employees}
               totalEmployees={totalEmployees}
               activeEmployees={activeEmployees}
               departments={DEPARTMENTS_CONFIG}
               onSeeAllEmployees={() => navigate('/admin/karyawan')}
               jabatanOptions={jabatanOptions}
               statusKerjaOptions={statusKerjaOptions}
-              // 7. Kirim handler ke DashboardPage
               onMenuClick={() => setIsSidebarOpen(true)}
-            />
-          ) : (
-            <DataEmployee
-              // ... (props lain sudah benar)
-              searchTerm={searchTerm}
-              onChangeSearch={setSearchTerm}
-              filterDepartment={filterDepartment} 
-              onChangeDepartment={setFilterDepartment}
-              filterStatus={filterStatus} 
-              onChangeStatus={setFilterStatus}
-              totalEmployees={totalEmployees}
-              filteredEmployees={filteredEmployees} 
-              allDepartments={allJabatanOptions} 
-              allStatusOptions={allStatusKerjaOptions} 
-              jabatanOptions={jabatanOptions}
-              statusKerjaOptions={statusKerjaOptions}
-              onAddClick={() => setIsAddModalOpen(true)}
-              onDeleteEmployee={handleDeleteEmployee}
-              onEditClick={handleEditClick}
-              onDetailClick={handleDetailClick}
-              isLoading={isLoading} 
-              // 7. Kirim handler ke DataEmployee
-              onMenuClick={() => setIsSidebarOpen(true)}
-            />
-          )}
-          {activeMenu === 'berhenti' && (
-              <ResignedEmployeePage
-                employeesBerhenti={employeesBerhenti}
-                jabatanOptions={jabatanOptions}
-              />
-          )}
+            />;
+          })()}
         </div>
       </div>
+
+
     </div>
   );
 }

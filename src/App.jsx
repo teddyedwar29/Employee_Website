@@ -6,19 +6,17 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rute baru untuk halaman data karyawan */}
         <Route path="/admin/karyawan" element={<EmployeeDashboard />} />
-        
-        {/* Rute yang sudah ada untuk dashboard */}
         <Route path="/admin/dashboard" element={<EmployeeDashboard />} />
-
         <Route path="/admin/karyawan-berhenti" element={<EmployeeDashboard />} />
 
-        {/* Rute baru untuk halaman master jabatan */}
+        {/* MASTER (semua tetap pakai EmployeeDashboard) */}
         <Route path="/admin/master/jabatan" element={<EmployeeDashboard />} />
+        <Route path="/admin/master/status-kerja" element={<EmployeeDashboard />} />
+        <Route path="/admin/master/status-pernikahan" element={<EmployeeDashboard />} />
+
 
         <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
-        {/* route master */}
       </Routes>
     </BrowserRouter>
   );

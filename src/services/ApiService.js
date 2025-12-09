@@ -168,6 +168,47 @@ export const getStatusKerjaOptions = async () => {
   return handleResponse(response);
 };
 
+// create status kerja
+export const createStatusKerja = async (data) => {
+  const payload = {
+    id: data.id,
+    nama_status: data.nama_status,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/status-kerja`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+};
+
+// update status kerja
+export const updateStatusKerja = async (id, data) => {
+  const payload = {
+    nama_status: data.nama_status,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/status-kerja/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+};
+
+// delete status kerja
+export const deleteStatusKerja = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/status-kerja/${id}`, {
+    method: 'DELETE',
+  });
+  return handleResponse(response);
+};
+
+
+
 /**
  * GET STATUS PERNIKAHAN (untuk dropdown)
  */
@@ -175,3 +216,44 @@ export const getStatusPernikahanOptions = async () => {
   const response = await fetch(`${API_BASE_URL}/status-pernikahan`);
   return handleResponse(response);
 }
+
+// create status pernikahan
+export const createStatusPernikahan = async (data) => {
+  // data di sini: { id, nama_status }
+  const payload = {
+    id: data.id,
+    nama: data.nama,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/status-pernikahan`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+};
+
+// update status pernikahan
+export const updateStatusPernikahan = async (id, data) => {
+  const payload = {
+    nama: data.nama,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/status-pernikahan/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+};
+
+// delete status pernikahan
+export const deleteStatusPernikahan = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/status-pernikahan/${id}`, {
+    method: 'DELETE',
+  });
+
+  return handleResponse(response);
+};
