@@ -11,6 +11,9 @@ import {
   Briefcase,
   Clock,
   Heart,
+  Book,
+  Building2,
+  UserCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -38,6 +41,24 @@ const masterMenus = [
     name: 'Status Pernikahan',
     icon: Heart,                    // atau icon lain
     path: '/admin/master/status-pernikahan',
+  },
+  {
+    id: 'master-agama',
+    name: 'Agama',
+    icon: Book,    
+    path: '/admin/master/agama',             
+  },
+  {
+    id: 'master-departemen',
+    name: 'Departemen',
+    icon: Building2,             // atau icon lain
+    path: '/admin/master/departemen',
+  },
+  {
+    id: 'master-kondisi-akun',
+    name: 'Kondisi Akun',
+    icon: UserCircle,
+    path: '/admin/master/kondisi-akun',
   },
 ];
 

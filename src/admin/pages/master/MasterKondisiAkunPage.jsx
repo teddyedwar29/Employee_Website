@@ -1,4 +1,4 @@
-// File: src/admin/pages/master/MasterStatusKerjaPage.jsx
+// src/admin/pages/master/MasterKondisiAkunPage.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Commet } from 'react-loading-indicators';
@@ -6,14 +6,14 @@ import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 
 import Modal from '../../../components/ui/Modal';
 import {
-  getStatusKerjaOptions,
-  createStatusKerja,
-  updateStatusKerja,
-  deleteStatusKerja,
+  getKondisiAkunOptions,
+  createKondisiAkun,
+  updateKondisiAkun,
+  deleteKondisiAkun,
 } from '../../../services/apiService';
 
-export default function MasterStatusKerjaPage() {
-  const [statuses, setStatuses] = useState([]);
+export default function MasterKondisiAkunPage() {
+  const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,12 +26,12 @@ export default function MasterStatusKerjaPage() {
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const data = await getStatusKerjaOptions();
+      const data = await getKondisiAkunOptions();
       const list = Array.isArray(data) ? data : data?.data || [];
-      setStatuses(list);
+      setItems(list);
       setError(null);
     } catch (err) {
-      console.error('Gagal mengambil status kerja:', err);
+      console.error('Gagal mengambil kondisi akun:', err);
       setError(err.message || 'Gagal memuat data');
     } finally {
       setIsLoading(false);
@@ -42,13 +42,13 @@ export default function MasterStatusKerjaPage() {
     loadData();
   }, []);
 
-  const filteredStatuses = useMemo(() => {
+  const filteredItems = useMemo(() => {
     const q = searchTerm.toLowerCase();
-    return statuses.filter((s) => {
-      const nama = s.nama_status || s.nama || '';
+    return items.filter((i) => {
+      const nama = i.nama_kondisi_akun || i.nama || '';
       return nama.toLowerCase().includes(q);
     });
-  }, [statuses, searchTerm]);
+  }, [items, searchTerm]);
 
   const openAddModal = () => {
     setNamaInput('');
@@ -57,81 +57,64 @@ export default function MasterStatusKerjaPage() {
 
   const openEditModal = (item) => {
     setEditingItem(item);
-    setNamaInput(item.nama_status || item.nama || '');
+    setNamaInput(item.nama_kondisi_akun || item.nama || '');
     setIsEditOpen(true);
   };
 
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    if (!namaInput.trim()) return;
+
+    try {
+      await createKondisiAkun({ nama_kondisi_akun: namaInput.trim() }); // tanpa id
+      setIsAddOpen(false);
+      setNamaInput('');
+      await loadData();
+
+      Swal.fire({ title: 'Berhasil!', text: 'Kondisi akun berhasil ditambahkan.', icon: 'success', confirmButtonColor: '#800020' });
+    } catch (err) {
+      console.error(err);
+      Swal.fire({ title: 'Gagal', text: err.message || 'Gagal menambah kondisi akun.', icon: 'error', confirmButtonColor: '#800020' });
+    }
+  };
 
 
-// hanya kirim nama_status (backend yang buat id)
-const handleAddSubmit = async (e) => {
-  e.preventDefault();
-  if (!namaInput.trim()) return;
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!namaInput.trim() || !editingItem) return;
 
-  try {
-    await createStatusKerja({ nama_status: namaInput.trim() });
-    setIsAddOpen(false);
-    setNamaInput('');
-    await loadData();
-
-    Swal.fire({
-      title: 'Berhasil!',
-      text: 'Status kerja berhasil ditambahkan.',
-      icon: 'success',
-      confirmButtonColor: '#800020',
-    });
-  } catch (err) {
-    console.error(err);
-    Swal.fire({
-      title: 'Gagal',
-      text: err.message || 'Gagal menambah status kerja.',
-      icon: 'error',
-      confirmButtonColor: '#800020',
-    });
-  }
-};
-
-    const handleEditSubmit = async (e) => {
-        e.preventDefault();
-        if (!namaInput.trim() || !editingItem) return;
-
-        const payload = {
-            nama_status: namaInput.trim(),   // ✅ pakai nama_status, bukan nama
-        };
-
-        try {
-            await updateStatusKerja(editingItem.id, payload);
-            setIsEditOpen(false);
-            setEditingItem(null);
-            setNamaInput('');
-            await loadData();
-
-            Swal.fire({
-            title: 'Berhasil!',
-            text: 'Status kerja berhasil diperbarui.',
-            icon: 'success',
-            confirmButtonColor: '#800020',
-            });
-        } catch (err) {
-            console.error(err);
-            Swal.fire({
-            title: 'Gagal',
-            text:
-                err.response?.data?.message ||
-                err.message ||
-                'Gagal mengubah status kerja.',
-            icon: 'error',
-            confirmButtonColor: '#800020',
-            });
-        }
+    const payload = {
+      nama_kondisi_akun: namaInput.trim(),
     };
 
+    try {
+      await updateKondisiAkun(editingItem.id, payload);
+      setIsEditOpen(false);
+      setEditingItem(null);
+      await loadData();
+
+      Swal.fire({
+        title: 'Berhasil!',
+        text: 'Kondisi akun berhasil diperbarui.',
+        icon: 'success',
+        confirmButtonColor: '#800020',
+      });
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        title: 'Gagal',
+        text: err.message || 'Gagal mengubah kondisi akun.',
+        icon: 'error',
+        confirmButtonColor: '#800020',
+      });
+    }
+  };
 
   const handleDelete = async (item) => {
-    const nama = item.nama_status || item.nama || '-';
+    const nama = item.nama_kondisi_akun || item.nama || '-';
     const result = await Swal.fire({
-      title: 'Hapus Status?',
-      text: `Yakin ingin menghapus status "${nama}"?`,
+      title: 'Hapus Kondisi Akun?',
+      text: `Yakin ingin menghapus kondisi "${nama}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#800020',
@@ -143,12 +126,12 @@ const handleAddSubmit = async (e) => {
     if (!result.isConfirmed) return;
 
     try {
-      await deleteStatusKerja(item.id);
+      await deleteKondisiAkun(item.id);
       await loadData();
 
       Swal.fire({
         title: 'Terhapus',
-        text: 'Status kerja berhasil dihapus.',
+        text: 'Kondisi akun berhasil dihapus.',
         icon: 'success',
         confirmButtonColor: '#800020',
       });
@@ -156,7 +139,7 @@ const handleAddSubmit = async (e) => {
       console.error(err);
       Swal.fire({
         title: 'Gagal',
-        text: err.message || 'Gagal menghapus status kerja.',
+        text: err.message || 'Gagal menghapus kondisi akun.',
         icon: 'error',
         confirmButtonColor: '#800020',
       });
@@ -164,11 +147,11 @@ const handleAddSubmit = async (e) => {
   };
 
   // --- UI ---
-  if (isLoading && statuses.length === 0) {
+  if (isLoading && items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <Commet color={['#800020', '#a0002a']} size={48} />
-        <p className="mt-4 text-sm text-gray-600">Memuat data status kerja...</p>
+        <p className="mt-4 text-sm text-gray-600">Memuat data kondisi akun...</p>
       </div>
     );
   }
@@ -192,18 +175,18 @@ const handleAddSubmit = async (e) => {
     <>
       {/* Header */}
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Status Kerja</h2>
-        <p className="text-sm text-gray-600">Kelola data status kerja karyawan</p>
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Kondisi Akun</h2>
+        <p className="text-sm text-gray-600">Kelola data kondisi akun karyawan.</p>
       </div>
 
-      {/* Filter / toolbar */}
+      {/* Toolbar */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="relative w-full md:max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Cari status kerja..."
+              placeholder="Cari kondisi akun..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020] text-sm"
@@ -215,13 +198,13 @@ const handleAddSubmit = async (e) => {
             className="bg-gradient-to-r from-[#800020] to-[#a0002a] text-white px-6 py-3 rounded-xl font-medium text-sm hover:shadow-lg transition-all flex items-center gap-2 self-start md:self-auto"
           >
             <Plus size={18} />
-            Tambah Status
+            Tambah Kondisi
           </button>
         </div>
         <p className="mt-3 text-xs text-gray-600">
           Total:{' '}
-          <span className="font-bold text-[#800020]">{filteredStatuses.length}</span> dari{' '}
-          <span className="font-bold">{statuses.length}</span> data
+          <span className="font-bold text-[#800020]">{filteredItems.length}</span> dari{' '}
+          <span className="font-bold">{items.length}</span> data
         </p>
       </div>
 
@@ -235,7 +218,7 @@ const handleAddSubmit = async (e) => {
                   #
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Nama Status
+                  Nama Kondisi Akun
                 </th>
                 <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Aksi
@@ -243,28 +226,32 @@ const handleAddSubmit = async (e) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredStatuses.length === 0 ? (
+              {filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="px-6 py-10 text-center text-sm text-gray-500">
-                    Tidak ada data status kerja yang sesuai pencarian.
+                    Tidak ada data kondisi akun yang sesuai pencarian.
                   </td>
                 </tr>
               ) : (
-                filteredStatuses.map((item, index) => {
-                  const nama = item.nama_status || item.nama || '-';
+                filteredItems.map((item, index) => {
+                  const nama = item.nama_kondisi_akun || item.nama || '-';
                   const lower = nama.toLowerCase();
+
+                  // badge warna kecil aja kalau mau
                   const badgeClass =
-                    lower === 'aktif'
+                    lower.includes('aktif') && !lower.includes('non')
                       ? 'bg-emerald-100 text-emerald-700'
-                      : lower === 'berhenti'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-amber-100 text-amber-700';
+                      : lower.includes('non')
+                      ? 'bg-gray-100 text-gray-700'
+                      : 'bg-red-100 text-red-700';
 
                   return (
                     <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4 text-sm text-gray-500">{index + 1}</td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${badgeClass}`}>
+                        <span
+                          className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${badgeClass}`}
+                        >
                           {nama}
                         </span>
                       </td>
@@ -294,22 +281,18 @@ const handleAddSubmit = async (e) => {
       </div>
 
       {/* Modal Tambah */}
-      <Modal
-        isOpen={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
-        title="Tambah Status Kerja"
-      >
+      <Modal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="Tambah Kondisi Akun">
         <form onSubmit={handleAddSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nama Status
+              Nama Kondisi Akun
             </label>
             <input
               type="text"
               value={namaInput}
               onChange={(e) => setNamaInput(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-              placeholder="Misal: Aktif, Kontrak, Berhenti"
+              placeholder="Misal: aktif, non-aktif, suspended"
               required
             />
           </div>
@@ -333,15 +316,11 @@ const handleAddSubmit = async (e) => {
       </Modal>
 
       {/* Modal Edit */}
-      <Modal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        title="Edit Status Kerja"
-      >
+      <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} title="Edit Kondisi Akun">
         <form onSubmit={handleEditSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nama Status
+              Nama Kondisi Akun
             </label>
             <input
               type="text"

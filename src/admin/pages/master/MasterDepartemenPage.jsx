@@ -1,4 +1,4 @@
-// File: src/admin/pages/master/MasterStatusKerjaPage.jsx
+// src/admin/pages/master/MasterDepartemenPage.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Commet } from 'react-loading-indicators';
@@ -6,14 +6,14 @@ import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 
 import Modal from '../../../components/ui/Modal';
 import {
-  getStatusKerjaOptions,
-  createStatusKerja,
-  updateStatusKerja,
-  deleteStatusKerja,
+  getDepartemenOptions,
+  createDepartemen,
+  updateDepartemen,
+  deleteDepartemen,
 } from '../../../services/apiService';
 
-export default function MasterStatusKerjaPage() {
-  const [statuses, setStatuses] = useState([]);
+export default function MasterDepartemenPage() {
+  const [departments, setDepartments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,12 +26,12 @@ export default function MasterStatusKerjaPage() {
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const data = await getStatusKerjaOptions();
+      const data = await getDepartemenOptions();
       const list = Array.isArray(data) ? data : data?.data || [];
-      setStatuses(list);
+      setDepartments(list);
       setError(null);
     } catch (err) {
-      console.error('Gagal mengambil status kerja:', err);
+      console.error('Gagal mengambil departemen:', err);
       setError(err.message || 'Gagal memuat data');
     } finally {
       setIsLoading(false);
@@ -42,13 +42,13 @@ export default function MasterStatusKerjaPage() {
     loadData();
   }, []);
 
-  const filteredStatuses = useMemo(() => {
+  const filteredDepartments = useMemo(() => {
     const q = searchTerm.toLowerCase();
-    return statuses.filter((s) => {
-      const nama = s.nama_status || s.nama || '';
+    return departments.filter((d) => {
+      const nama = d.nama_departemen || d.nama || '';
       return nama.toLowerCase().includes(q);
     });
-  }, [statuses, searchTerm]);
+  }, [departments, searchTerm]);
 
   const openAddModal = () => {
     setNamaInput('');
@@ -57,81 +57,64 @@ export default function MasterStatusKerjaPage() {
 
   const openEditModal = (item) => {
     setEditingItem(item);
-    setNamaInput(item.nama_status || item.nama || '');
+    setNamaInput(item.nama_departemen || item.nama || '');
     setIsEditOpen(true);
   };
 
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    if (!namaInput.trim()) return;
+
+    try {
+      await createDepartemen({ nama_departemen: namaInput.trim() }); // tanpa id
+      setIsAddOpen(false);
+      setNamaInput('');
+      await loadData();
+
+      Swal.fire({ title: 'Berhasil!', text: 'Departemen berhasil ditambahkan.', icon: 'success', confirmButtonColor: '#800020' });
+    } catch (err) {
+      console.error(err);
+      Swal.fire({ title: 'Gagal', text: err.message || 'Gagal menambah departemen.', icon: 'error', confirmButtonColor: '#800020' });
+    }
+  };
 
 
-// hanya kirim nama_status (backend yang buat id)
-const handleAddSubmit = async (e) => {
-  e.preventDefault();
-  if (!namaInput.trim()) return;
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!namaInput.trim() || !editingItem) return;
 
-  try {
-    await createStatusKerja({ nama_status: namaInput.trim() });
-    setIsAddOpen(false);
-    setNamaInput('');
-    await loadData();
-
-    Swal.fire({
-      title: 'Berhasil!',
-      text: 'Status kerja berhasil ditambahkan.',
-      icon: 'success',
-      confirmButtonColor: '#800020',
-    });
-  } catch (err) {
-    console.error(err);
-    Swal.fire({
-      title: 'Gagal',
-      text: err.message || 'Gagal menambah status kerja.',
-      icon: 'error',
-      confirmButtonColor: '#800020',
-    });
-  }
-};
-
-    const handleEditSubmit = async (e) => {
-        e.preventDefault();
-        if (!namaInput.trim() || !editingItem) return;
-
-        const payload = {
-            nama_status: namaInput.trim(),   // ✅ pakai nama_status, bukan nama
-        };
-
-        try {
-            await updateStatusKerja(editingItem.id, payload);
-            setIsEditOpen(false);
-            setEditingItem(null);
-            setNamaInput('');
-            await loadData();
-
-            Swal.fire({
-            title: 'Berhasil!',
-            text: 'Status kerja berhasil diperbarui.',
-            icon: 'success',
-            confirmButtonColor: '#800020',
-            });
-        } catch (err) {
-            console.error(err);
-            Swal.fire({
-            title: 'Gagal',
-            text:
-                err.response?.data?.message ||
-                err.message ||
-                'Gagal mengubah status kerja.',
-            icon: 'error',
-            confirmButtonColor: '#800020',
-            });
-        }
+    const payload = {
+      nama_departemen: namaInput.trim(),
     };
 
+    try {
+      await updateDepartemen(editingItem.id, payload);
+      setIsEditOpen(false);
+      setEditingItem(null);
+      await loadData();
+
+      Swal.fire({
+        title: 'Berhasil!',
+        text: 'Departemen berhasil diperbarui.',
+        icon: 'success',
+        confirmButtonColor: '#800020',
+      });
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        title: 'Gagal',
+        text: err.message || 'Gagal mengubah departemen.',
+        icon: 'error',
+        confirmButtonColor: '#800020',
+      });
+    }
+  };
 
   const handleDelete = async (item) => {
-    const nama = item.nama_status || item.nama || '-';
+    const nama = item.nama_departemen || item.nama || '-';
     const result = await Swal.fire({
-      title: 'Hapus Status?',
-      text: `Yakin ingin menghapus status "${nama}"?`,
+      title: 'Hapus Departemen?',
+      text: `Yakin ingin menghapus departemen "${nama}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#800020',
@@ -143,12 +126,12 @@ const handleAddSubmit = async (e) => {
     if (!result.isConfirmed) return;
 
     try {
-      await deleteStatusKerja(item.id);
+      await deleteDepartemen(item.id);
       await loadData();
 
       Swal.fire({
         title: 'Terhapus',
-        text: 'Status kerja berhasil dihapus.',
+        text: 'Departemen berhasil dihapus.',
         icon: 'success',
         confirmButtonColor: '#800020',
       });
@@ -156,7 +139,7 @@ const handleAddSubmit = async (e) => {
       console.error(err);
       Swal.fire({
         title: 'Gagal',
-        text: err.message || 'Gagal menghapus status kerja.',
+        text: err.message || 'Gagal menghapus departemen.',
         icon: 'error',
         confirmButtonColor: '#800020',
       });
@@ -164,11 +147,11 @@ const handleAddSubmit = async (e) => {
   };
 
   // --- UI ---
-  if (isLoading && statuses.length === 0) {
+  if (isLoading && departments.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <Commet color={['#800020', '#a0002a']} size={48} />
-        <p className="mt-4 text-sm text-gray-600">Memuat data status kerja...</p>
+        <p className="mt-4 text-sm text-gray-600">Memuat data departemen...</p>
       </div>
     );
   }
@@ -192,18 +175,18 @@ const handleAddSubmit = async (e) => {
     <>
       {/* Header */}
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Status Kerja</h2>
-        <p className="text-sm text-gray-600">Kelola data status kerja karyawan</p>
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Data Departemen</h2>
+        <p className="text-sm text-gray-600">Kelola departemen perusahaan.</p>
       </div>
 
-      {/* Filter / toolbar */}
+      {/* Toolbar */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="relative w-full md:max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Cari status kerja..."
+              placeholder="Cari nama departemen..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#800020] text-sm"
@@ -215,13 +198,13 @@ const handleAddSubmit = async (e) => {
             className="bg-gradient-to-r from-[#800020] to-[#a0002a] text-white px-6 py-3 rounded-xl font-medium text-sm hover:shadow-lg transition-all flex items-center gap-2 self-start md:self-auto"
           >
             <Plus size={18} />
-            Tambah Status
+            Tambah Departemen
           </button>
         </div>
         <p className="mt-3 text-xs text-gray-600">
           Total:{' '}
-          <span className="font-bold text-[#800020]">{filteredStatuses.length}</span> dari{' '}
-          <span className="font-bold">{statuses.length}</span> data
+          <span className="font-bold text-[#800020]">{filteredDepartments.length}</span> dari{' '}
+          <span className="font-bold">{departments.length}</span> data
         </p>
       </div>
 
@@ -235,7 +218,7 @@ const handleAddSubmit = async (e) => {
                   #
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Nama Status
+                  Nama Departemen
                 </th>
                 <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Aksi
@@ -243,50 +226,37 @@ const handleAddSubmit = async (e) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredStatuses.length === 0 ? (
+              {filteredDepartments.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="px-6 py-10 text-center text-sm text-gray-500">
-                    Tidak ada data status kerja yang sesuai pencarian.
+                    Tidak ada data departemen yang sesuai pencarian.
                   </td>
                 </tr>
               ) : (
-                filteredStatuses.map((item, index) => {
-                  const nama = item.nama_status || item.nama || '-';
-                  const lower = nama.toLowerCase();
-                  const badgeClass =
-                    lower === 'aktif'
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : lower === 'berhenti'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-amber-100 text-amber-700';
-
-                  return (
-                    <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-500">{index + 1}</td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${badgeClass}`}>
-                          {nama}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => openEditModal(item)}
-                            className="bg-blue-50 hover:bg-blue-100 text-blue-700 p-2 rounded-lg text-xs font-medium transition-all"
-                          >
-                            <Edit2 size={14} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item)}
-                            className="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-lg text-xs font-medium transition-all"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
+                filteredDepartments.map((item, index) => (
+                  <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-4 text-sm text-gray-500">{index + 1}</td>
+                    <td className="px-6 py-4 text-sm text-gray-800">
+                      {item.nama_departemen || item.nama || '-'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => openEditModal(item)}
+                          className="bg-blue-50 hover:bg-blue-100 text-blue-700 p-2 rounded-lg text-xs font-medium transition-all"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item)}
+                          className="bg-red-50 hover:bg-red-100 text-red-700 p-2 rounded-lg text-xs font-medium transition-all"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
@@ -294,22 +264,18 @@ const handleAddSubmit = async (e) => {
       </div>
 
       {/* Modal Tambah */}
-      <Modal
-        isOpen={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
-        title="Tambah Status Kerja"
-      >
+      <Modal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="Tambah Departemen">
         <form onSubmit={handleAddSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nama Status
+              Nama Departemen
             </label>
             <input
               type="text"
               value={namaInput}
               onChange={(e) => setNamaInput(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-              placeholder="Misal: Aktif, Kontrak, Berhenti"
+              placeholder="Misal: IT, HRD"
               required
             />
           </div>
@@ -333,15 +299,11 @@ const handleAddSubmit = async (e) => {
       </Modal>
 
       {/* Modal Edit */}
-      <Modal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        title="Edit Status Kerja"
-      >
+      <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} title="Edit Departemen">
         <form onSubmit={handleEditSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nama Status
+              Nama Departemen
             </label>
             <input
               type="text"

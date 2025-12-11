@@ -12,40 +12,7 @@ import {
   deleteStatusPernikahan,
 } from '../../../services/apiService';
 
-// Helper: generate ID berikutnya, lanjutin dari ID yang sudah ada
-const generateNextId = (items) => {
-  if (!items || items.length === 0) {
-    return 'ST-PRK-001'; // default kalau belum ada data
-  }
 
-  let maxNum = 0;
-  let prefix = '';
-
-  items.forEach((item, index) => {
-    const id = String(item.id || '');
-    if (!id) return;
-
-    // ambil angka di paling belakang (apapun prefiks-nya)
-    const match = id.match(/(\d+)$/);
-    if (match) {
-      const num = parseInt(match[1], 10);
-      if (num > maxNum) maxNum = num;
-
-      // prefix diambil dari ID pertama yang valid, buang angka di belakang
-      if (!prefix) {
-        prefix = id.replace(/(\d+)$/, '');
-      }
-    }
-  });
-
-  if (!prefix) {
-    prefix = 'ST-PRK-'; // fallback
-  }
-
-  const next = maxNum + 1;
-  const padded = String(next).padStart(3, '0');
-  return `${prefix}${padded}`;
-};
 
 export default function MasterStatusPernikahanPage() {
   const [statuses, setStatuses] = useState([]);
@@ -81,7 +48,7 @@ export default function MasterStatusPernikahanPage() {
   const filteredItems = useMemo(() => {
     const q = searchTerm.toLowerCase();
     return items.filter((s) => {
-      const nama = s.nama_status || s.nama || '';
+      const nama = s.nama_status_pernikahan || s.nama || '';
       return nama.toLowerCase().includes(q);
     });
   }, [items, searchTerm]);
@@ -93,58 +60,27 @@ export default function MasterStatusPernikahanPage() {
 
   const openEditModal = (item) => {
     setEditingItem(item);
-    setNamaInput(item.nama_status || item.nama || '');
+    setNamaInput(item.nama_status_pernikahan || item.nama || '');
     setIsEditOpen(true);
   };
 
-  const generateNextId = () => {
-    if (!statuses.length) {
-        return 'ST-PERNI-001';
-    }
+ const handleAddSubmit = async (e) => {
+  e.preventDefault();
+  if (!namaInput.trim()) return;
 
-    // Ambil item terakhir
-    const lastItem = statuses[statuses.length - 1];
-    const lastId = lastItem.id || 'ST-PERNI-000';
+  try {
+    await createStatusPernikahan({ nama: namaInput.trim() }); // backend buat id
+    setIsAddOpen(false);
+    setNamaInput('');
+    await loadData();
 
-    // Ambil 4 digit terakhir
-    const lastNumber = parseInt(lastId.split('-').pop(), 10) || 0;
+    Swal.fire({ title: 'Berhasil!', text: 'Status pernikahan berhasil ditambahkan.', icon: 'success', confirmButtonColor: '#800020' });
+  } catch (err) {
+    console.error(err);
+    Swal.fire({ title: 'Gagal', text: err.message || 'Gagal menambah status pernikahan.', icon: 'error', confirmButtonColor: '#800020' });
+  }
+};
 
-    // Naikkan 1 lalu pad jadi 4 digit
-    const nextNumber = lastNumber + 1;
-    return `ST-PERNI-${String(nextNumber).padStart(3, '0')}`;
-  };
-
-
-  const handleAddSubmit = async (e) => {
-    e.preventDefault();
-    if (!namaInput.trim()) return;
-
-    const payload = {
-      id: generateNextId(),         // ✅ contoh: ST-KONT-0004
-      nama: namaInput.trim(),     // ✅ field yang benar
-    };
-
-    try {
-      await createStatusPernikahan(payload);
-      setIsAddOpen(false);
-      await loadData();
-
-      Swal.fire({
-        title: 'Berhasil!',
-        text: 'Status pernikahan berhasil ditambahkan.',
-        icon: 'success',
-        confirmButtonColor: '#800020',
-      });
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        title: 'Gagal',
-        text: err.message || 'Gagal menambah status pernikahan.',
-        icon: 'error',
-        confirmButtonColor: '#800020',
-      });
-    }
-  };
 
 
 
@@ -177,7 +113,7 @@ export default function MasterStatusPernikahanPage() {
 
 
   const handleDelete = async (item) => {
-    const nama = item.nama_status || item.nama || '-';
+    const nama = item.nama_status_pernikahan || item.nama || '-';
 
     const result = await Swal.fire({
       title: 'Hapus Status?',
@@ -302,7 +238,7 @@ export default function MasterStatusPernikahanPage() {
                 </tr>
               ) : (
                 filteredItems.map((item, index) => {
-                  const nama = item.nama_status || item.nama || '-';
+                  const nama = item.nama_status_pernikahan || item.nama || '-';
 
                   return (
                     <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">

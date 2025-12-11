@@ -218,11 +218,13 @@ export const getStatusPernikahanOptions = async () => {
 }
 
 // create status pernikahan
+// create status pernikahan
 export const createStatusPernikahan = async (data) => {
-  // data di sini: { id, nama_status }
+  console.log('POST /api/status-pernikahan =>', data); // buat cek di console
+
   const payload = {
-    id: data.id,
-    nama: data.nama,
+    // backend minta 'nama'
+    nama: data.nama || data.nama_status_pernikahan,
   };
 
   const response = await fetch(`${API_BASE_URL}/status-pernikahan`, {
@@ -234,10 +236,13 @@ export const createStatusPernikahan = async (data) => {
   return handleResponse(response);
 };
 
+
 // update status pernikahan
 export const updateStatusPernikahan = async (id, data) => {
+  console.log('PUT /api/status-pernikahan/' + id, data);
+
   const payload = {
-    nama: data.nama,
+    nama: data.nama || data.nama_status_pernikahan,
   };
 
   const response = await fetch(`${API_BASE_URL}/status-pernikahan/${id}`, {
@@ -249,6 +254,7 @@ export const updateStatusPernikahan = async (id, data) => {
   return handleResponse(response);
 };
 
+
 // delete status pernikahan
 export const deleteStatusPernikahan = async (id) => {
   const response = await fetch(`${API_BASE_URL}/status-pernikahan/${id}`, {
@@ -257,3 +263,184 @@ export const deleteStatusPernikahan = async (id) => {
 
   return handleResponse(response);
 };
+
+// get agama
+
+export const getAgamaOptions = async () => {
+  const response = await fetch(`${API_BASE_URL}/agama`);
+  return handleResponse(response);
+};
+
+// post agama
+export const createAgama = async (data) => {
+  const payload = {
+    // kirim dua-duanya biar aman dengan backend
+    nama: data.nama,
+    nama_agama: data.nama_agama,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/agama`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(response);
+};
+
+// put agama
+export const updateAgama = async (id, data) => {
+  const payload = {
+    nama: data.nama,
+    nama_agama: data.nama,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/agama/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(response);
+};
+
+// delete agama
+export const deleteAgama = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/agama/${id}`, {
+    method: 'DELETE',
+  });
+  return handleResponse(response);
+};
+
+
+export const getDepartemenOptions = async () => {
+  const res = await fetch(`${API_BASE_URL}/departemen`);
+  return handleResponse(res);
+};
+
+export const createDepartemen = async (data) => {
+  const res = await fetch(`${API_BASE_URL}/departemen`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nama_departemen: data.nama_departemen,
+    }),
+  });
+  return handleResponse(res);
+};
+
+export const updateDepartemen = async (id, data) => {
+  const res = await fetch(`${API_BASE_URL}/departemen/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nama_departemen: data.nama_departemen,
+    }),
+  });
+  return handleResponse(res);
+};
+
+export const deleteDepartemen = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/departemen/${id}`, {
+    method: 'DELETE',
+  });
+  return handleResponse(res);
+};
+
+
+// KONDISI AKUN
+
+export const getKondisiAkunOptions = async () => {
+  const res = await fetch(`${API_BASE_URL}/kondisi-akun`);
+  return handleResponse(res);
+};
+
+export const createKondisiAkun = async (data) => {
+  const res = await fetch(`${API_BASE_URL}/kondisi-akun`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: data.id,
+      nama_kondisi_akun: data.nama_kondisi_akun,
+    }),
+  });
+  return handleResponse(res);
+};
+
+export const updateKondisiAkun = async (id, data) => {
+  const res = await fetch(`${API_BASE_URL}/kondisi-akun/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nama_kondisi_akun: data.nama_kondisi_akun,
+    }),
+  });
+  return handleResponse(res);
+};
+
+export const deleteKondisiAkun = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/kondisi-akun/${id}`, {
+    method: 'DELETE',
+  });
+  return handleResponse(res);
+};
+
+
+// Gaji Setting
+export const getGajiSettings = async () => {
+  const res = await fetch(`${API_BASE_URL}/gaji-setting`);
+  return handleResponse(res);
+};
+
+export const createGajiSetting = async (payload) => {
+  // NOTE: jangan kirim id; backend yang buat id
+  const res = await fetch(`${API_BASE_URL}/gaji-setting`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+};
+
+export const updateGajiSetting = async (id, payload) => {
+  const res = await fetch(`${API_BASE_URL}/gaji-setting/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+};
+
+export const deleteGajiSetting = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/gaji-setting/${id}`, { method: 'DELETE' });
+  return handleResponse(res);
+};
+
+// Gaji Rule
+export const getGajiRules = async () => {
+  const res = await fetch(`${API_BASE_URL}/gaji-rule`);
+  return handleResponse(res);
+};
+
+export const createGajiRule = async (payload) => {
+  // backend yg buat id (jika berlaku) -> kirim fields yang diminta: id_jabatan_karyawan, formula, variables
+  const res = await fetch(`${API_BASE_URL}/gaji-rule`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+};
+
+export const updateGajiRule = async (id, payload) => {
+  const res = await fetch(`${API_BASE_URL}/gaji-rule/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+};
+
+export const deleteGajiRule = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/gaji-rule/${id}`, { method: 'DELETE' });
+  return handleResponse(res);
+};
+
