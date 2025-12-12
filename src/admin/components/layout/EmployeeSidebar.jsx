@@ -14,6 +14,7 @@ import {
   Book,
   Building2,
   UserCircle,
+  DollarSign,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -60,6 +61,13 @@ const masterMenus = [
     icon: UserCircle,
     path: '/admin/master/kondisi-akun',
   },
+    {
+    id: 'gaji-setting',
+    name: 'Gaji Setting',
+    icon: Settings,
+    path: '/admin/master/gaji-setting',
+  },
+
 ];
 
 export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {

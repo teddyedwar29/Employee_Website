@@ -209,25 +209,25 @@ export const deleteStatusKerja = async (id) => {
 
 
 
-/**
- * GET STATUS PERNIKAHAN (untuk dropdown)
- */
+// STATUS PERNIKAHAN (pakai trailing slash untuk menghindari redirect)
+const STATUS_PERNIKAHAN_BASE = `${API_BASE_URL}/status-pernikahan/`;
+
+// GET
 export const getStatusPernikahanOptions = async () => {
-  const response = await fetch(`${API_BASE_URL}/status-pernikahan`);
+  const response = await fetch(STATUS_PERNIKAHAN_BASE);
   return handleResponse(response);
-}
+};
 
-// create status pernikahan
-// create status pernikahan
+// CREATE
 export const createStatusPernikahan = async (data) => {
-  console.log('POST /api/status-pernikahan =>', data); // buat cek di console
-
   const payload = {
-    // backend minta 'nama'
-    nama: data.nama || data.nama_status_pernikahan,
+    // backend nampaknya pakai 'nama' -> kirim hanya 'nama'
+    nama: data.nama || data.nama_status_pernikahan || data.name || ''
   };
 
-  const response = await fetch(`${API_BASE_URL}/status-pernikahan`, {
+  console.log('POST /api/status-pernikahan =>', payload);
+
+  const response = await fetch(STATUS_PERNIKAHAN_BASE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -236,16 +236,15 @@ export const createStatusPernikahan = async (data) => {
   return handleResponse(response);
 };
 
-
-// update status pernikahan
+// UPDATE
 export const updateStatusPernikahan = async (id, data) => {
-  console.log('PUT /api/status-pernikahan/' + id, data);
-
   const payload = {
-    nama: data.nama || data.nama_status_pernikahan,
+    nama: data.nama || data.nama_status_pernikahan || data.name || ''
   };
 
-  const response = await fetch(`${API_BASE_URL}/status-pernikahan/${id}`, {
+  console.log('PUT /api/status-pernikahan/' + id, payload);
+
+  const response = await fetch(`${STATUS_PERNIKAHAN_BASE}${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -254,15 +253,15 @@ export const updateStatusPernikahan = async (id, data) => {
   return handleResponse(response);
 };
 
-
-// delete status pernikahan
+// DELETE
 export const deleteStatusPernikahan = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/status-pernikahan/${id}`, {
+  const response = await fetch(`${STATUS_PERNIKAHAN_BASE}${id}`, {
     method: 'DELETE',
   });
-
   return handleResponse(response);
 };
+
+
 
 // get agama
 
@@ -274,7 +273,6 @@ export const getAgamaOptions = async () => {
 // post agama
 export const createAgama = async (data) => {
   const payload = {
-    // kirim dua-duanya biar aman dengan backend
     nama: data.nama,
     nama_agama: data.nama_agama,
   };
@@ -390,8 +388,16 @@ export const getGajiSettings = async () => {
   return handleResponse(res);
 };
 
+export const getGajiSettingById = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/gaji-setting/${id}`);
+  return handleResponse(res);
+};
+
 export const createGajiSetting = async (payload) => {
-  // NOTE: jangan kirim id; backend yang buat id
+  // payload harus berisi:
+  // { departemen_id, jabatan_id, status_kerja_id, gaji_pokok, tunjangan_pokok,
+  //   tunjangan_opsional?: [{keterangan, jumlah}], potongan_opsional?: [{keterangan, jumlah}] }
+  console.log('POST /api/gaji-setting =>', payload);
   const res = await fetch(`${API_BASE_URL}/gaji-setting`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -411,36 +417,6 @@ export const updateGajiSetting = async (id, payload) => {
 
 export const deleteGajiSetting = async (id) => {
   const res = await fetch(`${API_BASE_URL}/gaji-setting/${id}`, { method: 'DELETE' });
-  return handleResponse(res);
-};
-
-// Gaji Rule
-export const getGajiRules = async () => {
-  const res = await fetch(`${API_BASE_URL}/gaji-rule`);
-  return handleResponse(res);
-};
-
-export const createGajiRule = async (payload) => {
-  // backend yg buat id (jika berlaku) -> kirim fields yang diminta: id_jabatan_karyawan, formula, variables
-  const res = await fetch(`${API_BASE_URL}/gaji-rule`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  return handleResponse(res);
-};
-
-export const updateGajiRule = async (id, payload) => {
-  const res = await fetch(`${API_BASE_URL}/gaji-rule/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  return handleResponse(res);
-};
-
-export const deleteGajiRule = async (id) => {
-  const res = await fetch(`${API_BASE_URL}/gaji-rule/${id}`, { method: 'DELETE' });
   return handleResponse(res);
 };
 

@@ -13,6 +13,8 @@ import MasterStatusPernikahanPage from './master/MasterStatusPernikahanPage';
 import MasterAgamaPage from './master/MasterAgamaPage';
 import MasterDepartemenPage from './master/MasterDepartemenPage';
 import MasterKondisiAkunPage from './master/MasterKondisiAkunPage';
+import MasterGajiSettingPage from './master/MasterGajiSettingPage';
+
 
 
 import { 
@@ -166,17 +168,17 @@ export default function EmployeeDashboard() {
     setActiveMenu('master-jabatan');
   } else if (path.includes('/master/status-pernikahan')) {
     setActiveMenu('master-status-pernikahan');
-  } 
-  else if (path.includes('/master/status-kerja')) {
+  } else if (path.includes('/master/gaji-setting')) {
+    setActiveMenu('gaji-setting');
+  } else if (path.includes('/master/status-kerja')) {
     setActiveMenu('master-status-kerja');
-  } else if(path.includes('/master/agama')) {
+  } else if (path.includes('/master/agama')) {
     setActiveMenu('master-agama');  
   } else if (path.includes('/master/departemen')) {
     setActiveMenu('master-departemen');
   } else if (path.includes('/master/kondisi-akun')) {
     setActiveMenu('master-kondisi-akun');
-  }
-  else if (path.includes('/karyawan')) {
+  } else if (path.includes('/karyawan')) {
     setActiveMenu('karyawan');
   } else {
     setActiveMenu('dashboard');
@@ -365,6 +367,8 @@ export default function EmployeeDashboard() {
         statusKerjaOptions={statusKerjaOptions}
         statusPernikahanOptions={statusPernikahanOptions}
       />
+
+      
       
       {/* 5. Kirim state ke Sidebar */}
       <EmployeeSidebar
@@ -413,6 +417,10 @@ export default function EmployeeDashboard() {
                   onDetailClick={handleDetailClick}
                   isLoading={isLoading}
                   onMenuClick={() => setIsSidebarOpen(true)}
+                  onResignClick={(emp) => {
+                    setSelectedEmployee(emp);
+                    setShowResignModal(true);
+                  }}
                 />
               );
             }
@@ -446,6 +454,9 @@ export default function EmployeeDashboard() {
             }
             if (activeMenu === 'master-kondisi-akun') {
               return <MasterKondisiAkunPage />;
+            }
+            if (activeMenu === 'gaji-setting') {
+              return <MasterGajiSettingPage />;
             }
 
 

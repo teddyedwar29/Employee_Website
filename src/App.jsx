@@ -17,6 +17,7 @@ export default function App() {
         <Route path="/admin/master/agama" element={<EmployeeDashboard />} />
         <Route path="/admin/master/departemen" element={<EmployeeDashboard />} />
         <Route path="/admin/master/kondisi-akun" element={<EmployeeDashboard />} />
+        <Route path="/admin/master/gaji-setting" element={<EmployeeDashboard />} />
 
         <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
       </Routes>

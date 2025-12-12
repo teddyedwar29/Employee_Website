@@ -10,7 +10,7 @@ import {
   createAgama,
   updateAgama,
   deleteAgama,
-} from '../../../services/ApiService';
+} from '../../../services/apiService';
 
 export default function MasterAgamaPage() {
   const [religions, setReligions] = useState([]);

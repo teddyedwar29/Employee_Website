@@ -64,22 +64,27 @@ export default function MasterStatusPernikahanPage() {
     setIsEditOpen(true);
   };
 
- const handleAddSubmit = async (e) => {
-  e.preventDefault();
-  if (!namaInput.trim()) return;
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    if (!namaInput.trim()) return;
 
-  try {
-    await createStatusPernikahan({ nama: namaInput.trim() }); // backend buat id
-    setIsAddOpen(false);
-    setNamaInput('');
-    await loadData();
+    const payload = {
+      nama: namaInput.trim(),
+    };
 
-    Swal.fire({ title: 'Berhasil!', text: 'Status pernikahan berhasil ditambahkan.', icon: 'success', confirmButtonColor: '#800020' });
-  } catch (err) {
-    console.error(err);
-    Swal.fire({ title: 'Gagal', text: err.message || 'Gagal menambah status pernikahan.', icon: 'error', confirmButtonColor: '#800020' });
-  }
-};
+    try {
+      await createStatusPernikahan(payload);
+      setIsAddOpen(false);
+      setNamaInput('');
+      await loadData();
+
+      Swal.fire({ title: 'Berhasil!', text: 'Status pernikahan berhasil ditambahkan.', icon: 'success', confirmButtonColor: '#800020' });
+    } catch (err) {
+      console.error(err);
+      Swal.fire({ title: 'Gagal', text: err.message || 'Gagal menambah status pernikahan.', icon: 'error', confirmButtonColor: '#800020' });
+    }
+  };
+
 
 
 
@@ -88,8 +93,10 @@ export default function MasterStatusPernikahanPage() {
     e.preventDefault();
     if (!namaInput.trim() || !editingItem) return;
 
+    const payload = { nama: namaInput.trim() };
+
     try {
-      await updateStatusPernikahan(editingItem.id, { nama: namaInput.trim() });
+      await updateStatusPernikahan(editingItem.id, payload);
       setIsEditOpen(false);
       setEditingItem(null);
       await loadData();
