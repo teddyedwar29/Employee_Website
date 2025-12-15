@@ -10,6 +10,12 @@ import ResignedEmployeePage from './ResignedEmployeePage';
 import MasterJabatanPage from './master/MasterJabatanPage';
 import MasterStatusKerjaPage from './master/MasterStatusKerjaPage';
 import MasterStatusPernikahanPage from './master/MasterStatusPernikahanPage';
+import MasterAgamaPage from './master/MasterAgamaPage';
+import MasterDepartemenPage from './master/MasterDepartemenPage';
+import MasterKondisiAkunPage from './master/MasterKondisiAkunPage';
+import MasterGajiSettingPage from './master/MasterGajiSettingPage';
+
+
 
 import { 
   getEmployees, 
@@ -18,7 +24,10 @@ import {
   updateEmployee,
   getJabatanOptions,
   getStatusKerjaOptions,
-  getStatusPernikahanOptions
+  getStatusPernikahanOptions,
+  getAgamaOptions,          
+  getDepartemenOptions,    
+  getKondisiAkunOptions,
 } from '../../services/apiService'; 
 
 const DEPARTMENT_COLORS = [
@@ -57,19 +66,46 @@ export default function EmployeeDashboard() {
   // Dropdown options
   const [jabatanOptions, setJabatanOptions] = useState([]);
   const [statusKerjaOptions, setStatusKerjaOptions] = useState([]);
-  const [statusPernikahanOptions, setStatusPernikahanOptions] = useState([]); 
+  const [statusPernikahanOptions, setStatusPernikahanOptions] = useState([]);
+  const [agamaOptions, setAgamaOptions] = useState([]);
+  const [departemenOptions, setDepartemenOptions] = useState([]);
+  const [kondisiAkunOptions, setKondisiAkunOptions] = useState([]);
+
 
 
   // ... (loadData, useEffects, dan semua handler (handleAdd, handleDelete, handleEdit, handleUpdate) TETAP SAMA, tidak diubah) ...
   const loadData = async () => {
     try {
-      const [employeeData, jabatanData, statusData, statusPernikahanData] = await Promise.all([
-        getEmployees(), 
+      const [
+        employeeData,
+        jabatanData,
+        statusData,
+        statusPernikahanData,
+        agamaData,
+        departemenData,
+        kondisiData,
+      ] = await Promise.all([
+        getEmployees(),
         getJabatanOptions(),
         getStatusKerjaOptions(),
-        getStatusPernikahanOptions()
+        getStatusPernikahanOptions(),
+        getAgamaOptions(),
+        getDepartemenOptions(),
+        getKondisiAkunOptions(),
       ]);
-      
+
+      // ===== MASTER BARU =====
+      setAgamaOptions(
+        Array.isArray(agamaData) ? agamaData : agamaData?.data || []
+      );
+      setDepartemenOptions(
+        Array.isArray(departemenData) ? departemenData : departemenData?.data || []
+      );
+      setKondisiAkunOptions(
+        Array.isArray(kondisiData) ? kondisiData : kondisiData?.data || []
+      );
+
+      // ===== KARYAWAN =====
       if (Array.isArray(employeeData)) {
         setEmployees(employeeData);
       } else if (employeeData && Array.isArray(employeeData.data)) {
@@ -78,7 +114,8 @@ export default function EmployeeDashboard() {
         console.warn('Data Karyawan dari API bukan array:', employeeData);
         setEmployees([]);
       }
-      
+
+      // ===== JABATAN =====
       if (Array.isArray(jabatanData)) {
         setJabatanOptions(jabatanData);
       } else if (jabatanData && Array.isArray(jabatanData.data)) {
@@ -87,7 +124,8 @@ export default function EmployeeDashboard() {
         console.warn('Data Jabatan dari API bukan array:', jabatanData);
         setJabatanOptions([]);
       }
-      
+
+      // ===== STATUS KERJA =====
       if (Array.isArray(statusData)) {
         setStatusKerjaOptions(statusData);
       } else if (statusData && Array.isArray(statusData.data)) {
@@ -97,6 +135,7 @@ export default function EmployeeDashboard() {
         setStatusKerjaOptions([]);
       }
 
+      // ===== STATUS PERNIKAHAN =====
       if (Array.isArray(statusPernikahanData)) {
         setStatusPernikahanOptions(statusPernikahanData);
       } else if (statusPernikahanData && Array.isArray(statusPernikahanData.data)) {
@@ -105,15 +144,16 @@ export default function EmployeeDashboard() {
         console.warn('Data Status Pernikahan dari API bukan array:', statusPernikahanData);
         setStatusPernikahanOptions([]);
       }
-      
+
       setError(null);
     } catch (err) {
       console.error('Gagal mengambil data:', err);
       setError(err.message);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
+
 
   useEffect(() => {
     setIsLoading(true);
@@ -128,11 +168,17 @@ export default function EmployeeDashboard() {
     setActiveMenu('master-jabatan');
   } else if (path.includes('/master/status-pernikahan')) {
     setActiveMenu('master-status-pernikahan');
-  } 
-  else if (path.includes('/master/status-kerja')) {
+  } else if (path.includes('/master/gaji-setting')) {
+    setActiveMenu('gaji-setting');
+  } else if (path.includes('/master/status-kerja')) {
     setActiveMenu('master-status-kerja');
-  } 
-  else if (path.includes('/karyawan')) {
+  } else if (path.includes('/master/agama')) {
+    setActiveMenu('master-agama');  
+  } else if (path.includes('/master/departemen')) {
+    setActiveMenu('master-departemen');
+  } else if (path.includes('/master/kondisi-akun')) {
+    setActiveMenu('master-kondisi-akun');
+  } else if (path.includes('/karyawan')) {
     setActiveMenu('karyawan');
   } else {
     setActiveMenu('dashboard');
@@ -300,6 +346,9 @@ export default function EmployeeDashboard() {
         jabatanOptions={jabatanOptions}
         statusKerjaOptions={statusKerjaOptions}
         statusPernikahanOptions={statusPernikahanOptions}
+        agamaOptions={agamaOptions}
+        departemenOptions={departemenOptions}
+        kondisiAkunOptions={kondisiAkunOptions}
       />
       <EditEmployeeModal
         isOpen={isEditModalOpen}
@@ -318,6 +367,8 @@ export default function EmployeeDashboard() {
         statusKerjaOptions={statusKerjaOptions}
         statusPernikahanOptions={statusPernikahanOptions}
       />
+
+      
       
       {/* 5. Kirim state ke Sidebar */}
       <EmployeeSidebar
@@ -366,6 +417,10 @@ export default function EmployeeDashboard() {
                   onDetailClick={handleDetailClick}
                   isLoading={isLoading}
                   onMenuClick={() => setIsSidebarOpen(true)}
+                  onResignClick={(emp) => {
+                    setSelectedEmployee(emp);
+                    setShowResignModal(true);
+                  }}
                 />
               );
             }
@@ -390,6 +445,21 @@ export default function EmployeeDashboard() {
             if (activeMenu === 'master-status-pernikahan') {
               return <MasterStatusPernikahanPage />;
             }
+
+            if (activeMenu === 'master-agama') {
+              return <MasterAgamaPage />;
+            }
+            if (activeMenu === 'master-departemen') {
+              return <MasterDepartemenPage />;
+            }
+            if (activeMenu === 'master-kondisi-akun') {
+              return <MasterKondisiAkunPage />;
+            }
+            if (activeMenu === 'gaji-setting') {
+              return <MasterGajiSettingPage />;
+            }
+
+
 
             // fallback
             return <DashboardPage

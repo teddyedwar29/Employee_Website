@@ -12,6 +12,8 @@ import {
   deleteStatusPernikahan,
 } from '../../../services/apiService';
 
+
+
 export default function MasterStatusPernikahanPage() {
   const [statuses, setStatuses] = useState([]);
   const [items, setItems] = useState([]);
@@ -46,7 +48,7 @@ export default function MasterStatusPernikahanPage() {
   const filteredItems = useMemo(() => {
     const q = searchTerm.toLowerCase();
     return items.filter((s) => {
-      const nama = s.nama_status || s.nama || '';
+      const nama = s.nama_status_pernikahan || s.nama || '';
       return nama.toLowerCase().includes(q);
     });
   }, [items, searchTerm]);
@@ -58,58 +60,32 @@ export default function MasterStatusPernikahanPage() {
 
   const openEditModal = (item) => {
     setEditingItem(item);
-    setNamaInput(item.nama_status || item.nama || '');
+    setNamaInput(item.nama_status_pernikahan || item.nama || '');
     setIsEditOpen(true);
   };
-
-  const generateNextId = () => {
-    if (!statuses.length) {
-        return 'ST-PERNI-001';
-    }
-
-    // Ambil item terakhir
-    const lastItem = statuses[statuses.length - 1];
-    const lastId = lastItem.id || 'ST-PERNI-000';
-
-    // Ambil 4 digit terakhir
-    const lastNumber = parseInt(lastId.split('-').pop(), 10) || 0;
-
-    // Naikkan 1 lalu pad jadi 4 digit
-    const nextNumber = lastNumber + 1;
-    return `ST-PERNI-${String(nextNumber).padStart(3, '0')}`;
-  };
-
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     if (!namaInput.trim()) return;
 
     const payload = {
-      id: generateNextId(),       
-      nama: namaInput.trim(),     
+      nama: namaInput.trim(),
     };
 
     try {
       await createStatusPernikahan(payload);
       setIsAddOpen(false);
+      setNamaInput('');
       await loadData();
 
-      Swal.fire({
-        title: 'Berhasil!',
-        text: 'Status pernikahan berhasil ditambahkan.',
-        icon: 'success',
-        confirmButtonColor: '#800020',
-      });
+      Swal.fire({ title: 'Berhasil!', text: 'Status pernikahan berhasil ditambahkan.', icon: 'success', confirmButtonColor: '#800020' });
     } catch (err) {
       console.error(err);
-      Swal.fire({
-        title: 'Gagal',
-        text: err.message || 'Gagal menambah status pernikahan.',
-        icon: 'error',
-        confirmButtonColor: '#800020',
-      });
+      Swal.fire({ title: 'Gagal', text: err.message || 'Gagal menambah status pernikahan.', icon: 'error', confirmButtonColor: '#800020' });
     }
   };
+
+
 
 
 
@@ -117,8 +93,10 @@ export default function MasterStatusPernikahanPage() {
     e.preventDefault();
     if (!namaInput.trim() || !editingItem) return;
 
+    const payload = { nama: namaInput.trim() };
+
     try {
-      await updateStatusPernikahan(editingItem.id, { nama: namaInput.trim() });
+      await updateStatusPernikahan(editingItem.id, payload);
       setIsEditOpen(false);
       setEditingItem(null);
       await loadData();
@@ -142,7 +120,7 @@ export default function MasterStatusPernikahanPage() {
 
 
   const handleDelete = async (item) => {
-    const nama = item.nama_status || item.nama || '-';
+    const nama = item.nama_status_pernikahan || item.nama || '-';
 
     const result = await Swal.fire({
       title: 'Hapus Status?',
@@ -267,7 +245,7 @@ export default function MasterStatusPernikahanPage() {
                 </tr>
               ) : (
                 filteredItems.map((item, index) => {
-                  const nama = item.nama_status || item.nama || '-';
+                  const nama = item.nama_status_pernikahan || item.nama || '-';
 
                   return (
                     <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">

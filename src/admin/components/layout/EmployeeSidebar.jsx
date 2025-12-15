@@ -11,6 +11,10 @@ import {
   Briefcase,
   Clock,
   Heart,
+  Book,
+  Building2,
+  UserCircle,
+  DollarSign,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -39,6 +43,31 @@ const masterMenus = [
     icon: Heart,                    // atau icon lain
     path: '/admin/master/status-pernikahan',
   },
+  {
+    id: 'master-agama',
+    name: 'Agama',
+    icon: Book,    
+    path: '/admin/master/agama',             
+  },
+  {
+    id: 'master-departemen',
+    name: 'Departemen',
+    icon: Building2,             // atau icon lain
+    path: '/admin/master/departemen',
+  },
+  {
+    id: 'master-kondisi-akun',
+    name: 'Kondisi Akun',
+    icon: UserCircle,
+    path: '/admin/master/kondisi-akun',
+  },
+    {
+    id: 'gaji-setting',
+    name: 'Gaji Setting',
+    icon: Settings,
+    path: '/admin/master/gaji-setting',
+  },
+
 ];
 
 export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {

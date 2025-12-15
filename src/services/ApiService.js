@@ -209,23 +209,25 @@ export const deleteStatusKerja = async (id) => {
 
 
 
-/**
- * GET STATUS PERNIKAHAN (untuk dropdown)
- */
-export const getStatusPernikahanOptions = async () => {
-  const response = await fetch(`${API_BASE_URL}/status-pernikahan`);
-  return handleResponse(response);
-}
+// STATUS PERNIKAHAN (pakai trailing slash untuk menghindari redirect)
+const STATUS_PERNIKAHAN_BASE = `${API_BASE_URL}/status-pernikahan/`;
 
-// create status pernikahan
+// GET
+export const getStatusPernikahanOptions = async () => {
+  const response = await fetch(STATUS_PERNIKAHAN_BASE);
+  return handleResponse(response);
+};
+
+// CREATE
 export const createStatusPernikahan = async (data) => {
-  // data di sini: { id, nama_status }
   const payload = {
-    id: data.id,
-    nama: data.nama,
+    // backend nampaknya pakai 'nama' -> kirim hanya 'nama'
+    nama: data.nama || data.nama_status_pernikahan || data.name || ''
   };
 
-  const response = await fetch(`${API_BASE_URL}/status-pernikahan`, {
+  console.log('POST /api/status-pernikahan =>', payload);
+
+  const response = await fetch(STATUS_PERNIKAHAN_BASE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -234,13 +236,15 @@ export const createStatusPernikahan = async (data) => {
   return handleResponse(response);
 };
 
-// update status pernikahan
+// UPDATE
 export const updateStatusPernikahan = async (id, data) => {
   const payload = {
-    nama: data.nama,
+    nama: data.nama || data.nama_status_pernikahan || data.name || ''
   };
 
-  const response = await fetch(`${API_BASE_URL}/status-pernikahan/${id}`, {
+  console.log('PUT /api/status-pernikahan/' + id, payload);
+
+  const response = await fetch(`${STATUS_PERNIKAHAN_BASE}${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -249,12 +253,58 @@ export const updateStatusPernikahan = async (id, data) => {
   return handleResponse(response);
 };
 
-// delete status pernikahan
+// DELETE
 export const deleteStatusPernikahan = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/status-pernikahan/${id}`, {
+  const response = await fetch(`${STATUS_PERNIKAHAN_BASE}${id}`, {
     method: 'DELETE',
   });
+  return handleResponse(response);
+};
 
+
+
+// get agama
+
+export const getAgamaOptions = async () => {
+  const response = await fetch(`${API_BASE_URL}/agama`);
+  return handleResponse(response);
+};
+
+// post agama
+export const createAgama = async (data) => {
+  const payload = {
+    nama: data.nama,
+    nama_agama: data.nama_agama,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/agama`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(response);
+};
+
+// put agama
+export const updateAgama = async (id, data) => {
+  const payload = {
+    nama: data.nama,
+    nama_agama: data.nama,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/agama/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(response);
+};
+
+// delete agama
+export const deleteAgama = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/agama/${id}`, {
+    method: 'DELETE',
+  });
   return handleResponse(response);
 };
 
