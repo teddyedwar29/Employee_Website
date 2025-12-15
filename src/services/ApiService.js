@@ -66,7 +66,7 @@ export const createEmployee = async (employeeData) => {
 };
 
 /**
- * ✅ READ (GET All) - DIAKTIFKAN
+ *  READ (GET All) - DIAKTIFKAN
  */
 export const getEmployees = async () => {
   console.log('Fetching data from /api/karyawan...');
@@ -80,7 +80,7 @@ export const getEmployees = async () => {
 };
 
 /**
- * ✅ DELETE (DELETE) - DIAKTIFKAN
+ * DELETE (DELETE) - DIAKTIFKAN
  */
 export const deleteEmployee = async (employeeId) => {
   console.log(`Deleting employee with ID: ${employeeId}`);
@@ -255,5 +255,53 @@ export const deleteStatusPernikahan = async (id) => {
     method: 'DELETE',
   });
 
+  return handleResponse(response);
+};
+
+
+// === AGAMA ===
+
+// GET /agama
+export const getAgamaOptions = async () => {
+  const response = await fetch(`${API_BASE_URL}/agama`);
+  return handleResponse(response);
+};
+
+// POST /agama
+export const createAgama = async (data) => {
+  const payload = {
+    // kirim dua-duanya biar aman dengan backend
+    nama: data.nama,
+    nama_agama: data.nama,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/agama`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(response);
+};
+
+// PUT /agama/{id}
+export const updateAgama = async (id, data) => {
+  const payload = {
+    nama: data.nama,
+    nama_agama: data.nama,
+  };
+
+  const response = await fetch(`${API_BASE_URL}/agama/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(response);
+};
+
+// DELETE /agama/{id}
+export const deleteAgama = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/agama/${id}`, {
+    method: 'DELETE',
+  });
   return handleResponse(response);
 };

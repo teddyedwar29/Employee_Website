@@ -12,41 +12,6 @@ import {
   deleteStatusPernikahan,
 } from '../../../services/apiService';
 
-// Helper: generate ID berikutnya, lanjutin dari ID yang sudah ada
-const generateNextId = (items) => {
-  if (!items || items.length === 0) {
-    return 'ST-PRK-001'; // default kalau belum ada data
-  }
-
-  let maxNum = 0;
-  let prefix = '';
-
-  items.forEach((item, index) => {
-    const id = String(item.id || '');
-    if (!id) return;
-
-    // ambil angka di paling belakang (apapun prefiks-nya)
-    const match = id.match(/(\d+)$/);
-    if (match) {
-      const num = parseInt(match[1], 10);
-      if (num > maxNum) maxNum = num;
-
-      // prefix diambil dari ID pertama yang valid, buang angka di belakang
-      if (!prefix) {
-        prefix = id.replace(/(\d+)$/, '');
-      }
-    }
-  });
-
-  if (!prefix) {
-    prefix = 'ST-PRK-'; // fallback
-  }
-
-  const next = maxNum + 1;
-  const padded = String(next).padStart(3, '0');
-  return `${prefix}${padded}`;
-};
-
 export default function MasterStatusPernikahanPage() {
   const [statuses, setStatuses] = useState([]);
   const [items, setItems] = useState([]);
@@ -120,8 +85,8 @@ export default function MasterStatusPernikahanPage() {
     if (!namaInput.trim()) return;
 
     const payload = {
-      id: generateNextId(),         // ✅ contoh: ST-KONT-0004
-      nama: namaInput.trim(),     // ✅ field yang benar
+      id: generateNextId(),       
+      nama: namaInput.trim(),     
     };
 
     try {
