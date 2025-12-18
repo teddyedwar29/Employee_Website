@@ -4,15 +4,17 @@ import Swal from 'sweetalert2';
 import { Commet } from 'react-loading-indicators';
 import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 
-import Modal from '../../../components/ui/Modal';
+import Modal from '@/components/ui/Modal';
 import {
   getAgamaOptions,
   createAgama,
   updateAgama,
   deleteAgama,
-} from '../../../services/apiService';
+} from '@/services/apiService';
+import PageHeader from '@/components/ui/PageHeader';
 
-export default function MasterAgamaPage() {
+
+export default function MasterAgamaPage({onMenuClick}) {
   const [religions, setReligions] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -204,6 +206,12 @@ export default function MasterAgamaPage() {
   // --- MAIN UI ---
   return (
     <>
+      <PageHeader
+        title="Agama"
+        description="Kelola data agama karyawan"
+        onMenuClick={onMenuClick}
+      />
+      
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-800 mb-2">Data Agama</h2>

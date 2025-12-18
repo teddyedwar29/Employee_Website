@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Swal from 'sweetalert2';
 import { Commet } from 'react-loading-indicators';
 import { Plus, Edit2, Trash2, Search } from 'lucide-react';
-import Modal from '../../../components/ui/Modal';
+import Modal from '@/components/ui/Modal';
 
 import {
   getGajiSettings,
@@ -13,9 +13,10 @@ import {
   getDepartemenOptions,
   getJabatanOptions,
   getStatusKerjaOptions,
-} from '../../../services/apiService';
+} from '@/services/apiService';
+import PageHeader from '@/components/ui/PageHeader';
 
-export default function MasterGajiSettingPage() {
+export default function MasterGajiSettingPage({onMenuClick}) {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -203,12 +204,14 @@ export default function MasterGajiSettingPage() {
 
   return (
     <>
+      <PageHeader
+        title="Gaji Setting"
+        description="Kelola setting gaji untuk kombinasi departemen / jabatan / status kerja"
+        onMenuClick={onMenuClick}
+      />
+
       {/* Header / toolbar */}
       <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800">Gaji Setting</h2>
-          <p className="text-sm text-gray-600">Kelola setting gaji untuk kombinasi departemen / jabatan / status kerja</p>
-        </div>
         <div>
           <button onClick={openAddModal} className="flex items-center gap-2 bg-gradient-to-r from-[#800020] to-[#a0002a] text-white px-4 py-2 rounded-lg">
             <Plus size={16} /> Tambah Setting

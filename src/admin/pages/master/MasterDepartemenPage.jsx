@@ -4,15 +4,16 @@ import Swal from 'sweetalert2';
 import { Commet } from 'react-loading-indicators';
 import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 
-import Modal from '../../../components/ui/Modal';
+import Modal from '@/components/ui/Modal';
 import {
   getDepartemenOptions,
   createDepartemen,
   updateDepartemen,
   deleteDepartemen,
-} from '../../../services/apiService';
+} from '@/services/apiService';
+import PageHeader from '@/components/ui/PageHeader';
 
-export default function MasterDepartemenPage() {
+export default function MasterDepartemenPage({onMenuClick}) {
   const [departments, setDepartments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -173,12 +174,13 @@ export default function MasterDepartemenPage() {
 
   return (
     <>
-      {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Data Departemen</h2>
-        <p className="text-sm text-gray-600">Kelola departemen perusahaan.</p>
-      </div>
 
+      <PageHeader
+        title="Departemen"
+        description="Kelola departemen perusahaan."
+        onMenuClick={onMenuClick}
+      />
+    
       {/* Toolbar */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

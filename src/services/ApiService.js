@@ -66,7 +66,7 @@ export const createEmployee = async (employeeData) => {
 };
 
 /**
- *  READ (GET All) - DIAKTIFKAN
+ * ✅ READ (GET All) - DIAKTIFKAN
  */
 export const getEmployees = async () => {
   console.log('Fetching data from /api/karyawan...');
@@ -80,7 +80,7 @@ export const getEmployees = async () => {
 };
 
 /**
- * DELETE (DELETE) - DIAKTIFKAN
+ * ✅ DELETE (DELETE) - DIAKTIFKAN
  */
 export const deleteEmployee = async (employeeId) => {
   console.log(`Deleting employee with ID: ${employeeId}`);
@@ -309,49 +309,113 @@ export const deleteAgama = async (id) => {
 };
 
 
-// === AGAMA ===
-
-// GET /agama
-export const getAgamaOptions = async () => {
-  const response = await fetch(`${API_BASE_URL}/agama`);
-  return handleResponse(response);
+export const getDepartemenOptions = async () => {
+  const res = await fetch(`${API_BASE_URL}/departemen`);
+  return handleResponse(res);
 };
 
-// POST /agama
-export const createAgama = async (data) => {
-  const payload = {
-    // kirim dua-duanya biar aman dengan backend
-    nama: data.nama,
-    nama_agama: data.nama,
-  };
+export const createDepartemen = async (data) => {
+  const res = await fetch(`${API_BASE_URL}/departemen`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nama_departemen: data.nama_departemen,
+    }),
+  });
+  return handleResponse(res);
+};
 
-  const response = await fetch(`${API_BASE_URL}/agama`, {
+export const updateDepartemen = async (id, data) => {
+  const res = await fetch(`${API_BASE_URL}/departemen/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nama_departemen: data.nama_departemen,
+    }),
+  });
+  return handleResponse(res);
+};
+
+export const deleteDepartemen = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/departemen/${id}`, {
+    method: 'DELETE',
+  });
+  return handleResponse(res);
+};
+
+
+// KONDISI AKUN
+
+export const getKondisiAkunOptions = async () => {
+  const res = await fetch(`${API_BASE_URL}/kondisi-akun`);
+  return handleResponse(res);
+};
+
+export const createKondisiAkun = async (data) => {
+  const res = await fetch(`${API_BASE_URL}/kondisi-akun`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: data.id,
+      nama_kondisi_akun: data.nama_kondisi_akun,
+    }),
+  });
+  return handleResponse(res);
+};
+
+export const updateKondisiAkun = async (id, data) => {
+  const res = await fetch(`${API_BASE_URL}/kondisi-akun/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nama_kondisi_akun: data.nama_kondisi_akun,
+    }),
+  });
+  return handleResponse(res);
+};
+
+export const deleteKondisiAkun = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/kondisi-akun/${id}`, {
+    method: 'DELETE',
+  });
+  return handleResponse(res);
+};
+
+
+// Gaji Setting
+export const getGajiSettings = async () => {
+  const res = await fetch(`${API_BASE_URL}/gaji-setting`);
+  return handleResponse(res);
+};
+
+export const getGajiSettingById = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/gaji-setting/${id}`);
+  return handleResponse(res);
+};
+
+export const createGajiSetting = async (payload) => {
+  // payload harus berisi:
+  // { departemen_id, jabatan_id, status_kerja_id, gaji_pokok, tunjangan_pokok,
+  //   tunjangan_opsional?: [{keterangan, jumlah}], potongan_opsional?: [{keterangan, jumlah}] }
+  console.log('POST /api/gaji-setting =>', payload);
+  const res = await fetch(`${API_BASE_URL}/gaji-setting`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
-  return handleResponse(response);
+  return handleResponse(res);
 };
 
-// PUT /agama/{id}
-export const updateAgama = async (id, data) => {
-  const payload = {
-    nama: data.nama,
-    nama_agama: data.nama,
-  };
-
-  const response = await fetch(`${API_BASE_URL}/agama/${id}`, {
+export const updateGajiSetting = async (id, payload) => {
+  const res = await fetch(`${API_BASE_URL}/gaji-setting/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
-  return handleResponse(response);
+  return handleResponse(res);
 };
 
-// DELETE /agama/{id}
-export const deleteAgama = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/agama/${id}`, {
-    method: 'DELETE',
-  });
-  return handleResponse(response);
+export const deleteGajiSetting = async (id) => {
+  const res = await fetch(`${API_BASE_URL}/gaji-setting/${id}`, { method: 'DELETE' });
+  return handleResponse(res);
 };

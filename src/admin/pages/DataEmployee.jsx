@@ -15,6 +15,8 @@ import {
   Menu,
   ChevronDown
 } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
+
 
 // ... (Helper 'getJabatanName' dan 'getStatusName' tetap sama) ...
 const getJabatanName = (id, jabatanOptions) => {
@@ -110,26 +112,15 @@ export default function DataEmployee({
   onEditClick,
   onDetailClick,
   isLoading, 
-  
-  // 2. Terima prop BARU
   onMenuClick,
 }) {
   return (
     <>
-      {/* 3. Header di-MODIFIKASI: tambah tombol menu */}
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Data Karyawan</h2>
-          <p className="text-sm text-gray-600">Kelola semua data karyawan perusahaan</p>
-        </div>
-        {/* Tombol Hamburger (HANYA muncul di HP) */}
-        <button 
-          onClick={onMenuClick}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 md:hidden"
-        >
-          <Menu size={24} className="text-gray-700" />
-        </button>
-      </div>
+      <PageHeader
+        title="Data Karyawan"
+        description="Kelola semua data karyawan perusahaan"
+        onMenuClick={onMenuClick}
+      />
 
       {/* 4. Filter Section di-MODIFIKASI: Ganti grid-cols-12 */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">

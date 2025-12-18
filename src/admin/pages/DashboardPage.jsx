@@ -1,5 +1,6 @@
 import React from 'react';
-import { UserCircle, Calendar, Award, Users as UsersIcon, Menu } from 'lucide-react'; // 1. Import Menu
+import { UserCircle, Calendar, Award, Users as UsersIcon, Menu } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
 
 // ... (Helper 'getJabatanName' dan 'getStatusName' tetap sama) ...
 const getJabatanName = (id, jabatanOptions) => {
@@ -22,26 +23,16 @@ export default function DashboardPage({
   onSeeAllEmployees,
   jabatanOptions,
   statusKerjaOptions,
-  
-  // 2. Terima prop BARU
   onMenuClick,
 }) {
   return (
     <>
-      {/* 3. Header di-MODIFIKASI: tambah tombol menu */}
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-600 mb-1">Welcome back, Admin 👋</p>
-          <h2 className="text-3xl font-bold text-gray-800">Dashboard</h2>
-        </div>
-        {/* Tombol Hamburger (HANYA muncul di HP) */}
-        <button 
-          onClick={onMenuClick}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 md:hidden"
-        >
-          <Menu size={24} className="text-gray-700" />
-        </button>
-      </div>
+      {/* header */}
+      <PageHeader
+        title="Dashboard"
+        description="Welcome back, Admin"
+        onMenuClick={onMenuClick}
+      />
 
       <div className="grid grid-cols-12 gap-6">
         {/* Left Column */}

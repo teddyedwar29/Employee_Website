@@ -10,12 +10,11 @@ import {
   createStatusPernikahan,
   updateStatusPernikahan,
   deleteStatusPernikahan,
-} from '../../../services/apiService';
+} from '@/services/apiService';
+import PageHeader from '@/components/ui/PageHeader';
 
 
-
-export default function MasterStatusPernikahanPage() {
-  const [statuses, setStatuses] = useState([]);
+export default function MasterStatusPernikahanPage({onMenuClick}) {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -185,10 +184,11 @@ export default function MasterStatusPernikahanPage() {
   return (
     <>
       {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Status Pernikahan</h2>
-        <p className="text-sm text-gray-600">Kelola data status pernikahan karyawan</p>
-      </div>
+      <PageHeader
+        title="Status Pernikahan"
+        description="Kelola data status pernikahan karyawan"
+        onMenuClick={onMenuClick}
+      />
 
       {/* Toolbar */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">

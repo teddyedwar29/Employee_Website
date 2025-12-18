@@ -8,11 +8,12 @@ import Modal from '../../../components/ui/Modal';
 import {
   getStatusKerjaOptions,
   createStatusKerja,
-  updateStatusKerja,
+  updateStatusKerja,  
   deleteStatusKerja,
 } from '../../../services/apiService';
+import PageHeader from '@/components/ui/PageHeader';
 
-export default function MasterStatusKerjaPage() {
+export default function MasterStatusKerjaPage({onMenuClick}) {
   const [statuses, setStatuses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -190,11 +191,12 @@ const handleAddSubmit = async (e) => {
 
   return (
     <>
-      {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Status Kerja</h2>
-        <p className="text-sm text-gray-600">Kelola data status kerja karyawan</p>
-      </div>
+      {/* header */}
+      <PageHeader
+        title="Status Kerja"
+        description="Kelola data status kerja karyawan"
+        onMenuClick={onMenuClick}
+      />
 
       {/* Filter / toolbar */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">

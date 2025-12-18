@@ -14,6 +14,7 @@ import MasterAgamaPage from './master/MasterAgamaPage';
 import MasterDepartemenPage from './master/MasterDepartemenPage';
 import MasterKondisiAkunPage from './master/MasterKondisiAkunPage';
 import MasterGajiSettingPage from './master/MasterGajiSettingPage';
+import ReportPage from './ReportPage';
 
 
 
@@ -180,6 +181,8 @@ export default function EmployeeDashboard() {
     setActiveMenu('master-kondisi-akun');
   } else if (path.includes('/karyawan')) {
     setActiveMenu('karyawan');
+  } else if (path.includes('/laporan')) {
+    setActiveMenu('laporan');
   } else {
     setActiveMenu('dashboard');
   }
@@ -430,36 +433,66 @@ export default function EmployeeDashboard() {
                 <ResignedEmployeePage
                   employeesBerhenti={employeesBerhenti}
                   jabatanOptions={jabatanOptions}
+                  onMenuClick={() => setIsSidebarOpen(true)}
                 />
               );
             }
 
             if (activeMenu === 'master-jabatan') {
-              return <MasterJabatanPage />;
+              return (
+              <MasterJabatanPage 
+                  onMenuClick={() => setIsSidebarOpen(true)}
+              />);
             }
 
             if (activeMenu === 'master-status-kerja') {
-              return <MasterStatusKerjaPage />;
+              return (
+              <MasterStatusKerjaPage 
+                  onMenuClick={() => setIsSidebarOpen(true)}  
+              />);
             }
 
             if (activeMenu === 'master-status-pernikahan') {
-              return <MasterStatusPernikahanPage />;
+              return (
+              <MasterStatusPernikahanPage 
+                  onMenuClick={() => setIsSidebarOpen(true)}      
+              />);
             }
 
             if (activeMenu === 'master-agama') {
-              return <MasterAgamaPage />;
+              return (
+              <MasterAgamaPage 
+                  onMenuClick={() => setIsSidebarOpen(true)}
+              />);
             }
             if (activeMenu === 'master-departemen') {
-              return <MasterDepartemenPage />;
+              return (
+              <MasterDepartemenPage 
+                  onMenuClick={() => setIsSidebarOpen(true)}
+              />);
             }
             if (activeMenu === 'master-kondisi-akun') {
-              return <MasterKondisiAkunPage />;
+              return (
+              <MasterKondisiAkunPage 
+                  onMenuClick={() => setIsSidebarOpen(true)}
+              />);
             }
             if (activeMenu === 'gaji-setting') {
-              return <MasterGajiSettingPage />;
+              return (
+              <MasterGajiSettingPage 
+                  onMenuClick={() => setIsSidebarOpen(true)}
+              />);
             }
 
-
+            if (activeMenu === 'laporan') {
+              return (
+                <ReportPage
+                  employees={employees}
+                  employeesBerhenti={employeesBerhenti}
+                  onMenuClick={() => setIsSidebarOpen(true)}
+                />
+              );
+            }
 
             // fallback
             return <DashboardPage
@@ -475,8 +508,6 @@ export default function EmployeeDashboard() {
           })()}
         </div>
       </div>
-
-
     </div>
   );
 }
