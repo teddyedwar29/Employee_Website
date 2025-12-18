@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import {
   Search,
   Calendar,
-  Users as UsersIcon,
+  Users,
   UserCircle,
   TrendingUp,
   MapPin,
@@ -11,6 +11,9 @@ import {
   FileText,
   UserX,
 } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
+
 
 // Helper ambil nama jabatan / status kerja (optional, kalau mau dipakai)
 const getJabatanName = (id, jabatanOptions) => {
@@ -22,6 +25,7 @@ const getJabatanName = (id, jabatanOptions) => {
 export default function ResignedEmployeePage({
   employeesBerhenti,   // array karyawan yang status_kerja = "berhenti"
   jabatanOptions = [],
+  onMenuClick
 }) {
   // --- STATE FILTER ---
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,11 +77,11 @@ export default function ResignedEmployeePage({
 
   return (
     <>
-      {/* HEADER */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Karyawan Berhenti</h2>
-        <p className="text-sm text-gray-600">Daftar karyawan yang sudah mengundurkan diri / habis kontrak</p>
-      </div>
+      <PageHeader
+        title="Karyawan Berhenti"
+        description="Daftar karyawan yang sudah mengundurkan diri / habis kontrak"
+        onMenuClick={onMenuClick}
+      />
 
       {/* FILTER SECTION */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">

@@ -4,15 +4,16 @@ import Swal from 'sweetalert2';
 import { Commet } from 'react-loading-indicators';
 import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 
-import Modal from '../../../components/ui/Modal';
+import Modal from '@/components/ui/Modal';
 import {
   getKondisiAkunOptions,
   createKondisiAkun,
   updateKondisiAkun,
   deleteKondisiAkun,
-} from '../../../services/apiService';
+} from '@/services/apiService';
+import PageHeader from '@/components/ui/PageHeader';
 
-export default function MasterKondisiAkunPage() {
+export default function MasterKondisiAkunPage({onMenuClick}) {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -173,11 +174,12 @@ export default function MasterKondisiAkunPage() {
 
   return (
     <>
-      {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Kondisi Akun</h2>
-        <p className="text-sm text-gray-600">Kelola data kondisi akun karyawan.</p>
-      </div>
+
+      <PageHeader
+        title="Kondisi Akun"
+        description="Kelola data kondisi akun karyawan."
+        onMenuClick={onMenuClick}
+      />
 
       {/* Toolbar */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">

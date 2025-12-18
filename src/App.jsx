@@ -9,6 +9,7 @@ export default function App() {
         <Route path="/admin/karyawan" element={<EmployeeDashboard />} />
         <Route path="/admin/dashboard" element={<EmployeeDashboard />} />
         <Route path="/admin/karyawan-berhenti" element={<EmployeeDashboard />} />
+        <Route path="/admin/laporan" element={<EmployeeDashboard />} />
 
         {/* MASTER (semua tetap pakai EmployeeDashboard) */}
         <Route path="/admin/master/jabatan" element={<EmployeeDashboard />} />

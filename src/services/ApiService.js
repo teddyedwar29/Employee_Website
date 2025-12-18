@@ -419,4 +419,3 @@ export const deleteGajiSetting = async (id) => {
   const res = await fetch(`${API_BASE_URL}/gaji-setting/${id}`, { method: 'DELETE' });
   return handleResponse(res);
 };
-

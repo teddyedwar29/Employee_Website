@@ -1,5 +1,6 @@
 import React from 'react';
-import { UserCircle, Calendar, Award, Users as UsersIcon, Menu, BarChart3 } from 'lucide-react';
+import { UserCircle, Calendar, Award, Users as UsersIcon, Menu } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
 
 const getJabatanName = (id, jabatanOptions) => {
   if (!jabatanOptions) return '...';
@@ -44,18 +45,12 @@ export default function DashboardPage({
 
   return (
     <>
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-600 mb-1">Welcome back, Admin 👋</p>
-          <h2 className="text-3xl font-bold text-gray-800">Dashboard</h2>
-        </div>
-        <button 
-          onClick={onMenuClick}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 md:hidden"
-        >
-          <Menu size={24} className="text-gray-700" />
-        </button>
-      </div>
+      {/* header */}
+      <PageHeader
+        title="Dashboard"
+        description="Welcome back, Admin"
+        onMenuClick={onMenuClick}
+      />
 
       <div className="grid grid-cols-12 gap-6">
         {/* Left Column */}

@@ -1,10 +1,10 @@
 // File: src/admin/pages/master/MasterJabatanPage.jsx
 import React, { useEffect, useState, useMemo } from 'react';
-import { Search, Plus, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Menu } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { Commet } from 'react-loading-indicators';
-
 import Modal from "../../../components/ui/Modal";
+import PageHeader from "@/components/ui/PageHeader";
 
 import {
   getJabatanOptions,
@@ -134,7 +134,7 @@ function JabatanFormModal({ isOpen, onClose, onSubmit, initialData }) {
 }
 
 // ====== Halaman Master Jabatan ======
-export default function MasterJabatanPage() {
+export default function MasterJabatanPage({onMenuClick}) {
   const [jabatanList, setJabatanList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -278,13 +278,11 @@ export default function MasterJabatanPage() {
         initialData={editingJabatan}
       />
 
-      {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Data Jabatan</h2>
-        <p className="text-sm text-gray-600">
-          Kelola data jabatan karyawan di perusahaan.
-        </p>
-      </div>
+      <PageHeader 
+        title="Data Jabatan"
+        description="Kelola data jabatan karyawa perusahaan."
+        onMenuClick={onMenuClick}
+      />
 
       {/* Filter + Tombol Tambah */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">

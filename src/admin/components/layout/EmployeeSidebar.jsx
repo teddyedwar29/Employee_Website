@@ -15,6 +15,7 @@ import {
   Building2,
   UserCircle,
   DollarSign,
+  FileText,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -22,6 +23,8 @@ const menuItems = [
   { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
   { id: 'karyawan',  name: 'Data Karyawan', icon: Users, path: '/admin/karyawan' },
   { id: 'berhenti',  name: 'Karyawan Berhenti', icon: UserX, path: '/admin/karyawan-berhenti' },
+  { id: 'laporan',  name: 'Laporan', icon: FileText, path: '/admin/laporan' },
+
 ];
 
 const masterMenus = [
@@ -80,13 +83,15 @@ export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {
     <div
       className={`
         fixed inset-y-0 left-0 z-50
-        w-48 bg-white/70 backdrop-blur-xl p-6 shadow-2xl
-        shrink-0 flex-col
+        w-48 bg-white/70 backdrop-blur-xl shadow-2xl
+        flex flex-col h-screen
         transition-transform duration-300 ease-in-out
         md:relative md:translate-x-0 md:flex
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}
     >
+    {/* Header Sidebar */}
+    <div className="relative p-6 pb-4 shrink-0">
       {/* Tombol Close (mobile) */}
       <button
         onClick={() => setIsOpen(false)}
@@ -95,13 +100,18 @@ export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {
         <X size={20} />
       </button>
 
-      {/* Logo */}
-      <div className="mb-10">
-        <h1 className="text-xl font-bold text-gray-800">Alaska Employee</h1>
-      </div>
+      <h1 className="text-xl font-bold text-gray-800">
+        Alaska Employee
+      </h1>
+    </div>
+
 
       {/* Menu utama */}
-      <nav className="space-y-1">
+      <nav className="
+        flex-1 px-4 pb-6 space-y-1
+        overflow-y-auto
+        scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent
+      ">
         {menuItems.map((item) => (
           <Link
             key={item.id}
