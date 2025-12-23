@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserCircle, Calendar, Award, Users as UsersIcon, Menu } from 'lucide-react';
+import { UserCircle, Calendar, Award, Users as UsersIcon, Menu, BarChart3 } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 
 const getJabatanName = (id, jabatanOptions) => {

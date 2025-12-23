@@ -30,6 +30,8 @@ export default function MasterGajiSettingPage({onMenuClick}) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
+  
+
   const initialForm = {
     departemen_id: '',
     jabatan_id: '',
@@ -202,6 +204,30 @@ export default function MasterGajiSettingPage({onMenuClick}) {
     );
   }
 
+  const showTunjanganOpsional = items.some(
+  item => Number(item.total_tunjangan_opsional) > 0
+  );
+
+  const showPotonganOpsional = items.some(
+    item => Number(item.total_potongan_opsional) > 0
+  );
+
+  const hitungTotalGaji = (item) => {
+  const gajiPokok = Number(item.gaji_pokok) || 0;
+  const tunjanganPokok = Number(item.tunjangan_pokok) || 0;
+  const tunjanganOpsional = Number(item.total_tunjangan_opsional) || 0;
+  const potonganOpsional = Number(item.total_potongan_opsional) || 0;
+
+  return (
+      gajiPokok +
+      tunjanganPokok +
+      tunjanganOpsional -
+      potonganOpsional
+    );
+  };
+
+
+
   return (
     <>
       <PageHeader
@@ -234,6 +260,17 @@ export default function MasterGajiSettingPage({onMenuClick}) {
                   <th className="px-4 py-2">Status Kerja</th>
                   <th className="px-4 py-2">Gaji Pokok</th>
                   <th className="px-4 py-2">Tunjangan Pokok</th>
+
+                  {showTunjanganOpsional && (
+                    <th>Tunjangan Opsional</th>
+                  )}
+
+                  {showPotonganOpsional && (
+                    <th>Potongan Opsional</th>
+                  )}
+
+                  <th className="px-4 py-2">Total Gaji</th>
+
                   <th className="px-4 py-2">Aksi</th>
                 </tr>
               </thead>
@@ -246,6 +283,27 @@ export default function MasterGajiSettingPage({onMenuClick}) {
                     <td className="px-4 py-3">{item.status_kerja?.nama_status || item.status_kerja_id}</td>
                     <td className="px-4 py-3">{item.gaji_pokok ?? 0}</td>
                     <td className="px-4 py-3">{item.tunjangan_pokok ?? 0}</td>
+         
+                    {showTunjanganOpsional && (
+                      <td>
+                        {item.total_tunjangan_opsional
+                          ? `Rp ${Number(item.total_tunjangan_opsional).toLocaleString()}`
+                          : '-'}
+                      </td>
+                    )}
+
+                    {showPotonganOpsional && (
+                      <td className="text-red-600">
+                        {item.total_potongan_opsional
+                          ? `Rp ${Number(item.total_potongan_opsional).toLocaleString()}`
+                          : '-'}
+                      </td>
+                    )}
+
+                    <td className="font-semibold text-emerald-700">
+                      Rp {hitungTotalGaji(item).toLocaleString()}
+                    </td>
+
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
                         <button onClick={() => openEditModal(item)} className="px-2 py-1 bg-blue-50 text-blue-700 rounded"><Edit2 size={14} /></button>
