@@ -1,0 +1,198 @@
+import React, { useEffect, useState } from "react";
+import {
+  Clock,
+  LogIn,
+  LogOut,
+  Calendar,
+  MapPin,
+  User,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
+
+/**
+ * UI ABSENSI REUSABLE
+ * Dipakai oleh Operator & Marketing
+ */
+export default function TeamAttendanceDashboard({
+  employeeData,
+  onClockIn,
+  onClockOut,
+}) {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [attendanceStatus, setAttendanceStatus] = useState(null); // null | in | out
+  const [clockInTime, setClockInTime] = useState(null);
+  const [clockOutTime, setClockOutTime] = useState(null);
+
+  // Live clock
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (date) =>
+    date.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+  const formatDate = (date) =>
+    date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+  const handleClockIn = () => {
+    const now = new Date();
+    setClockInTime(now);
+    setAttendanceStatus("in");
+
+    onClockIn?.({
+      time: now,
+      location: "Kantor Pusat",
+    });
+  };
+
+  const handleClockOut = () => {
+    const now = new Date();
+    setClockOutTime(now);
+    setAttendanceStatus("out");
+
+    onClockOut?.({
+      time: now,
+      location: "Kantor Pusat",
+    });
+  };
+
+  const getWorkDuration = () => {
+    if (!clockInTime || !clockOutTime) return "-";
+    const diff = clockOutTime - clockInTime;
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    return `${h}j ${m}m`;
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-100 p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <p className="text-sm text-gray-600">
+          Selamat datang, {employeeData?.nama || "Karyawan"} 👋
+        </p>
+        <h1 className="text-3xl font-bold text-gray-800">Absensi</h1>
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        {/* LEFT */}
+        <div className="col-span-12 lg:col-span-4 space-y-6">
+          {/* Time */}
+          <div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-3xl p-6 text-white shadow-xl">
+            <p className="text-sm opacity-90">Waktu Sekarang</p>
+            <p className="text-4xl font-bold">{formatTime(currentTime)}</p>
+            <div className="flex items-center gap-2 mt-2 text-sm opacity-80">
+              <Calendar size={16} />
+              {formatDate(currentTime)}
+            </div>
+          </div>
+
+          {/* Status */}
+          <div
+            className={`rounded-3xl p-6 text-white shadow-xl ${
+              attendanceStatus === "in"
+                ? "bg-gradient-to-br from-green-400 to-green-600"
+                : attendanceStatus === "out"
+                ? "bg-gradient-to-br from-orange-400 to-orange-600"
+                : "bg-gradient-to-br from-gray-400 to-gray-600"
+            }`}
+          >
+            <p className="text-sm opacity-90">Status Absensi</p>
+            <p className="text-2xl font-bold">
+              {attendanceStatus === "in"
+                ? "Sudah Clock In"
+                : attendanceStatus === "out"
+                ? "Sudah Clock Out"
+                : "Belum Absen"}
+            </p>
+          </div>
+
+          {/* Location */}
+          <div className="bg-white/70 rounded-3xl p-6 shadow-xl">
+            <div className="flex items-center gap-2 mb-2">
+              <MapPin size={18} className="text-[#800020]" />
+              <span className="font-semibold">Lokasi</span>
+            </div>
+            <p className="text-sm text-gray-700">Kantor Pusat</p>
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          {/* Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Clock In */}
+            <div className="bg-white/70 rounded-3xl p-8 shadow-xl text-center">
+              <LogIn className="mx-auto text-green-600 mb-4" size={36} />
+              <h3 className="text-xl font-bold mb-2">Clock In</h3>
+
+              <button
+                onClick={handleClockIn}
+                disabled={attendanceStatus !== null}
+                className={`w-full py-3 rounded-xl text-white font-bold ${
+                  attendanceStatus === null
+                    ? "bg-green-500 hover:bg-green-600"
+                    : "bg-gray-300 cursor-not-allowed"
+                }`}
+              >
+                Clock In
+              </button>
+            </div>
+
+            {/* Clock Out */}
+            <div className="bg-white/70 rounded-3xl p-8 shadow-xl text-center">
+              <LogOut className="mx-auto text-orange-600 mb-4" size={36} />
+              <h3 className="text-xl font-bold mb-2">Clock Out</h3>
+
+              <button
+                onClick={handleClockOut}
+                disabled={attendanceStatus !== "in"}
+                className={`w-full py-3 rounded-xl text-white font-bold ${
+                  attendanceStatus === "in"
+                    ? "bg-orange-500 hover:bg-orange-600"
+                    : "bg-gray-300 cursor-not-allowed"
+                }`}
+              >
+                Clock Out
+              </button>
+            </div>
+          </div>
+
+          {/* Summary */}
+          <div className="bg-white/70 rounded-3xl p-6 shadow-xl">
+            <h3 className="font-bold mb-4">Ringkasan Hari Ini</h3>
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p className="text-xs">Masuk</p>
+                <p className="font-bold">
+                  {clockInTime ? formatTime(clockInTime) : "--"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs">Pulang</p>
+                <p className="font-bold">
+                  {clockOutTime ? formatTime(clockOutTime) : "--"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs">Durasi</p>
+                <p className="font-bold">{getWorkDuration()}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

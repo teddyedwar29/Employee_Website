@@ -1,6 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import EmployeeDashboard from './admin/pages/EmployeeDashboard';
 import LoginPage from './auth/pages/LoginPage';
+import OperatorLayout from "./operator/layout/OperatorLayout";
+import MarketingLayout from "./marketing/layout/MarketingLayout";
+import AttendancePage from './operator/pages/AttendancePage';
+
+
+
 
 
 export default function App() {
@@ -25,6 +31,16 @@ export default function App() {
         <Route path="/admin/master/gaji-setting" element={<EmployeeDashboard />} />
 
         <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+
+        {/* OPERATOR ROUTES */} 
+        <Route path="/operator" element={<OperatorLayout />}>
+          <Route path="absensi" element={<AttendancePage />} />
+        </Route>
+
+        {/* MARKETING ROUTES */}
+        <Route path="/marketing" element={<MarketingLayout />}>
+          <Route path="absensi" element={<AttendancePage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
