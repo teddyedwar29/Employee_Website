@@ -1,11 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import EmployeeDashboard from './admin/pages/EmployeeDashboard';
+import LoginPage from './auth/pages/LoginPage';
 
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* ADMIN ROUTES */}
         <Route path="/admin/karyawan" element={<EmployeeDashboard />} />
         <Route path="/admin/dashboard" element={<EmployeeDashboard />} />
         <Route path="/admin/karyawan-berhenti" element={<EmployeeDashboard />} />

@@ -65,32 +65,32 @@ export default function MasterStatusKerjaPage({onMenuClick}) {
 
 
 // hanya kirim nama_status (backend yang buat id)
-const handleAddSubmit = async (e) => {
-  e.preventDefault();
-  if (!namaInput.trim()) return;
+    const handleAddSubmit = async (e) => {
+      e.preventDefault();
+      if (!namaInput.trim()) return;
 
-  try {
-    await createStatusKerja({ nama_status: namaInput.trim() });
-    setIsAddOpen(false);
-    setNamaInput('');
-    await loadData();
+      try {
+        await createStatusKerja({ nama_status: namaInput.trim() });
+        setIsAddOpen(false);
+        setNamaInput('');
+        await loadData();
 
-    Swal.fire({
-      title: 'Berhasil!',
-      text: 'Status kerja berhasil ditambahkan.',
-      icon: 'success',
-      confirmButtonColor: '#800020',
-    });
-  } catch (err) {
-    console.error(err);
-    Swal.fire({
-      title: 'Gagal',
-      text: err.message || 'Gagal menambah status kerja.',
-      icon: 'error',
-      confirmButtonColor: '#800020',
-    });
-  }
-};
+        Swal.fire({
+          title: 'Berhasil!',
+          text: 'Status kerja berhasil ditambahkan.',
+          icon: 'success',
+          confirmButtonColor: '#800020',
+        });
+      } catch (err) {
+        console.error(err);
+        Swal.fire({
+          title: 'Gagal',
+          text: err.message || 'Gagal menambah status kerja.',
+          icon: 'error',
+          confirmButtonColor: '#800020',
+        });
+      }
+    };
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
