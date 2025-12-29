@@ -1,8 +1,30 @@
 // File: src/services/apiService.js
+export const API_BASE_URL = '/api'; 
+import Swal from 'sweetalert2';
 
-const API_BASE_URL = '/api'; 
+export const handleResponse = async (response) => {
+  // === TANGKAP 401 UNAUTHORIZED SECARA GLOBAL ===
+  if (response.status === 401) {
+    // Hapus token
+    localStorage.removeItem("access_token");
+    // Optional: hapus data user lain kalau ada
+    // localStorage.removeItem("user_data");
 
-const handleResponse = async (response) => {
+    Swal.fire({
+      icon: "warning",
+      title: "Sesi Berakhir",
+      text: "Token login Anda telah kadaluarsa. Silakan login ulang.",
+      confirmButtonText: "Login Ulang",
+    }).then(() => {
+      // Redirect ke halaman login
+      window.location.href = "/login";  // Ganti dengan path login kamu
+    });
+
+    // Throw error biar fetch di component berhenti
+    throw new Error("Unauthorized - Sesi berakhir");
+  }
+
+
   if (response.status === 204) {
     return { ok: true };
   }
@@ -47,6 +69,7 @@ const handleResponse = async (response) => {
   
   throw new Error(errorMessage);
 };
+
 
 
 /**

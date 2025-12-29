@@ -1,41 +1,48 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Clock,
-  LogIn,
-  LogOut,
   Calendar,
   MapPin,
-  User,
-  CheckCircle,
-  XCircle,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 
-/**
- * UI ABSENSI REUSABLE
- * Dipakai oleh Operator & Marketing
- */
+
+
 export default function TeamAttendanceDashboard({
   employeeData,
-  onClockIn,
-  onClockOut,
+  attendanceStatus, 
+  onAbsenMasuk,
+  onAbsenKeluar,  
+  clockInTime,
+  clockOutTime,
 }) {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [attendanceStatus, setAttendanceStatus] = useState(null); // null | in | out
-  const [clockInTime, setClockInTime] = useState(null);
-  const [clockOutTime, setClockOutTime] = useState(null);
 
-  // Live clock
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (date) =>
-    date.toLocaleTimeString("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+  const formatTime = (time) => {
+    if (!time) return "--";
+
+    // kalau sudah Date object
+    if (time instanceof Date) {
+      return time.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    }
+
+    // kalau string dari backend (HH:mm:ss)
+    if (typeof time === "string") {
+      return time;
+    }
+
+    return "--";
+  };
+
 
   const formatDate = (date) =>
     date.toLocaleDateString("id-ID", {
@@ -44,28 +51,6 @@ export default function TeamAttendanceDashboard({
       month: "long",
       day: "numeric",
     });
-
-  const handleClockIn = () => {
-    const now = new Date();
-    setClockInTime(now);
-    setAttendanceStatus("in");
-
-    onClockIn?.({
-      time: now,
-      location: "Kantor Pusat",
-    });
-  };
-
-  const handleClockOut = () => {
-    const now = new Date();
-    setClockOutTime(now);
-    setAttendanceStatus("out");
-
-    onClockOut?.({
-      time: now,
-      location: "Kantor Pusat",
-    });
-  };
 
   const getWorkDuration = () => {
     if (!clockInTime || !clockOutTime) return "-";
@@ -80,7 +65,7 @@ export default function TeamAttendanceDashboard({
       {/* Header */}
       <div className="mb-8">
         <p className="text-sm text-gray-600">
-          Selamat datang, {employeeData?.nama || "Karyawan"} 👋
+          Selamat datang, {employeeData?.nama} 👋
         </p>
         <h1 className="text-3xl font-bold text-gray-800">Absensi</h1>
       </div>
@@ -89,10 +74,10 @@ export default function TeamAttendanceDashboard({
         {/* LEFT */}
         <div className="col-span-12 lg:col-span-4 space-y-6">
           {/* Time */}
-          <div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-3xl p-6 text-white shadow-xl">
-            <p className="text-sm opacity-90">Waktu Sekarang</p>
+          <div className="bg-blue-600 rounded-3xl p-6 text-white shadow-xl">
+            <p className="text-sm">Waktu Sekarang</p>
             <p className="text-4xl font-bold">{formatTime(currentTime)}</p>
-            <div className="flex items-center gap-2 mt-2 text-sm opacity-80">
+            <div className="flex items-center gap-2 mt-2 text-sm">
               <Calendar size={16} />
               {formatDate(currentTime)}
             </div>
@@ -102,29 +87,29 @@ export default function TeamAttendanceDashboard({
           <div
             className={`rounded-3xl p-6 text-white shadow-xl ${
               attendanceStatus === "in"
-                ? "bg-gradient-to-br from-green-400 to-green-600"
+                ? "bg-green-500"
                 : attendanceStatus === "out"
-                ? "bg-gradient-to-br from-orange-400 to-orange-600"
-                : "bg-gradient-to-br from-gray-400 to-gray-600"
+                ? "bg-orange-500"
+                : "bg-gray-400"
             }`}
           >
-            <p className="text-sm opacity-90">Status Absensi</p>
+            <p className="text-sm">Status Absensi</p>
             <p className="text-2xl font-bold">
               {attendanceStatus === "in"
-                ? "Sudah Clock In"
+                ? "Sudah Absen Masuk"
                 : attendanceStatus === "out"
-                ? "Sudah Clock Out"
+                ? "Sudah Absen Keluar"
                 : "Belum Absen"}
             </p>
           </div>
 
           {/* Location */}
-          <div className="bg-white/70 rounded-3xl p-6 shadow-xl">
+          <div className="bg-white rounded-3xl p-6 shadow-xl">
             <div className="flex items-center gap-2 mb-2">
               <MapPin size={18} className="text-[#800020]" />
               <span className="font-semibold">Lokasi</span>
             </div>
-            <p className="text-sm text-gray-700">Kantor Pusat</p>
+            <p className="text-sm">Kantor Pusat</p>
           </div>
         </div>
 
@@ -132,31 +117,31 @@ export default function TeamAttendanceDashboard({
         <div className="col-span-12 lg:col-span-8 space-y-6">
           {/* Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Clock In */}
-            <div className="bg-white/70 rounded-3xl p-8 shadow-xl text-center">
+            {/* Absen Masuk */}
+            <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
               <LogIn className="mx-auto text-green-600 mb-4" size={36} />
-              <h3 className="text-xl font-bold mb-2">Clock In</h3>
+              <h3 className="text-xl font-bold mb-4">Absen Masuk</h3>
 
               <button
-                onClick={handleClockIn}
-                disabled={attendanceStatus !== null}
-                className={`w-full py-3 rounded-xl text-white font-bold ${
-                  attendanceStatus === null
-                    ? "bg-green-500 hover:bg-green-600"
-                    : "bg-gray-300 cursor-not-allowed"
-                }`}
+                  onClick={onAbsenMasuk}
+                  disabled={attendanceStatus !== null}
+                  className={`w-full py-3 rounded-xl text-white font-bold ${
+                    attendanceStatus === null
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-gray-300 cursor-not-allowed"
+                  }`}
               >
-                Clock In
+                Absen Masuk
               </button>
             </div>
 
-            {/* Clock Out */}
-            <div className="bg-white/70 rounded-3xl p-8 shadow-xl text-center">
+            {/* Absen Keluar */}
+            <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
               <LogOut className="mx-auto text-orange-600 mb-4" size={36} />
-              <h3 className="text-xl font-bold mb-2">Clock Out</h3>
+              <h3 className="text-xl font-bold mb-4">Absen Keluar</h3>
 
               <button
-                onClick={handleClockOut}
+                onClick={onAbsenKeluar}
                 disabled={attendanceStatus !== "in"}
                 className={`w-full py-3 rounded-xl text-white font-bold ${
                   attendanceStatus === "in"
@@ -164,13 +149,13 @@ export default function TeamAttendanceDashboard({
                     : "bg-gray-300 cursor-not-allowed"
                 }`}
               >
-                Clock Out
+                Absen Keluar
               </button>
             </div>
           </div>
 
           {/* Summary */}
-          <div className="bg-white/70 rounded-3xl p-6 shadow-xl">
+          <div className="bg-white rounded-3xl p-6 shadow-xl">
             <h3 className="font-bold mb-4">Ringkasan Hari Ini</h3>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
@@ -193,6 +178,9 @@ export default function TeamAttendanceDashboard({
           </div>
         </div>
       </div>
+  
     </div>
   );
+
+  
 }

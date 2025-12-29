@@ -15,6 +15,8 @@ import MasterDepartemenPage from './master/MasterDepartemenPage';
 import MasterKondisiAkunPage from './master/MasterKondisiAkunPage';
 import MasterGajiSettingPage from './master/MasterGajiSettingPage';
 import ReportPage from './ReportPage';
+import IzinPage from "./IzinPage";
+import AbsensiReportPage from "./AbsensiReportPage";
 
 
 
@@ -183,7 +185,12 @@ export default function EmployeeDashboard() {
     setActiveMenu('karyawan');
   } else if (path.includes('/laporan')) {
     setActiveMenu('laporan');
-  } else {
+  } else if (path.includes('/izin')) {
+    setActiveMenu('izin');
+  } else if (path.includes('/absensi-report')) {
+    setActiveMenu('absensi-report');
+  }
+  else {
     setActiveMenu('dashboard');
   }
   setIsSidebarOpen(false);
@@ -492,6 +499,18 @@ export default function EmployeeDashboard() {
                   onMenuClick={() => setIsSidebarOpen(true)}
                 />
               );
+            }
+
+            if (activeMenu === 'izin') {
+              return <IzinPage 
+              onMenuClick={() => setIsSidebarOpen(true)}
+              />;
+            }
+
+            if (activeMenu === 'absensi-report') {
+              return <AbsensiReportPage 
+              onMenuClick={() => setIsSidebarOpen(true)}
+              />;
             }
 
             // fallback

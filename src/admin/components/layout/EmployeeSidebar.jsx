@@ -16,6 +16,7 @@ import {
   UserCircle,
   DollarSign,
   FileText,
+  Calendar,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -24,7 +25,8 @@ const menuItems = [
   { id: 'karyawan',  name: 'Data Karyawan', icon: Users, path: '/admin/karyawan' },
   { id: 'berhenti',  name: 'Karyawan Berhenti', icon: UserX, path: '/admin/karyawan-berhenti' },
   { id: 'laporan',  name: 'Laporan', icon: FileText, path: '/admin/laporan' },
-
+  { id: 'izin',  name: 'Izin', icon: Clock, path: '/admin/izin' },
+  { id: 'absensi-report', name: 'Riwayat Absensi', icon: Calendar, path: '/admin/absensi-report' },
 ];
 
 const masterMenus = [

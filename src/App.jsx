@@ -4,8 +4,11 @@ import LoginPage from './auth/pages/LoginPage';
 import OperatorLayout from "./operator/layout/OperatorLayout";
 import MarketingLayout from "./marketing/layout/MarketingLayout";
 import AttendancePage from './operator/pages/AttendancePage';
-
-
+import MarketingAttendancePage from './marketing/pages/MarketingAttendancePage';
+import ProtectedRoute from "@/auth/components/ProtectedRoute";
+import RiwayatAbsensi from "./operator/pages/RiwayatAbsensi";
+import KunjunganPage from './marketing/pages/KunjunganPage';
+import RiwayatAbsensiMarketing from './marketing/pages/RiwayatAbsensiMarketing';
 
 
 
@@ -14,32 +17,43 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* ADMIN ROUTES */}
-        <Route path="/admin/karyawan" element={<EmployeeDashboard />} />
-        <Route path="/admin/dashboard" element={<EmployeeDashboard />} />
-        <Route path="/admin/karyawan-berhenti" element={<EmployeeDashboard />} />
-        <Route path="/admin/laporan" element={<EmployeeDashboard />} />
-
-        {/* MASTER (semua tetap pakai EmployeeDashboard) */}
-        <Route path="/admin/master/jabatan" element={<EmployeeDashboard />} />
-        <Route path="/admin/master/status-kerja" element={<EmployeeDashboard />} />
-        <Route path="/admin/master/status-pernikahan" element={<EmployeeDashboard />} />
-        <Route path="/admin/master/agama" element={<EmployeeDashboard />} />
-        <Route path="/admin/master/departemen" element={<EmployeeDashboard />} />
-        <Route path="/admin/master/kondisi-akun" element={<EmployeeDashboard />} />
-        <Route path="/admin/master/gaji-setting" element={<EmployeeDashboard />} />
-
-        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+      {/* ADMIN ROUTES - HANYA UNTUK HRD */}
+      <Route
+        path="/admin/*"
+        element={
+          <ProtectedRoute allow={["HRD"]}>
+            <EmployeeDashboard />
+          </ProtectedRoute>
+        }
+      />
 
         {/* OPERATOR ROUTES */} 
-        <Route path="/operator" element={<OperatorLayout />}>
+        <Route
+          path="/operator"
+          element={
+            <ProtectedRoute allow={["OPERATOR"]}>
+              <OperatorLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="absensi" element={<AttendancePage />} />
+          <Route path="riwayat" element={<RiwayatAbsensi />} />
         </Route>
 
         {/* MARKETING ROUTES */}
-        <Route path="/marketing" element={<MarketingLayout />}>
-          <Route path="absensi" element={<AttendancePage />} />
+        <Route
+          path="/marketing"
+          element={
+            <ProtectedRoute allow={["MARKETING"]}>  
+              <MarketingLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="absensi" element={<MarketingAttendancePage />} />
+          <Route path="kunjungan" element={<KunjunganPage />} />
+          <Route path="riwayat" element={<RiwayatAbsensiMarketing />} />
         </Route>
       </Routes>
     </BrowserRouter>

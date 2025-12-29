@@ -14,3 +14,109 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+```
+Employee_Website
+├─ eslint.config.js
+├─ index.html
+├─ package-lock.json
+├─ package.json
+├─ public
+│  └─ vite.svg
+├─ README.md
+├─ src
+│  ├─ admin
+│  │  ├─ components
+│  │  │  ├─ AddEmployeeModal.jsx
+│  │  │  ├─ dashboard
+│  │  │  │  ├─ EmployeeTable.jsx
+│  │  │  │  └─ RightStatsPanel.jsx
+│  │  │  ├─ DetailEmployeeModal.jsx
+│  │  │  ├─ EditEmployeeModal.jsx
+│  │  │  ├─ EmployeeResignForm.jsx
+│  │  │  └─ layout
+│  │  │     ├─ EmployeeHeader.jsx
+│  │  │     └─ EmployeeSidebar.jsx
+│  │  └─ pages
+│  │     ├─ AbsensiReportPage.jsx
+│  │     ├─ DashboardPage.jsx
+│  │     ├─ DataEmployee.jsx
+│  │     ├─ EmployeeDashboard.jsx
+│  │     ├─ IzinPage.jsx
+│  │     ├─ master
+│  │     │  ├─ MasterAgamaPage.jsx
+│  │     │  ├─ MasterDepartemenPage.jsx
+│  │     │  ├─ MasterGajiRulePage.jsx
+│  │     │  ├─ MasterGajiSettingPage.jsx
+│  │     │  ├─ MasterJabatanPage.jsx
+│  │     │  ├─ MasterKondisiAkunPage.jsx
+│  │     │  ├─ MasterStatusKerjaPage.jsx
+│  │     │  └─ MasterStatusPernikahanPage.jsx
+│  │     ├─ ReportPage.jsx
+│  │     └─ ResignedEmployeePage.jsx
+│  ├─ App.css
+│  ├─ App.jsx
+│  ├─ assets
+│  │  └─ react.svg
+│  ├─ auth
+│  │  ├─ components
+│  │  │  ├─ LoginForm.jsx
+│  │  │  └─ ProtectedRoute.jsx
+│  │  └─ pages
+│  │     └─ LoginPage.jsx
+│  ├─ components
+│  │  └─ ui
+│  │     ├─ Badge.jsx
+│  │     ├─ Button.jsx
+│  │     ├─ Card.jsx
+│  │     ├─ Input.jsx
+│  │     ├─ Modal.jsx
+│  │     ├─ PageHeader.jsx
+│  │     ├─ Select.jsx
+│  │     └─ Table.jsx
+│  ├─ index.css
+│  ├─ main.jsx
+│  ├─ marketing
+│  │  ├─ components
+│  │  │  └─ MarketingAbsensiModal.jsx
+│  │  ├─ config
+│  │  │  └─ marketingMenu.js
+│  │  ├─ layout
+│  │  │  ├─ MarketingLayout.jsx
+│  │  │  └─ MarketingSidebar.jsx
+│  │  ├─ pages
+│  │  │  ├─ KunjunganPage.jsx
+│  │  │  ├─ MarketingAttendancePage.jsx
+│  │  │  └─ RiwayatAbsensiMarketing.jsx
+│  │  └─ services
+│  │     ├─ kunjunganService.js
+│  │     └─ marketingAbsensiService.js
+│  ├─ operator
+│  │  ├─ components
+│  │  │  └─ AbsensiModal.jsx
+│  │  ├─ config
+│  │  │  └─ operatorMenu.js
+│  │  ├─ layout
+│  │  │  ├─ OperatorLayout.jsx
+│  │  │  └─ OperatorSidebar.jsx
+│  │  ├─ pages
+│  │  │  ├─ AttendancePage.jsx
+│  │  │  ├─ DashboardPage.jsx
+│  │  │  └─ RiwayatAbsensi.jsx
+│  │  └─ services
+│  │     └─ absensiServices.js
+│  ├─ services
+│  │  ├─ absensiReportService.js
+│  │  ├─ ApiService.js
+│  │  └─ authServices.js
+│  ├─ shared
+│  │  ├─ attendance
+│  │  │  └─ TeamAttendanceDashboard.jsx
+│  │  └─ sidebar
+│  │     └─ SidebarItems.jsx
+│  └─ utils
+│     └─ date.js
+└─ vite.config.js
+
+```
