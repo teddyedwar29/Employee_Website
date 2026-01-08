@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { getMyAbsensi } from "@/services/absensiReportService";
+import { BACKEND_BASE_URL } from "@/utils/constants";
 
 export default function RiwayatAbsensiMarketing() {
   const [riwayat, setRiwayat] = useState([]);
@@ -28,7 +29,7 @@ export default function RiwayatAbsensiMarketing() {
         setRiwayat([]);
         setFilteredRiwayat([]);
       }
-    } catch (err) {
+    } catch (err) {      
       console.error("Error fetch riwayat:", err);
       setRiwayat([]);
       setFilteredRiwayat([]);
@@ -85,7 +86,7 @@ export default function RiwayatAbsensiMarketing() {
     return <span className={`px-3 py-1 rounded-full text-sm font-medium ${color}`}>{status || "Hadir"}</span>;
   };
 
-  const BACKEND_URL = "http://localhost:5000";
+  const BACKEND_URL = BACKEND_BASE_URL;
   const placeholderFoto = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zNS4wMDAxIDM1LjAwMDFDMzUuMDAwMSAzMS42NjY4IDMyLjMzMzQgMjguOTk5OSAyOS4wMDAxIDI4Ljk5OTlIMjEuMDAwMUMxNy42NjY4IDI4Ljk5OTkgMTUuMDAwMSAzMS42NjY4IDE1LjAwMDEgMzUuMDAwMVYzOC4wMDAxQzE1LjAwMDEgNDAuMjA5MSAxNi43OTEgNDIuMDAwMSAxOS4wMDAxIDQyLjAwMDFIMzEuMDAwMUMzMy4yMDkxIDQyLjAwMDEgMzUuMDAwMSA0MC4yMDkxIDM1LjAwMDEgMzguMDAwMVYzNS4wMDAxWiIgc3Ryb2tlPSIjQ0NDQ0NDIiBzdHJva2Utd2lkdGg9IjIiLz4KPGNpcmNsZSBjeD0iMjUiIGN5PSIxOCIgcj0iNyIgZmlsbD0iI0NDQ0NDQyIvPgo8L3N2Zz4K";
 
   return (

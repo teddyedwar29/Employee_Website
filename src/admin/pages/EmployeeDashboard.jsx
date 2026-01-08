@@ -17,6 +17,8 @@ import MasterGajiSettingPage from './master/MasterGajiSettingPage';
 import ReportPage from './ReportPage';
 import IzinPage from "./IzinPage";
 import AbsensiReportPage from "./AbsensiReportPage";
+import KunjunganReportPage from './KunjunganReportPage';
+import OtomaxDataPage from './OtomaxDataPage';
 
 
 
@@ -183,11 +185,16 @@ export default function EmployeeDashboard() {
     setActiveMenu('master-kondisi-akun');
   } else if (path.includes('/karyawan')) {
     setActiveMenu('karyawan');
+  } else if (path.includes('/otomax-data')) {
+    setActiveMenu('otomax-data');
   } else if (path.includes('/laporan')) {
     setActiveMenu('laporan');
   } else if (path.includes('/izin')) {
-    setActiveMenu('izin');
-  } else if (path.includes('/absensi-report')) {
+    setActiveMenu('izin');  
+  } else if (path.includes('/kunjungan-report')) {
+    setActiveMenu('kunjungan-report');
+  } 
+  else if (path.includes('/absensi-report')) {
     setActiveMenu('absensi-report');
   }
   else {
@@ -368,6 +375,9 @@ export default function EmployeeDashboard() {
         jabatanOptions={jabatanOptions}
         statusKerjaOptions={statusKerjaOptions}
         statusPernikahanOptions={statusPernikahanOptions}
+        agamaOptions={agamaOptions}         
+        departemenOptions={departemenOptions}
+        kondisiAkunOptions={kondisiAkunOptions} 
       />
       <DetailEmployeeModal
         isOpen={isDetailModalOpen}
@@ -490,6 +500,11 @@ export default function EmployeeDashboard() {
                   onMenuClick={() => setIsSidebarOpen(true)}
               />);
             }
+            if (activeMenu === 'otomax-data') {
+              return (<
+                OtomaxDataPage onMenuClick={() => setIsSidebarOpen(true)} 
+              />);
+            }
 
             if (activeMenu === 'laporan') {
               return (
@@ -505,6 +520,10 @@ export default function EmployeeDashboard() {
               return <IzinPage 
               onMenuClick={() => setIsSidebarOpen(true)}
               />;
+            }
+            if (activeMenu === 'kunjungan-report') {
+              return <KunjunganReportPage 
+              onMenuClick={() => setIsSidebarOpen(true)} />;
             }
 
             if (activeMenu === 'absensi-report') {

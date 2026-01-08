@@ -206,19 +206,12 @@ export default function MasterAgamaPage({onMenuClick}) {
   // --- MAIN UI ---
   return (
     <>
+      {/* HEADER */}
       <PageHeader
         title="Agama"
         description="Kelola data agama karyawan"
         onMenuClick={onMenuClick}
       />
-      
-      {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Data Agama</h2>
-        <p className="text-sm text-gray-600">
-          Kelola data agama karyawan di perusahaan.
-        </p>
-      </div>
 
       {/* Toolbar */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl mb-6">

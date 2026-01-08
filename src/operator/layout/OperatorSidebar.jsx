@@ -1,5 +1,6 @@
 import { operatorMenu } from "../config/operatorMenu";
 import SidebarItem from "../../shared/sidebar/SidebarItems";
+import { LogOut } from "lucide-react";
 
 
 export default function OperatorSidebar({ onNavigate, onLogout   }) {
@@ -19,9 +20,10 @@ export default function OperatorSidebar({ onNavigate, onLogout   }) {
         ))}
         <button
           onClick={onLogout}
-          className="mt-auto flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition"
+          className="mt-auto flex items-center gap-2 px-4 py-3 cursor-pointer hover:bg-red-50 rounded-xl transition"
         >
-          Logout
+          <LogOut size={18} />
+          <span>Logout</span>
         </button>
 
       </nav>

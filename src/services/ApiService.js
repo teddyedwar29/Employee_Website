@@ -1,74 +1,42 @@
 // File: src/services/apiService.js
-export const API_BASE_URL = '/api'; 
+import { BACKEND_BASE_URL, API_BASE_URL } from '@/utils/constants';
+
+
 import Swal from 'sweetalert2';
 
-export const handleResponse = async (response) => {
-  // === TANGKAP 401 UNAUTHORIZED SECARA GLOBAL ===
-  if (response.status === 401) {
-    // Hapus token
-    localStorage.removeItem("access_token");
-    // Optional: hapus data user lain kalau ada
-    // localStorage.removeItem("user_data");
+export const handleResponse = async (response, options = {}) => {
+  const { skipAuth = false } = options;
 
-    Swal.fire({
+  // 🔥 GLOBAL 401 → HANYA UNTUK REQUEST YANG BUTUH TOKEN
+  if (response.status === 401 && !skipAuth) {
+    localStorage.removeItem("access_token");
+
+    await Swal.fire({
       icon: "warning",
       title: "Sesi Berakhir",
-      text: "Token login Anda telah kadaluarsa. Silakan login ulang.",
-      confirmButtonText: "Login Ulang",
-    }).then(() => {
-      // Redirect ke halaman login
-      window.location.href = "/login";  // Ganti dengan path login kamu
+      text: "Sesi login Anda telah berakhir. Silakan login ulang.",
+      confirmButtonText: "Login",
     });
 
-    // Throw error biar fetch di component berhenti
-    throw new Error("Unauthorized - Sesi berakhir");
+    window.location.href = "/login";
+    throw new Error("Unauthorized");
   }
 
+  if (response.status === 204) return { ok: true };
 
-  if (response.status === 204) {
-    return { ok: true };
-  }
-  
   let responseData;
   try {
     responseData = await response.json();
-  } catch (e) {
-    if (response.ok) {
-      return { ok: true };
-    }
-    throw new Error(response.statusText || 'Terjadi kesalahan pada server');
-  }
-  
-  if (response.ok) {
-    return responseData;
+  } catch {
+    if (response.ok) return { ok: true };
+    throw new Error(response.statusText);
   }
 
+  if (response.ok) return responseData;
 
-  // treat as success to avoid false error messages on frontend.
-  if (responseData && (responseData.id || (responseData.data && responseData.data.id) || responseData.ok === true)) {
-    console.warn('Non-2xx response but body contains resource/ok flag — treating as success', response.status, responseData);
-    return responseData;
-  }
-  
-  console.error('API Error Response:', {
-    status: response.status,
-    statusText: response.statusText,
-    fullData: responseData
-  });
-  
-  let errorMessage = responseData.message || responseData.error || response.statusText || 'Terjadi kesalahan pada server';
-  
-  if (responseData.errors && typeof responseData.errors === 'object') {
-    const errorMessages = Object.entries(responseData.errors)
-      .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
-      .join('; ');
-    if (errorMessages) {
-      errorMessage = errorMessages;
-    }
-  }
-  
-  throw new Error(errorMessage);
+  throw new Error(responseData.message || "Terjadi kesalahan");
 };
+
 
 
 
@@ -194,7 +162,6 @@ export const getStatusKerjaOptions = async () => {
 // create status kerja
 export const createStatusKerja = async (data) => {
   const payload = {
-    id: data.id,
     nama_status: data.nama_status,
   };
 

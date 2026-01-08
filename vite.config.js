@@ -18,14 +18,14 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000', // Server backend lo
-        changeOrigin: true, // Wajib ada
-        secure: false,      // Wajib ada (walaupun http)
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:5000', // Server backend lo
+          changeOrigin: true, // Wajib ada
+          secure: false,      // Wajib ada (walaupun http)
+        }
       }
-    }
   }
   // =============================================
 })

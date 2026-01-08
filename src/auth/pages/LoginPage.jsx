@@ -8,17 +8,13 @@ import { login } from "@/services/authServices";
 export default function LoginPage() {
   const navigate = useNavigate();
 
-  const handleLogin = async ({ username, password }) => {
+  const handleLogin = async ({ id, password }) => {
     try {
-      const res = await login(username, password);
+      const res = await login(id, password);
 
       const token = res.access_token;
-
-      // decode JWT (karena role ada di claims)
       const decoded = jwtDecode(token);
 
-
-      // simpan token & user
       localStorage.setItem("access_token", token);
       localStorage.setItem(
         "user",
@@ -38,23 +34,25 @@ export default function LoginPage() {
         showConfirmButton: false,
       });
 
-      // redirect sesuai jabatan
+      let path = "/login";
+
       switch (decoded.jabatan) {
         case "OPERATOR":
-          navigate("/operator/absensi");
+          path = "/operator/absensi";
           break;
         case "MARKETING":
-          navigate("/marketing/absensi");
+          path = "/marketing/absensi";
           break;
         case "IT":
-          navigate("/it/absensi");
+          path = "/it/absensi";
           break;
-        case "HRD":
-          navigate("/admin/dashboard");
+        case "KETUA":
+          path = "/admin";
           break;
-        default:
-          navigate("/login");
       }
+
+      window.location.href = path;
+
     } catch (err) {
       Swal.fire({
         icon: "error",

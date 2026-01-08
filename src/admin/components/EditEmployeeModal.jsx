@@ -1,5 +1,4 @@
-// File: src/admin/components/EditEmployeeModal.jsx
-
+// src/admin/components/EditEmployeeModal.jsx
 import React, { useState, useEffect } from 'react';
 import Modal from '../../components/ui/Modal';
 import Swal from 'sweetalert2';
@@ -25,20 +24,26 @@ export default function EditEmployeeModal({
   jabatanOptions = [],
   statusKerjaOptions = [],
   statusPernikahanOptions = [],
+  agamaOptions = [],        // ← TAMBAH PROP INI
+  departemenOptions = [],   // ← TAMBAH PROP INI
+  kondisiAkunOptions = [],  // ← TAMBAH PROP INI
 }) {
   const [formData, setFormData] = useState({
     nama: '',
     nik: '',
-    id_jabatan_karyawan: '',
-    id_status_pernikahan: '',
     npwp: '',
     status_pajak: '',
-    alamat: '',
+    id_jabatan_karyawan: '',
     no_hp: '',
+    alamat: '',
     tanggal_masuk: '',
+    id_status_kerja_karyawan: '',
+    id_status_pernikahan: '',
+    id_agama: '',             // ← TAMBAH
+    id_departemen: '',        // ← TAMBAH
+    id_kondisi_akun: '',      // ← TAMBAH
     awal_kontrak: '',
     akhir_kontrak: '',
-    id_status_kerja_karyawan: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,33 +63,33 @@ export default function EditEmployeeModal({
       id_jabatan_karyawan:
         employeeData.id_jabatan_karyawan ||
         employeeData.jabatan?.id ||
-        (jabatanOptions[0] ? jabatanOptions[0].id : ''),
-      id_status_pernikahan:
-        employeeData.id_status_pernikahan ||
-        employeeData.status_pernikahan?.id ||
-        (statusPernikahanOptions[0] ? statusPernikahanOptions[0].id : ''),
+        '',
       id_status_kerja_karyawan:
         employeeData.id_status_kerja_karyawan ||
         employeeData.status_kerja?.id ||
-        (statusKerjaOptions[0] ? statusKerjaOptions[0].id : ''),
+        '',
+      id_status_pernikahan:
+        employeeData.id_status_pernikahan ||
+        employeeData.status_pernikahan_rel?.id ||
+        '',
+      id_agama: employeeData.id_agama || employeeData.agama_rel?.id || '', // ← TAMBAH
+      id_departemen: employeeData.id_departemen || employeeData.departemen_rel?.id || '', // ← TAMBAH
+      id_kondisi_akun: employeeData.id_kondisi_akun || '', // ← TAMBAH
       alamat: employeeData.alamat || '',
       no_hp: employeeData.no_hp ? String(employeeData.no_hp) : '',
       tanggal_masuk: formatDateForInput(employeeData.tanggal_masuk),
       awal_kontrak: formatDateForInput(employeeData.awal_kontrak),
       akhir_kontrak: formatDateForInput(employeeData.akhir_kontrak),
     });
-  }, [isOpen, employeeData, jabatanOptions, statusKerjaOptions, statusPernikahanOptions]);
+  }, [isOpen, employeeData, jabatanOptions, statusKerjaOptions, statusPernikahanOptions, agamaOptions, departemenOptions, kondisiAkunOptions]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     let newValue = value;
 
-    // NIK: hanya angka & max 16 digit
     if (name === 'nik') {
       newValue = value.replace(/\D/g, '').slice(0, 16);
     }
-
-    // No HP: hanya angka
     if (name === 'no_hp') {
       newValue = value.replace(/\D/g, '');
     }
@@ -102,8 +107,7 @@ export default function EditEmployeeModal({
     setIsSubmitting(true);
     setError(null);
 
-    // Base data sama persis pattern AddEmployeeModal
-    const baseData = {
+    const dataToSubmit = {
       nama: formData.nama,
       nik: formData.nik || null,
       no_hp: formData.no_hp || null,
@@ -111,27 +115,15 @@ export default function EditEmployeeModal({
       id_jabatan_karyawan: formData.id_jabatan_karyawan || null,
       id_status_kerja_karyawan: formData.id_status_kerja_karyawan || null,
       id_status_pernikahan: formData.id_status_pernikahan || null,
-      tanggal_masuk: formData.tanggal_masuk === '' ? null : formData.tanggal_masuk,
-      awal_kontrak: formData.awal_kontrak === '' ? null : formData.awal_kontrak,
-      akhir_kontrak: formData.akhir_kontrak === '' ? null : formData.akhir_kontrak,
-      npwp: formData.npwp === '' ? null : formData.npwp,
-      status_pajak: formData.status_pajak === '' ? null : formData.status_pajak,
+      id_agama: formData.id_agama || null,                 // ← TAMBAH
+      id_departemen: formData.id_departemen || null,       // ← TAMBAH
+      id_kondisi_akun: formData.id_kondisi_akun || null,   // ← TAMBAH
+      tanggal_masuk: formData.tanggal_masuk || null,
+      awal_kontrak: formData.awal_kontrak || null,
+      akhir_kontrak: formData.akhir_kontrak || null,
+      npwp: formData.npwp || null,
+      status_pajak: formData.status_pajak || null,
     };
-
-    const dataToSubmit = { ...baseData };
-
-    // ====== FIX: kalau NIK / No HP tidak diubah, jangan dikirim ======
-    const originalNik = employeeData.nik ? String(employeeData.nik) : '';
-    const originalNoHp = employeeData.no_hp ? String(employeeData.no_hp) : '';
-
-    if (formData.nik.trim() === originalNik.trim()) {
-      delete dataToSubmit.nik;
-    }
-
-    if (formData.no_hp.trim() === originalNoHp.trim()) {
-      delete dataToSubmit.no_hp;
-    }
-    // ================================================================
 
     try {
       await onUpdateEmployee(employeeData.id, dataToSubmit);
@@ -155,16 +147,12 @@ export default function EditEmployeeModal({
   return (
     <Modal title="Edit Karyawan" isOpen={isOpen} onClose={onClose}>
       <div className="relative">
-
-      {isSubmitting && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/70 backdrop-blur-sm rounded-2xl">
-          <Commet
-          color={["#800020", "#8a0023", "#a0002a", "#c8003d"]}
-          size={60}
-          />
-          <p className="mt-4 text-sm text-gray-600">Menyimpan data...</p>
-        </div>
-      )}
+        {isSubmitting && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/70 backdrop-blur-sm rounded-2xl">
+            <Commet color={["#800020", "#8a0023", "#a0002a", "#c8003d"]} size={60} />
+            <p className="mt-4 text-sm text-gray-600">Menyimpan data...</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
@@ -173,204 +161,128 @@ export default function EditEmployeeModal({
             </div>
           )}
 
-          {/* Baris 1: Nama & NIK */}
+          {/* Baris 1: Nama, NIK, NPWP, Status Pajak */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">
-                Nama Lengkap
-              </label>
-              <input
-                type="text"
-                name="nama"
-                value={formData.nama}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                required
-              />
+              <label className="text-sm font-medium text-gray-700 block mb-1">Nama Lengkap *</label>
+              <input type="text" name="nama" value={formData.nama} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]" />
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-1">NIK</label>
-              <input
-                type="text"
-                name="nik"
-                value={formData.nik}
-                onChange={handleChange}
-                maxLength={16}
-                inputMode="numeric"
-                pattern="\d*"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                placeholder="Contoh: 13710..."
-              />
+              <input type="text" name="nik" value={formData.nik} onChange={handleChange} maxLength={16} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]" />
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-1">NPWP</label>
-              <input
-                type="text"
-                name="npwp"
-                value={formData.npwp}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                placeholder="Contoh: 13710..."
-              />
+              <input type="text" name="npwp" value={formData.npwp} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]" />
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-1">Status Pajak</label>
-              <input
-                type="text"
-                name="status_pajak"
-                value={formData.status_pajak}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-              />
+              <input type="text" name="status_pajak" value={formData.status_pajak} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]" />
             </div>
           </div>
 
-          {/* Baris 2: Jabatan & No. HP */}
+          {/* Baris 2: Jabatan & No HP */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">Jabatan</label>
-              <select
-                name="id_jabatan_karyawan"
-                value={formData.id_jabatan_karyawan}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                disabled={jabatanOptions.length === 0}
-                required
-              >
+              <label className="text-sm font-medium text-gray-700 block mb-1">Jabatan *</label>
+              <select name="id_jabatan_karyawan" value={formData.id_jabatan_karyawan} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]">
                 <option value="">Pilih Jabatan</option>
-                {jabatanOptions.map((jabatan) => (
-                  <option key={jabatan.id} value={jabatan.id}>
-                    {jabatan.nama_jabatan || jabatan.nama}
-                  </option>
+                {jabatanOptions.map((j) => (
+                  <option key={j.id} value={j.id}>{j.nama_jabatan || j.nama}</option>
                 ))}
               </select>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-1">No. HP</label>
-              <input
-                type="text"
-                name="no_hp"
-                value={formData.no_hp}
-                onChange={handleChange}
-                maxLength={13}
-                inputMode="numeric"
-                pattern="\d*"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                placeholder="Contoh: 0812..."
-              />
+              <input type="text" name="no_hp" value={formData.no_hp} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]" />
             </div>
           </div>
 
           {/* Baris 3: Alamat */}
           <div>
             <label className="text-sm font-medium text-gray-700 block mb-1">Alamat</label>
-            <textarea
-              name="alamat"
-              value={formData.alamat}
-              onChange={handleChange}
-              rows="2"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-            ></textarea>
+            <textarea name="alamat" value={formData.alamat} onChange={handleChange} rows="2" className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]"></textarea>
           </div>
 
-          {/* Baris 4: Tanggal Masuk, Status Kerja, Status Pernikahan */}
+          {/* Baris 4: Tanggal Masuk & Status Kerja */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">
-                Tanggal Masuk
-              </label>
-              <input
-                type="date"
-                name="tanggal_masuk"
-                value={formData.tanggal_masuk}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-              />
+              <label className="text-sm font-medium text-gray-700 block mb-1">Tanggal Masuk</label>
+              <input type="date" name="tanggal_masuk" value={formData.tanggal_masuk} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]" />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">
-                Status Kerja
-              </label>
-              <select
-                name="id_status_kerja_karyawan"
-                value={formData.id_status_kerja_karyawan}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                disabled={statusKerjaOptions.length === 0}
-                required
-              >
+              <label className="text-sm font-medium text-gray-700 block mb-1">Status Kerja *</label>
+              <select name="id_status_kerja_karyawan" value={formData.id_status_kerja_karyawan} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]">
                 <option value="">Pilih Status</option>
-                {statusKerjaOptions.map((status) => (
-                  <option key={status.id} value={status.id}>
-                    {status.nama_status || status.nama}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">
-                Status Pernikahan
-              </label>
-              <select
-                name="id_status_pernikahan"
-                value={formData.id_status_pernikahan}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                disabled={statusPernikahanOptions.length === 0}
-                required
-              >
-                <option value="">Pilih Status</option>
-                {statusPernikahanOptions.map((status) => (
-                  <option key={status.id} value={status.id}>
-                    {status.nama_status || status.nama}
-                  </option>
+                {statusKerjaOptions.map((s) => (
+                  <option key={s.id} value={s.id}>{s.nama_status || s.nama}</option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* Baris 5: Kontrak */}
+          {/* Baris 5: Status Pernikahan & Agama */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">
-                Awal Kontrak
-              </label>
-              <input
-                type="date"
-                name="awal_kontrak"
-                value={formData.awal_kontrak}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-              />
+              <label className="text-sm font-medium text-gray-700 block mb-1">Status Pernikahan *</label>
+              <select name="id_status_pernikahan" value={formData.id_status_pernikahan} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]">
+                <option value="">Pilih Status</option>
+                {statusPernikahanOptions.map((s) => (
+                  <option key={s.id} value={s.id}>{s.nama || s.nama_status_pernikahan}</option>
+                ))}
+              </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">
-                Akhir Kontrak
-              </label>
-              <input
-                type="date"
-                name="akhir_kontrak"
-                value={formData.akhir_kontrak}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800020]"
-              />
+              <label className="text-sm font-medium text-gray-700 block mb-1">Agama *</label>
+              <select name="id_agama" value={formData.id_agama} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]">
+                <option value="">Pilih Agama</option>
+                {agamaOptions.map((a) => (
+                  <option key={a.id} value={a.id}>{a.nama_agama || a.nama}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Baris 6: Departemen & Kondisi Akun */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-1">Departemen *</label>
+              <select name="id_departemen" value={formData.id_departemen} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]">
+                <option value="">Pilih Departemen</option>
+                {departemenOptions.map((d) => (
+                  <option key={d.id} value={d.id}>{d.nama_departemen || d.nama}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-1">Kondisi Akun *</label>
+              <select name="id_kondisi_akun" value={formData.id_kondisi_akun} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]">
+                <option value="">Pilih Kondisi</option>
+                {kondisiAkunOptions.map((k) => (
+                  <option key={k.id} value={k.id}>{k.nama_kondisi_akun || k.nama}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Baris 7: Kontrak */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-1">Awal Kontrak</label>
+              <input type="date" name="awal_kontrak" value={formData.awal_kontrak} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-1">Akhir Kontrak</label>
+              <input type="date" name="akhir_kontrak" value={formData.akhir_kontrak} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]" />
             </div>
           </div>
 
           {/* Tombol */}
-          <div className="pt-4 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-100 cursor-pointer text-gray-700 rounded-lg hover:bg-gray-200"
-            >
+          <div className="pt-6 flex justify-end gap-3">
+            <button type="button" onClick={onClose} className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
               Batal
             </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-gradient-to-r cursor-pointer from-[#800020] to-[#a0002a] text-white rounded-lg hover:shadow-lg disabled:opacity-50"
-            >
+            <button type="submit" disabled={isSubmitting} className="px-6 py-2 bg-gradient-to-r from-[#800020] to-[#a0002a] text-white rounded-lg hover:shadow-lg disabled:opacity-50">
               {isSubmitting ? 'Mengupdate...' : 'Update Karyawan'}
             </button>
           </div>

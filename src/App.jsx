@@ -9,6 +9,7 @@ import ProtectedRoute from "@/auth/components/ProtectedRoute";
 import RiwayatAbsensi from "./operator/pages/RiwayatAbsensi";
 import KunjunganPage from './marketing/pages/KunjunganPage';
 import RiwayatAbsensiMarketing from './marketing/pages/RiwayatAbsensiMarketing';
+import LaporanPencapaianMarketing from './marketing/pages/LaporanPencapaianMarketing';
 
 
 
@@ -23,7 +24,7 @@ export default function App() {
       <Route
         path="/admin/*"
         element={
-          <ProtectedRoute allow={["HRD"]}>
+          <ProtectedRoute allow={[ { jabatan: "KETUA", departemen: "HRD" } ]}>
             <EmployeeDashboard />
           </ProtectedRoute>
         }
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="absensi" element={<MarketingAttendancePage />} />
           <Route path="kunjungan" element={<KunjunganPage />} />
           <Route path="riwayat" element={<RiwayatAbsensiMarketing />} />
+          <Route path="laporan" element={<LaporanPencapaianMarketing />} />
         </Route>
       </Routes>
     </BrowserRouter>

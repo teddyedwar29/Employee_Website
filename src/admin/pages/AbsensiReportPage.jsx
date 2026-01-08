@@ -1,11 +1,27 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { Search, Calendar, Building2 } from "lucide-react";
+import PageHeader from '@/components/ui/PageHeader';
+import Pagination from "@/components/ui/Pagination";
+import { BACKEND_BASE_URL, API_BASE_URL } from '@/utils/constants';
 
-export default function AbsensiReportPage() {
+export default function AbsensiReportPage({ onMenuClick }) {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const [absensiList, setAbsensiList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const totalItems = filteredList.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  const paginatedList = filteredList.slice(startIndex, endIndex);
+
 
   // Filter state
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,7 +32,7 @@ export default function AbsensiReportPage() {
   // Departemen options
   const departemenOptions = ["Semua", "MARKETING", "OPERATOR", "HRD", "IT", "CS"];
 
-  const BACKEND_URL = "http://localhost:5000";
+  const BACKEND_URL = API_BASE_URL;
   const placeholderFoto = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zNS4wMDAxIDM1LjAwMDFDMzUuMDAwMSAzMS42NjY4IDMyLjMzMzQgMjguOTk5OSAyOS4wMDAxIDI4Ljk5OTlIMjEuMDAwMUMxNy42NjY4IDI4Ljk5OTkgMTUuMDAwMSAzMS42NjY4IDE1LjAwMDEgMzUuMDAwMVYzOC4wMDAxQzE1LjAwMDEgNDAuMjA5MSAxNi43OTEgNDIuMDAwMSAxOS4wMDAxIDQyLjAwMDFIMzEuMDAwMUMzMy4yMDkxIDQyLjAwMDEgMzUuMDAwMSA0MC4yMDkxIDM1LjAwMDEgMzguMDAwMVYzNS4wMDAxWiIgc3Ryb2tlPSIjQ0NDQ0NDIiBzdHJva2Utd2lkdGg9IjIiLz4KPGNpcmNsZSBjeD0iMjUiIGN5PSIxOCIgcj0iNyIgZmlsbD0iI0NDQ0NDQyIvPgo8L3N2Zz4K";
 
   const fetchAbsensiReport = async () => {
@@ -29,7 +45,7 @@ export default function AbsensiReportPage() {
       }
 
       // ✅ FIX: Gunakan endpoint yang benar sesuai route blueprint
-      let url = `${BACKEND_URL}/api/absensi/report`;
+      let url = `${BACKEND_URL}/absensi/report`;
       const params = new URLSearchParams();
 
       if (startDate) params.append("start_date", startDate);
@@ -59,7 +75,7 @@ export default function AbsensiReportPage() {
             text: "Sesi login Anda telah berakhir atau Anda tidak memiliki akses.",
           });
           // Optional: redirect ke login
-          // window.location.href = "/login";
+          window.location.href = "/login";
           return;
         }
 
@@ -110,7 +126,8 @@ export default function AbsensiReportPage() {
 
   useEffect(() => {
     fetchAbsensiReport();
-  }, [startDate, endDate, selectedDept]);
+    setCurrentPage(1);
+  }, [searchTerm,startDate, endDate, selectedDept]);
 
   // Search filter
   useEffect(() => {
@@ -155,10 +172,12 @@ export default function AbsensiReportPage() {
 
   return (
     <div className="p-6 lg:p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Riwayat Absensi Karyawan</h1>
-        <p className="text-gray-600">Monitoring absensi seluruh karyawan perusahaan</p>
-      </div>
+      {/* HEADER */}
+      <PageHeader 
+      title="Riwayat Absensi Karyawan"
+      description="Monitoring absensi seluruh karyawan perusahaan" 
+      onMenuClick={onMenuClick}
+      />
 
       {/* FILTER SECTION */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
@@ -245,33 +264,50 @@ export default function AbsensiReportPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Tanggal</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Karyawan</th>
-                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-700">Foto Masuk</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Jam Masuk</th>
-                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-700">Foto Keluar</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Jam Keluar</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Durasi</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Tanggal</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">ID Karyawan</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Nama Karyawan</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Departemen</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Jabatan</th>
+                      <th className="px-6 py-4 text-center text-sm font-medium text-gray-700">Foto Masuk</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Jam Masuk</th>
+                      <th className="px-6 py-4 text-center text-sm font-medium text-gray-700">Foto Keluar</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Jam Keluar</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Durasi</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {filteredList.map((item, idx) => (
+                  {paginatedList.map((item, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
+                      {/* tanggal */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
                         {formatDate(item.tanggal)}
                       </td>
-                      <td className="px-6 py-4">
-                        <div>
-                          <p className="font-medium text-gray-900">{item.karyawan?.nama}</p>
-                          <p className="text-xs text-gray-500">
-                            {item.karyawan?.jabatan?.nama_jabatan} • NIK: {item.karyawan?.nik}
-                          </p>
-                        </div>
+                      
+                      {/* ID Karyawan */}
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {item.id_karyawan || "-"}
                       </td>
+
+                      {/* Nama Karyawan */}
+                      <td className="px-6 py-4 text-sm text-gray-900 font-medium">
+                        {item.nama_karyawan || "-"}
+                      </td>
+
+                      {/* Departemen */}
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {item.nama_departemen || "-"}
+                      </td>
+
+                      {/* Jabatan */}
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {item.nama_jabatan || "-"}
+                      </td>
+
                       <td className="px-6 py-4 text-center">
                         <img
-                          src={item.foto_in ? `${BACKEND_URL}/${item.foto_in}` : placeholderFoto}
+                          src={item.foto_in ? `${BACKEND_BASE_URL}/${item.foto_in}` : placeholderFoto}
                           alt="Masuk"
                           className="w-12 h-12 rounded-lg object-cover mx-auto border"
                           onError={(e) => (e.target.src = placeholderFoto)}
@@ -280,7 +316,7 @@ export default function AbsensiReportPage() {
                       <td className="px-6 py-4 text-sm text-gray-600">{formatTime(item.jam_in)}</td>
                       <td className="px-6 py-4 text-center">
                         <img
-                          src={item.foto_out ? `${BACKEND_URL}/${item.foto_out}` : placeholderFoto}
+                          src={item.foto_out ? `${BACKEND_BASE_URL}/${item.foto_out}` : placeholderFoto}
                           alt="Keluar"
                           className="w-12 h-12 rounded-lg object-cover mx-auto border"
                           onError={(e) => (e.target.src = placeholderFoto)}
@@ -304,50 +340,105 @@ export default function AbsensiReportPage() {
 
           {/* MOBILE CARD VIEW */}
           <div className="lg:hidden space-y-4">
-            {filteredList.map((item, idx) => (
-              <div key={idx} className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
-                <div className="flex justify-between items-start mb-4">
+            {paginatedList.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 space-y-4"
+              >
+                {/* HEADER */}
+                <div className="flex justify-between items-start">
                   <div>
-                    <p className="font-bold text-gray-900">{formatDate(item.tanggal)}</p>
-                    <p className="text-sm text-gray-600">{item.karyawan?.nama}</p>
-                    <p className="text-xs text-gray-500">{item.karyawan?.jabatan?.nama_jabatan}</p>
+                    <p className="font-bold text-gray-900">
+                      {formatDate(item.tanggal)}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      ID: {item.id_karyawan || "-"}
+                    </p>
                   </div>
-                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                     Hadir
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-gray-600 mb-1">Masuk</p>
+                {/* IDENTITAS */}
+                <div className="border-t pt-3 space-y-1 text-sm">
+                  <p>
+                    <span className="text-gray-500">Nama:</span>{" "}
+                    <span className="font-medium">{item.nama_karyawan || "-"}</span>
+                  </p>
+                  <p>
+                    <span className="text-gray-500">Departemen:</span>{" "}
+                    {item.nama_departemen || "-"}
+                  </p>
+                  <p>
+                    <span className="text-gray-500">Jabatan:</span>{" "}
+                    {item.nama_jabatan || "-"}
+                  </p>
+                </div>
+
+                {/* ABSENSI MASUK */}
+                <div className="border-t pt-3">
+                  <p className="text-xs text-gray-500 mb-2">Absen Masuk</p>
+                  <div className="flex items-center gap-4">
                     <img
-                      src={item.foto_in ? `${BACKEND_URL}/${item.foto_in}` : placeholderFoto}
+                      src={item.foto_in ? `${BACKEND_BASE_URL}/${item.foto_in}` : placeholderFoto}
                       alt="Masuk"
-                      className="w-full h-32 rounded-lg object-cover border"
+                      className="w-20 h-20 rounded-lg object-cover border"
+                      onError={(e) => (e.target.src = placeholderFoto)}
                     />
-                    <p className="text-center text-sm font-medium mt-2">{formatTime(item.jam_in)}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600 mb-1">Keluar</p>
-                    <img
-                      src={item.foto_out ? `${BACKEND_URL}/${item.foto_out}` : placeholderFoto}
-                      alt="Keluar"
-                      className="w-full h-32 rounded-lg object-cover border"
-                    />
-                    <p className="text-center text-sm font-medium mt-2">{formatTime(item.jam_out)}</p>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        Jam Masuk
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {formatTime(item.jam_in)}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="text-center bg-blue-50 rounded-lg py-2">
-                  <p className="text-sm text-blue-900 font-bold">
-                    Durasi Kerja: {hitungDurasi(item.jam_in, item.jam_out)}
+                {/* ABSENSI KELUAR */}
+                <div className="border-t pt-3">
+                  <p className="text-xs text-gray-500 mb-2">Absen Keluar</p>
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={item.foto_out ? `${BACKEND_BASE_URL}/${item.foto_out}` : placeholderFoto}
+                      alt="Keluar"
+                      className="w-20 h-20 rounded-lg object-cover border"
+                      onError={(e) => (e.target.src = placeholderFoto)}
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        Jam Keluar
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {formatTime(item.jam_out)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DURASI */}
+                <div className="border-t pt-3 text-center">
+                  <p className="text-xs text-gray-500">Durasi Kerja</p>
+                  <p className="text-sm font-bold text-blue-900">
+                    {hitungDurasi(item.jam_in, item.jam_out)}
                   </p>
                 </div>
               </div>
             ))}
           </div>
+
         </>
       )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        totalItems={totalItems}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
     </div>
   );
 }

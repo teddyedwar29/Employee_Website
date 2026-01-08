@@ -8,7 +8,7 @@ import {
   UserX,
   ChevronDown,
   ChevronRight,
-  Briefcase,
+  Briefcase,    
   Clock,
   Heart,
   Book,
@@ -17,8 +17,13 @@ import {
   DollarSign,
   FileText,
   Calendar,
+  MapPin,
+  BarChart3,
+  LogOut
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { logout } from '@/services/authServices';
+import Swal from 'sweetalert2';
 
 const menuItems = [
   { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
@@ -26,7 +31,9 @@ const menuItems = [
   { id: 'berhenti',  name: 'Karyawan Berhenti', icon: UserX, path: '/admin/karyawan-berhenti' },
   { id: 'laporan',  name: 'Laporan', icon: FileText, path: '/admin/laporan' },
   { id: 'izin',  name: 'Izin', icon: Clock, path: '/admin/izin' },
+  { id: 'otomax-data', name: 'Data Otomax', icon: BarChart3, path: '/admin/otomax-data' },
   { id: 'absensi-report', name: 'Riwayat Absensi', icon: Calendar, path: '/admin/absensi-report' },
+  { id: 'kunjungan-report', name: 'Riwayat Kunjungan', icon: MapPin, path: '/admin/kunjungan-report' },
 ];
 
 const masterMenus = [
@@ -80,6 +87,31 @@ export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {
   const [isMasterOpen, setIsMasterOpen] = useState(
     window.location.pathname.startsWith('/admin/master')
   );
+
+  // handle logout
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Logout",
+      text: "Apakah Anda yakin ingin logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, Logout",
+      cancelButtonText: "Batal",
+    });
+
+    if (!result.isConfirmed) return;
+
+    await logout();
+
+    Swal.fire({
+      icon: "success",
+      title: "Logout berhasil",
+      timer: 1200,
+      showConfirmButton: false,
+    }).then(() => {
+      window.location.href = "/login";
+    });
+  };
 
   return (
     <div
@@ -182,6 +214,21 @@ export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {
         </div>
         {/* ====== END DATA MASTER ====== */}
       </nav>
+      {/* ===== LOGOUT ===== */}
+      <div className="p-4 border-t border-gray-200">
+        <button
+          onClick={handleLogout}
+          className="
+            w-full flex items-center gap-3
+            px-3 py-2.5 rounded-lg
+            text-red-600 font-medium text-sm
+            hover:bg-red-50 transition-all
+          "
+        >
+          <LogOut size={18} />
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
   );
 }

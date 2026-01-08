@@ -1,8 +1,8 @@
 import { marketingMenu } from "../config/marketingMenu";
 import SidebarItem from "../../shared/sidebar/SidebarItems";
-import { X } from "lucide-react";
+import { X, LogOut } from "lucide-react";
 
-export default function MarketingSidebar({onClose, onNavigate}) {
+export default function MarketingSidebar({onClose, onNavigate, onLogout}) {
   return (
     <aside className="w-56 bg-white/70 backdrop-blur-xl p-6 shadow-xl">
       {/* CLOSE BUTTON (MOBILE ONLY) */}
@@ -26,6 +26,13 @@ export default function MarketingSidebar({onClose, onNavigate}) {
           />
         ))} 
       </nav>
+        <button
+          onClick={onLogout}
+          className="mt-auto flex items-center gap-2 px-4 py-3 cursor-pointer hover:bg-red-50 rounded-xl transition"
+        >
+          <LogOut size={18} />
+          <span>Logout</span>
+        </button>
     </aside>
   );
 }

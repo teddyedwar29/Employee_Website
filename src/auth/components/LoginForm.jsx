@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm({ onSubmit }) {
-  const [username, setUsername] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = () => {
-    if (!username || !password) return;
-    onSubmit({ username, password });
+    if (!employeeId || !password) return;
+    onSubmit({ id: employeeId, password }); // 🔥 KIRIM ID
   };
 
   const handleKeyPress = (e) => {
@@ -29,14 +29,9 @@ export default function LoginForm({ onSubmit }) {
           </p>
         </div>
 
-        
-
         {/* RIGHT PANEL */}
         <div className="w-full md:w-1/2 p-10 flex items-center">
           <div className="max-w-md w-full mx-auto">
-            <h1 className="md:hidden text-2xl font-bold text-[#7a0c2e] mb-6">
-            Employee Management System
-            </h1>
             <h2 className="text-3xl font-bold text-gray-800 mb-2">
               Welcome Back
             </h2>
@@ -44,18 +39,18 @@ export default function LoginForm({ onSubmit }) {
               Silakan login ke akun Anda
             </p>
 
-            {/* Username */}
+            {/* ID Karyawan */}
             <div className="mb-4">
               <label className="block text-sm mb-2 text-gray-600">
-                Username
+                ID Karyawan
               </label>
               <input
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={employeeId}
+                onChange={(e) => setEmployeeId(e.target.value)}
                 onKeyDown={handleKeyPress}
                 className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-[#7a0c2e]"
-                placeholder="Masukkan username"
+                placeholder="Contoh: HR-0001"
               />
             </div>
 

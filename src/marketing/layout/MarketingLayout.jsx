@@ -1,12 +1,40 @@
+import { useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import MarketingSidebar from "./MarketingSidebar";
-
-
+import { logout } from "@/services/authServices";
+import Swal from "sweetalert2";
+  
 export default function MarketingLayout() {
   const [isOpen, setIsOpen] = useState(false);
-  
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const confirm = await Swal.fire({
+      title: "Logout?",
+      text: "Kamu akan keluar dari sistem",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, Logout",
+      cancelButtonText: "Batal",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await logout();
+    } catch (e) {
+      // walaupun error, kita tetap logout local
+    }
+
+    localStorage.removeItem("access_token");
+
+    Swal.fire("Berhasil", "Logout berhasil", "success").then(() => {
+      navigate("/login", { replace: true });
+    });
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -19,7 +47,7 @@ export default function MarketingLayout() {
           md:static md:translate-x-0 md:fade-in-up
         `}
       >
-        <MarketingSidebar />
+        <MarketingSidebar onNavigate={() => setIsOpen(false)} onLogout={handleLogout} />
       </div>
 
       {/* Backdrop (mobile only) */}

@@ -16,8 +16,11 @@ The React Compiler is not enabled on this template because of its impact on dev 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
 
+
 ```
 Employee_Website
+├─ .env
+├─ .env.production
 ├─ eslint.config.js
 ├─ index.html
 ├─ package-lock.json
@@ -44,6 +47,7 @@ Employee_Website
 │  │     ├─ DataEmployee.jsx
 │  │     ├─ EmployeeDashboard.jsx
 │  │     ├─ IzinPage.jsx
+│  │     ├─ KunjunganReportPage.jsx
 │  │     ├─ master
 │  │     │  ├─ MasterAgamaPage.jsx
 │  │     │  ├─ MasterDepartemenPage.jsx
@@ -53,6 +57,7 @@ Employee_Website
 │  │     │  ├─ MasterKondisiAkunPage.jsx
 │  │     │  ├─ MasterStatusKerjaPage.jsx
 │  │     │  └─ MasterStatusPernikahanPage.jsx
+│  │     ├─ OtomaxDataPage.jsx
 │  │     ├─ ReportPage.jsx
 │  │     └─ ResignedEmployeePage.jsx
 │  ├─ App.css
@@ -116,6 +121,7 @@ Employee_Website
 │  │  └─ sidebar
 │  │     └─ SidebarItems.jsx
 │  └─ utils
+│     ├─ constants.js
 │     └─ date.js
 └─ vite.config.js
 

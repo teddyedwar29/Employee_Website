@@ -1,42 +1,112 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+
 import TeamAttendanceDashboard from "@/shared/attendance/TeamAttendanceDashboard";
+import AttendanceCameraModal from "@/shared/attendance/AttendanceCameraModal";
+
 import { getMyAbsensi } from "@/services/absensiReportService";
 import {
   absenMasuk,
   absenKeluar,
 } from "@/operator/services/absensiServices";
-import { isToday } from "@/utils/date"; 
-import { Camera, X } from "lucide-react";
 
-export default function AttendancePage() {  
-  const [modalType, setModalType] = useState(null); // in | out | null
-  const [attendanceStatus, setAttendanceStatus] = useState(null); // null | in | out
+import { isToday } from "@/utils/date";
+
+export default function AttendancePage() {
+  // modal: "in" | "out" | null
+  const [modalType, setModalType] = useState(null);
+
+  // status: null | "in" | "out"
+  const [attendanceStatus, setAttendanceStatus] = useState(null);
   const [clockInTime, setClockInTime] = useState(null);
   const [clockOutTime, setClockOutTime] = useState(null);
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const [previewImage, setPreviewImage] = useState(null);
 
+  // =========================
+  // FETCH ABSENSI HARI INI
+  // =========================
   useEffect(() => {
     fetchAbsensiHariIni();
   }, []);
 
-    const getWorkDuration = () => {
+  const fetchAbsensiHariIni = async () => {
+    try {
+      const res = await getMyAbsensi();
+      if (!res.success || !res.data?.length) return;
+
+      const todayAbsensi = res.data.find((item) =>
+        isToday(item.tanggal)
+      );
+      if (!todayAbsensi) return;
+
+      if (todayAbsensi.jam_in) {
+        setAttendanceStatus("in");
+        setClockInTime(todayAbsensi.jam_in);
+      }
+
+      if (todayAbsensi.jam_out) {
+        setAttendanceStatus("out");
+        setClockOutTime(todayAbsensi.jam_out);
+      }
+    } catch (err) {
+      console.error("Gagal fetch absensi:", err);
+    }
+  };
+
+  // =========================
+  // DUMMY EMPLOYEE (NANTI JWT)
+  // =========================
+  const employee = {
+    id: "EMP001",
+    nama: "Budi Santoso",
+    jabatan: "OPERATOR",
+  };
+
+  // =========================
+  // HANDLER ABSENSI
+  // =========================
+  const handleAbsenMasuk = async (file) => {
+    const res = await absenMasuk(file);
+
+    if (res.success) {
+      Swal.fire("Berhasil", res.message, "success");
+      setAttendanceStatus("in");
+      setClockInTime(new Date());
+      setModalType(null);
+    } else {
+      Swal.fire("Gagal", res.message, "error");
+    }
+  };
+
+  const handleAbsenKeluar = async (file) => {
+    const res = await absenKeluar(file);
+
+    if (res.success) {
+      Swal.fire("Berhasil", res.message, "success");
+      setAttendanceStatus("out");
+      setClockOutTime(new Date());
+      setModalType(null);
+    } else {
+      Swal.fire("Gagal", res.message, "error");
+    }
+  };
+
+  // =========================
+  // DURASI KERJA
+  // =========================
+  const getWorkDuration = () => {
     if (!clockInTime || !clockOutTime) return "--";
 
-    let inTime, outTime;
+    const toParts = (time) =>
+      typeof time === "string"
+        ? time.split(":").map(Number)
+        : [time.getHours(), time.getMinutes()];
 
-    if (typeof clockInTime === "string") {
-      inTime = clockInTime.split(":").map(Number);
-      outTime = clockOutTime.split(":").map(Number);
-    } else {
-      inTime = [clockInTime.getHours(), clockInTime.getMinutes()];
-      outTime = [clockOutTime.getHours(), clockOutTime.getMinutes()];
-    }
+    const [inH, inM] = toParts(clockInTime);
+    const [outH, outM] = toParts(clockOutTime);
 
-    let hours = outTime[0] - inTime[0];
-    let minutes = outTime[1] - inTime[1];
+    let hours = outH - inH;
+    let minutes = outM - inM;
+
     if (minutes < 0) {
       minutes += 60;
       hours -= 1;
@@ -46,123 +116,9 @@ export default function AttendancePage() {
     return `${hours}j ${minutes}m`;
   };
 
-  const fetchAbsensiHariIni = async () => {
-    const res = await getMyAbsensi();
-
-    if (!res.success || !res.data?.length) return;
-
-    const todayAbsensi = res.data.find((item) =>
-      isToday(item.tanggal)
-    );
-
-    if (!todayAbsensi) return;
-
-    if (todayAbsensi.jam_in) {
-      setAttendanceStatus("in");
-      setClockInTime(todayAbsensi.jam_in);
-    }
-
-    if (todayAbsensi.jam_out) {
-      setAttendanceStatus("out");
-      setClockOutTime(todayAbsensi.jam_out);
-    }
-  };
-
-  // sementara (nanti ambil dari JWT) 
-  const employee = {
-    id: "EMP001",
-    nama: "Budi Santoso",
-    jabatan: "OPERATOR",
-  };
-
-  const handleAbsenMasuk = async (foto) => {
-    const res = await absenMasuk(foto);
-
-    if (res.success) {
-      Swal.fire("Berhasil", res.message, "success");
-
-      setAttendanceStatus("in");
-      setClockInTime(new Date());
-      setModalType(null);
-    } else {
-      Swal.fire("Gagal", res.message, "error");
-    }
-  };
-
-  const handleAbsenKeluar = async (foto) => {
-    const res = await absenKeluar(foto);
-
-    if (res.success) {
-      Swal.fire("Berhasil", res.message, "success");
-
-      setAttendanceStatus("out");
-      setClockOutTime(new Date());
-      setModalType(null);
-    } else {
-      Swal.fire("Gagal", res.message, "error");
-    }
-  };
-
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" }
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (err) {
-      Swal.fire("Error", "Gagal akses kamera. Izinkan akses kamera di browser.", "error");
-    }
-  };
-
-  const takePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext("2d").drawImage(video, 0, 0);
-      const dataUrl = canvas.toDataURL("image/jpeg");
-      setPreviewImage(dataUrl);
-
-      const stream = video.srcObject;
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    }
-  };
-
-  const retakePhoto = () => {
-    setPreviewImage(null);
-    startCamera();
-  };
-
-  const dataURLtoFile = (dataurl, filename) => {
-    let arr = dataurl.split(',');
-    let mime = arr[0].match(/:(.*?);/)[1];
-    let bstr = atob(arr[1]);
-    let n = bstr.length;
-    let u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new File([u8arr], filename, { type: mime });
-  };
-
-  // Mulai kamera otomatis saat modal muncul
-  useEffect(() => {
-    if (modalType) {
-      startCamera();
-    }
-    return () => {
-      const stream = videoRef.current?.srcObject;
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, [modalType]);
-
+  // =========================
+  // RENDER
+  // =========================
   return (
     <>
       <TeamAttendanceDashboard
@@ -175,76 +131,14 @@ export default function AttendancePage() {
         onAbsenKeluar={() => setModalType("out")}
       />
 
-      {(modalType === "in" || modalType === "out") && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md p-6 relative">
-            <button
-              onClick={() => {
-                setModalType(null);
-                setPreviewImage(null);
-              }}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-            >
-              <X size={24} />
-            </button>
-
-            <h3 className="text-xl font-bold text-center mb-6">
-              {modalType === "in" ? "Absen Masuk" : "Absen Keluar"}
-            </h3>
-
-            <div className="mb-6 text-center">
-              {previewImage ? (
-                <img src={previewImage} alt="Preview" className="mx-auto max-h-80 rounded-xl object-cover" />
-              ) : (
-                <video
-                  ref={videoRef}
-                  className="mx-auto max-h-80 rounded-xl object-cover"
-                  style={{ transform: "scaleX(-1)" }} // mirror selfie
-                  autoPlay
-                  muted
-                  playsInline
-                />
-              )}
-              <canvas ref={canvasRef} className="hidden" />
-            </div>
-
-            {!previewImage ? (
-              <button
-                type="button"
-                onClick={takePhoto}
-                className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 text-lg"
-              >
-                Jepret Foto
-              </button>
-            ) : (
-              <div className="space-y-4">
-                <button
-                  type="button"
-                  onClick={retakePhoto}
-                  className="w-full bg-gray-500 text-white py-3 rounded-xl font-medium hover:bg-gray-600"
-                >
-                  Ambil Ulang
-                </button>
-
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const file = dataURLtoFile(previewImage, "selfie.jpg");
-                    modalType === "in" ? await handleAbsenMasuk(file) : await handleAbsenKeluar(file);
-                  }}
-                  className={`w-full py-4 rounded-xl font-bold text-lg ${
-                    modalType === "in"
-                      ? "bg-green-600 hover:bg-green-700 text-white"
-                      : "bg-red-600 hover:bg-red-700 text-white"
-                  }`}
-                >
-                  {modalType === "in" ? "Absen Masuk" : "Absen Keluar"}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <AttendanceCameraModal
+        open={modalType}
+        title={modalType === "in" ? "Absen Masuk" : "Absen Keluar"}
+        submitLabel={modalType === "in" ? "Absen Masuk" : "Absen Keluar"}
+        submitColor={modalType === "in" ? "green" : "red"}
+        onSubmit={modalType === "in" ? handleAbsenMasuk : handleAbsenKeluar}
+        onClose={() => setModalType(null)}
+      />
     </>
   );
 }

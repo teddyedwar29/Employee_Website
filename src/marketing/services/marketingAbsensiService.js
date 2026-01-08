@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/services/apiService";
+import { BACKEND_BASE_URL, API_BASE_URL } from '@/utils/constants';
 
 const getAuthHeader = () => {
   const token = localStorage.getItem("access_token");
