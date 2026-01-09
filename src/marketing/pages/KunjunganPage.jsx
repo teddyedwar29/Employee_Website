@@ -10,11 +10,17 @@ import {
 import Swal from "sweetalert2";
 import { submitKunjungan } from "@/marketing/services/kunjunganService";
 import { handleResponse } from "@/services/apiService";
+import { API_BASE_URL } from "@/utils/constants";
+
+
 
 export default function KunjunganPage() {
+  const getTodayLocalDate = () =>
+    new Date().toLocaleDateString("en-CA");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]); // default hari ini
+  const [selectedDate, setSelectedDate] = useState(getTodayLocalDate()); // default hari ini
   const [previewImage, setPreviewImage] = useState(null);
 
   const [kunjungan, setKunjungan] = useState([]);
@@ -25,6 +31,7 @@ export default function KunjunganPage() {
   const [locationError, setLocationError] = useState(null);
   const [locationStatus, setLocationStatus] = useState("idle");
   const [locationMessage, setLocationMessage] = useState("");
+
 
   const [formData, setFormData] = useState({
     foto: null,
@@ -45,8 +52,8 @@ export default function KunjunganPage() {
       }
 
       const url = date 
-        ? `http://localhost:5000/api/kunjungan-report/AE?tanggal=${date}`
-        : "http://localhost:5000/api/kunjungan-report/AE";
+        ? `${API_BASE_URL}/kunjungan-report/AE?tanggal=${date}`
+        : `${API_BASE_URL}/kunjungan-report/AE`;
 
       const response = await fetch(url, {
         method: "GET",
@@ -78,7 +85,6 @@ export default function KunjunganPage() {
       console.error("Error fetch kunjungan:", err);
       setKunjungan([]);
       setTotalFoto(0);
-      Swal.fire("Error", "Gagal memuat data kunjungan", "error");
     } finally {
       setLoading(false);
     }
@@ -184,7 +190,7 @@ export default function KunjunganPage() {
     );
   });
 
-  const isToday = selectedDate === new Date().toISOString().split("T")[0];
+  const isToday = selectedDate === getTodayLocalDate();
 
   return (
     <>
@@ -258,7 +264,7 @@ export default function KunjunganPage() {
             <button
               onClick={() => {
                 setSearchTerm("");
-                setSelectedDate(new Date().toISOString().split("T")[0]);
+                setSelectedDate(getTodayLocalDate());
               }}
               className="w-full bg-gray-100 hover:bg-gray-200 py-3 rounded-xl text-sm font-medium"
             >

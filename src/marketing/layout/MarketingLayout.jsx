@@ -41,13 +41,18 @@ export default function MarketingLayout() {
       <div
         className={`
           fixed inset-y-0 left-0 z-40 w-56
-          transform bg-white/70 backdrop-blur-xl shadow-xl
+          transform
           transition-transform duration-300
           ${isOpen ? "translate-x-0 fade-in-up" : "-translate-x-full"}
           md:static md:translate-x-0 md:fade-in-up
         `}
       >
-        <MarketingSidebar onNavigate={() => setIsOpen(false)} onLogout={handleLogout} />
+        <MarketingSidebar
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          onNavigate={() => setIsOpen(false)}
+          onLogout={handleLogout}
+        />
       </div>
 
       {/* Backdrop (mobile only) */}

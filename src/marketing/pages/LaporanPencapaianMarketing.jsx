@@ -21,7 +21,10 @@ export default function LaporanPencapaianMarketing({ onMenuClick }) {
   // ======================
   // FILTER TANGGAL
   // ======================
-  const today = new Date().toISOString().slice(0, 10);
+  const getTodayLocalDate = () =>
+    new Date().toLocaleDateString("en-CA");
+
+  const today = getTodayLocalDate();
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
 

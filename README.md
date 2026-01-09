@@ -16,7 +16,6 @@ The React Compiler is not enabled on this template because of its impact on dev 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
 
-
 ```
 Employee_Website
 ├─ .env
@@ -38,9 +37,11 @@ Employee_Website
 │  │  │  ├─ DetailEmployeeModal.jsx
 │  │  │  ├─ EditEmployeeModal.jsx
 │  │  │  ├─ EmployeeResignForm.jsx
-│  │  │  └─ layout
-│  │  │     ├─ EmployeeHeader.jsx
-│  │  │     └─ EmployeeSidebar.jsx
+│  │  │  ├─ layout
+│  │  │  │  ├─ EmployeeHeader.jsx
+│  │  │  │  └─ EmployeeSidebar.jsx
+│  │  │  ├─ OtomaxPivotTable.jsx
+│  │  │  └─ ProfitHarianCard.jsx
 │  │  └─ pages
 │  │     ├─ AbsensiReportPage.jsx
 │  │     ├─ DashboardPage.jsx
@@ -78,8 +79,11 @@ Employee_Website
 │  │     ├─ Input.jsx
 │  │     ├─ Modal.jsx
 │  │     ├─ PageHeader.jsx
+│  │     ├─ Pagination.jsx
 │  │     ├─ Select.jsx
 │  │     └─ Table.jsx
+│  ├─ hooks
+│  │  └─ useCamera.js
 │  ├─ index.css
 │  ├─ main.jsx
 │  ├─ marketing
@@ -92,6 +96,7 @@ Employee_Website
 │  │  │  └─ MarketingSidebar.jsx
 │  │  ├─ pages
 │  │  │  ├─ KunjunganPage.jsx
+│  │  │  ├─ LaporanPencapaianMarketing.jsx
 │  │  │  ├─ MarketingAttendancePage.jsx
 │  │  │  └─ RiwayatAbsensiMarketing.jsx
 │  │  └─ services
@@ -117,10 +122,12 @@ Employee_Website
 │  │  └─ authServices.js
 │  ├─ shared
 │  │  ├─ attendance
+│  │  │  ├─ AttendanceCameraModal.jsx
 │  │  │  └─ TeamAttendanceDashboard.jsx
 │  │  └─ sidebar
 │  │     └─ SidebarItems.jsx
 │  └─ utils
+│     ├─ auth.js
 │     ├─ constants.js
 │     └─ date.js
 └─ vite.config.js

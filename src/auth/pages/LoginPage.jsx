@@ -47,7 +47,7 @@ export default function LoginPage() {
           path = "/it/absensi";
           break;
         case "KETUA":
-          path = "/admin";
+          path = "/admin/dashboard";
           break;
       }
 
