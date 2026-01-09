@@ -1,104 +1,72 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
-import OtomaxPivotTable from "@/admin/components/OtomaxPivotTable";
-import ProfitHarianCard from "@/admin/components/ProfitHarianCard";
-import { API_BASE_URL } from "@/utils/constants";
+import { fetchWithAuth } from "@/services/authServices";
+import { useNavigate } from "react-router-dom";
 
 export default function LaporanPencapaianMarketing({ onMenuClick }) {
+  const navigate = useNavigate();
+
   // ======================
-  // USER LOGIN (MARKETING)
+  // USER
   // ======================
   const userStr = localStorage.getItem("user");
-  const user = userStr ? JSON.parse(userStr) : null;
-  const myUplineCode = user?.id; // contoh: AE0002
+  if (!userStr) {
+    navigate("/login");
+    return null;
+  }
+
+  const user = JSON.parse(userStr);
+  const kodeAE = user.id; // contoh: AE0004
 
   // ======================
-  // DATE (LOCAL TIME)
+  // FILTER TANGGAL
   // ======================
-  const getLocalDate = () => {
-    const now = new Date();
-    const offset = now.getTimezoneOffset();
-    const local = new Date(now.getTime() - offset * 60 * 1000);
-    return local.toISOString().slice(0, 10);
-  };
-
-  const today = getLocalDate();
-
+  const today = new Date().toISOString().slice(0, 10);
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
 
   // ======================
-  // DATA STATE
+  // STATE DATA
   // ======================
-  const [data, setData] = useState([]);
-  const [uplineTotals, setUplineTotals] = useState({});
+  const [uplineTotal, setUplineTotal] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // ======================
-  // FETCH DETAIL (PIVOT)
+  // FETCH TOTAL AE
   // ======================
-  const fetchPivotData = async () => {
+  const fetchTotalUpline = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const url = `${API_BASE_URL}/pivot/laporan/laba?start=${startDate}&end=${endDate}&page=1&limit=50`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Gagal memuat data pivot");
+      const res = await fetchWithAuth(
+        `/api/pivot/laporan/upline?start=${startDate}&end=${endDate}&limit=100`
+      );
+
+      if (!res.ok) throw new Error("Gagal memuat data upline");
 
       const json = await res.json();
 
-      // FILTER HANYA DATA MILIK MARKETING LOGIN
-      const filtered = (json.data || []).filter(
-        (row) => row.kode_upline === myUplineCode
+      const matched = json.data.find(
+        (item) => item.kode_upline === kodeAE
       );
 
-      setData(filtered);
+      setUplineTotal(matched || null);
     } catch (err) {
       console.error(err);
-      setError(err.message);
-      setData([]);
+      setError("Gagal mengambil data pencapaian");
+      setUplineTotal(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // ======================
-  // FETCH TOTAL UPLINE
-  // ======================
-  const fetchUplineTotal = async () => {
-    try {
-      const url = `${API_BASE_URL}/pivot/laporan/upline?start=${startDate}&end=${endDate}`;
-      const res = await fetch(url);
-      const json = await res.json();
-
-      const mine = (json.data || []).find(
-        (item) => item.kode_upline === myUplineCode
-      );
-
-      if (mine) {
-        setUplineTotals({
-          [mine.kode_upline]: Number(mine.total_laba),
-        });
-      } else {
-        setUplineTotals({});
-      }
-    } catch (err) {
-      console.error("Gagal fetch total upline", err);
-      setUplineTotals({});
-    }
-  };
-
-  // ======================
-  // EFFECT
-  // ======================
   useEffect(() => {
-    if (startDate && endDate && myUplineCode) {
-      fetchPivotData();
-      fetchUplineTotal();
+    if (startDate && endDate) {
+      fetchTotalUpline();
     }
-  }, [startDate, endDate, myUplineCode]);
+  }, [startDate, endDate]);
 
   // ======================
   // RENDER
@@ -112,7 +80,7 @@ export default function LaporanPencapaianMarketing({ onMenuClick }) {
       />
 
       {/* FILTER TANGGAL */}
-      <div className="bg-white rounded-xl border p-4 flex flex-wrap gap-4 items-end">
+      <div className="bg-white rounded-xl border p-4 flex gap-4 flex-wrap">
         <div>
           <label className="block text-sm text-gray-600 mb-1">
             Tanggal Mulai
@@ -121,7 +89,7 @@ export default function LaporanPencapaianMarketing({ onMenuClick }) {
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]"
+            className="px-4 py-2 border rounded-lg"
           />
         </div>
 
@@ -133,18 +101,10 @@ export default function LaporanPencapaianMarketing({ onMenuClick }) {
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]"
+            className="px-4 py-2 border rounded-lg"
           />
         </div>
       </div>
-
-
-      {/* LOADING */}
-      {loading && (
-        <div className="text-center py-10 text-gray-600">
-          Memuat laporan pencapaian...
-        </div>
-      )}
 
       {/* ERROR */}
       {error && (
@@ -153,13 +113,33 @@ export default function LaporanPencapaianMarketing({ onMenuClick }) {
         </div>
       )}
 
-      {/* TABLE */}
-      {!loading && !error && (
-        <div className="bg-white rounded-xl border p-4">
-          <OtomaxPivotTable
-            data={data}
-            uplineTotals={uplineTotals}
-          />
+      {/* TABLE TOTAL AE */}
+      {!loading && uplineTotal && (
+        <div className="bg-white rounded-xl border overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead className="bg-[#C65911] text-white">
+              <tr>
+                <th className="border px-4 py-2 text-left">Kode Upline</th>
+                <th className="border px-4 py-2 text-left">Nama</th>
+                <th className="border px-4 py-2 text-right">Total Laba</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="bg-[#FFF3E0] font-bold">
+                <td className="border px-4 py-2">{uplineTotal.kode_upline}</td>
+                <td className="border px-4 py-2">{uplineTotal.nama_upline}</td>
+                <td className="border px-4 py-2 text-right">
+                  {Number(uplineTotal.total_laba).toLocaleString("id-ID")}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {!loading && !uplineTotal && (
+        <div className="text-gray-500">
+          Tidak ada data pencapaian pada rentang tanggal ini
         </div>
       )}
     </div>
