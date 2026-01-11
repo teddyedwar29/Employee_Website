@@ -257,38 +257,21 @@ export default function EmployeeDashboard() {
   );
 
   const DEPARTMENTS_CONFIG = useMemo(() => {
-      const config = {};
+    const config = {};
 
-      // 1. Inisialisasi semua jabatan dari API (jabatanOptions)
-      (jabatanOptions || []).forEach((jab, index) => {
-        const name = jab.nama_jabatan || jab.nama;
-        if (!name) return;
+    (departemenOptions || []).forEach((dept, index) => {
+      const name = dept.nama_departemen || dept.nama;
+      if (!name) return;
 
-        config[name] = {
-          count: 0,
-          color: DEPARTMENT_COLORS[index % DEPARTMENT_COLORS.length],
-        };
-      });
+      config[name] = {
+        count: dept.jumlah_karyawan ?? 0,
+        color: DEPARTMENT_COLORS[index % DEPARTMENT_COLORS.length],
+      };
+    });
 
-      // 2. Hitung jumlah karyawan per jabatan
-      (employees || []).forEach((emp) => {
-        const name = emp.jabatan?.nama_jabatan || emp.jabatan?.nama;
-        if (!name) return;
+    return config;
+  }, [departemenOptions]);
 
-        // kalau ada jabatan di karyawan tapi belum ada di config, tambahin
-        if (!config[name]) {
-          const index = Object.keys(config).length;
-          config[name] = {
-            count: 0,
-            color: DEPARTMENT_COLORS[index % DEPARTMENT_COLORS.length],
-          };
-        }
-
-        config[name].count += 1;
-      });
-
-      return config;
-}, [employees, jabatanOptions]);
 
 
 

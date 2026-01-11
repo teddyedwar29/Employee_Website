@@ -252,7 +252,7 @@ export default function KunjunganPage() {
           {/* Tombol Tambah */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="w-full bg-[#800020] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#900030] transition"
+            className="w-full bg-[#9c495e] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#900030] transition"
           >
             + Tambah Kunjungan
           </button>

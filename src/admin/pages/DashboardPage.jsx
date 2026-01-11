@@ -2,6 +2,7 @@ import React from 'react';
 import { UserCircle, Calendar, Award, Users as UsersIcon, Menu, BarChart3 } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 
+
 const getJabatanName = (id, jabatanOptions) => {
   if (!jabatanOptions) return '...';
   const jabatan = jabatanOptions.find(j => j.id == id);
@@ -237,23 +238,32 @@ export default function DashboardPage({
 
           {/* Departments list */}
           <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl">
-            <h3 className="text-sm font-bold text-gray-800 mb-4">Jabatan</h3>
+            <h3 className="text-sm font-bold text-gray-800 mb-4">
+              Departemen
+            </h3>
             <div className="space-y-3">
               {Object.entries(departments).map(([dept, info], index) => (
                 <div key={dept} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-8 h-8 bg-gradient-to-br ${info.color || 'from-gray-400 to-gray-600'} rounded-lg flex items-center justify-center text-white text-xs font-bold`}
+                      className={`w-8 h-8 bg-gradient-to-br ${
+                        info.color || "from-gray-400 to-gray-600"
+                      } rounded-lg flex items-center justify-center text-white text-xs font-bold`}
                     >
                       {index + 1}
                     </div>
-                    <span className="text-sm text-gray-700">{dept}</span>
+                    <span className="text-sm text-gray-700">
+                      {dept}
+                    </span>
                   </div>
-                  <span className="text-sm font-bold text-gray-800">{info.count}</span>
+                  <span className="text-sm font-bold text-gray-800">
+                    {info.count}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
+
 
           {/* Action Card */}
           <div className="bg-gradient-to-br from-teal-500 to-blue-600 rounded-3xl p-6 shadow-xl text-white relative overflow-hidden">

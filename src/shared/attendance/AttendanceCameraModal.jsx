@@ -4,8 +4,10 @@ import useCamera from "@/hooks/useCamera";
 export default function AttendanceCameraModal({
   open,
   title,
+  embedded = false,
   submitLabel,
   submitColor = "green",
+  onCapture,
   onSubmit,
   onClose,
 }) {
@@ -18,7 +20,7 @@ export default function AttendanceCameraModal({
     dataURLtoFile,
     setPreviewImage,
     stopCamera,
-  } = useCamera(!!open);
+  } = useCamera(embedded || !!open);
 
   if (!open) return null;
 
@@ -38,6 +40,52 @@ export default function AttendanceCameraModal({
     red: "bg-red-600 hover:bg-red-700",
     orange: "bg-orange-500 hover:bg-orange-600",
   };
+
+  // ===== MODE EMBEDDED (UNTUK IZIN) =====
+  if (embedded) {
+    return (
+      <div className="mb-4">
+        <div className="mb-4 text-center">
+          {previewImage ? (
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="mx-auto max-h-64 rounded-xl object-cover"
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              className="mx-auto max-h-64 rounded-xl object-cover"
+              style={{ transform: "scaleX(-1)" }}
+              autoPlay
+              muted
+              playsInline
+            />
+          )}
+          <canvas ref={canvasRef} className="hidden" />
+        </div>
+
+        {!previewImage ? (
+          <button
+            type="button"
+            onClick={takePhoto}
+            className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700"
+          >
+            Ambil Foto
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onSubmit(dataURLtoFile(previewImage, "izin.jpg"))}
+            className="w-full bg-[#800020] text-white py-3 rounded-xl font-bold hover:bg-[#900030]"
+          >
+            Gunakan Foto
+          </button>
+        )}
+      </div>
+    );
+  }
+
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

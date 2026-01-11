@@ -15,6 +15,9 @@ export default function TeamAttendanceDashboard({
   onAbsenKeluar,  
   clockInTime,
   clockOutTime,
+  todayHasIzin,
+  onIzin,
+
 }) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -52,13 +55,38 @@ export default function TeamAttendanceDashboard({
       day: "numeric",
     });
 
+  const parseTimeToDate = (time) => {
+    if (!time) return null;
+
+    // sudah Date
+    if (time instanceof Date) return time;
+
+    // string "HH:mm:ss"
+    if (typeof time === "string") {
+      const [h, m, s] = time.split(":").map(Number);
+      const d = new Date();
+      d.setHours(h, m, s || 0, 0);
+      return d;
+    }
+
+    return null;
+  };
+
   const getWorkDuration = () => {
-    if (!clockInTime || !clockOutTime) return "-";
-    const diff = clockOutTime - clockInTime;
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
+    const inTime = parseTimeToDate(clockInTime);
+    const outTime = parseTimeToDate(clockOutTime);
+
+    if (!inTime || !outTime) return "-";
+
+    const diffMs = outTime - inTime;
+    if (diffMs <= 0) return "-";
+
+    const h = Math.floor(diffMs / 3600000);
+    const m = Math.floor((diffMs % 3600000) / 60000);
+
     return `${h}j ${m}m`;
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-100 p-8">
@@ -86,7 +114,9 @@ export default function TeamAttendanceDashboard({
           {/* Status */}
           <div
             className={`rounded-3xl p-6 text-white shadow-xl ${
-              attendanceStatus === "in"
+              attendanceStatus === "izin"
+                ? "bg-blue-500"
+                : attendanceStatus === "in"
                 ? "bg-green-500"
                 : attendanceStatus === "out"
                 ? "bg-orange-500"
@@ -95,13 +125,16 @@ export default function TeamAttendanceDashboard({
           >
             <p className="text-sm">Status Absensi</p>
             <p className="text-2xl font-bold">
-              {attendanceStatus === "in"
+              {attendanceStatus === "izin"
+                ? "Sedang Izin"
+                : attendanceStatus === "in"
                 ? "Sudah Absen Masuk"
                 : attendanceStatus === "out"
                 ? "Sudah Absen Keluar"
                 : "Belum Absen"}
             </p>
           </div>
+
 
           {/* Location */}
           <div className="bg-white rounded-3xl p-6 shadow-xl">
@@ -116,7 +149,7 @@ export default function TeamAttendanceDashboard({
         {/* RIGHT */}
         <div className="col-span-12 lg:col-span-8 space-y-6">
           {/* Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Absen Masuk */}
             <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
               <LogIn className="mx-auto text-green-600 mb-4" size={36} />
@@ -124,9 +157,9 @@ export default function TeamAttendanceDashboard({
 
               <button
                   onClick={onAbsenMasuk}
-                  disabled={attendanceStatus !== null}
+                  disabled={attendanceStatus !== null || todayHasIzin}
                   className={`w-full py-3 rounded-xl text-white font-bold ${
-                    attendanceStatus === null
+                    attendanceStatus === null && !todayHasIzin
                       ? "bg-green-500 hover:bg-green-600"
                       : "bg-gray-300 cursor-not-allowed"
                   }`}
@@ -151,6 +184,25 @@ export default function TeamAttendanceDashboard({
               >
                 Absen Keluar
               </button>
+            </div>
+
+            {/* Izin */}
+            <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
+              <Calendar className="mx-auto text-blue-600 mb-4" size={36} />
+              <h3 className="text-xl font-bold mb-4">Izin</h3>
+
+            <button
+              onClick={onIzin}
+              disabled={attendanceStatus !== null}
+              className={`w-full py-3 rounded-xl font-bold ${
+                attendanceStatus === null
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              Ajukan Izin
+            </button>
+
             </div>
           </div>
 
