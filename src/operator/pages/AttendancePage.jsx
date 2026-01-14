@@ -141,14 +141,7 @@ export default function AttendancePage() {
 
 
 
-  // =========================
-  // DUMMY EMPLOYEE (NANTI JWT)
-  // =========================
-  const employee = {
-    id: "EMP001",
-    nama: "Budi Santoso",
-    jabatan: "OPERATOR",
-  };
+
 
   // =========================
   // HANDLER ABSENSI
@@ -216,6 +209,15 @@ export default function AttendancePage() {
   } = useCamera(isIzinOpen);
 
 
+  const userStr = localStorage.getItem("user");
+  const user = userStr ? JSON.parse(userStr) : null;
+
+  const employee = {
+    id: user?.id || "",
+    nama: user?.id?.toUpperCase() || "OPERATOR",
+    jabatan: "OPERATOR",
+  };
+
   // =========================
   // RENDER
   // =========================
@@ -237,7 +239,7 @@ export default function AttendancePage() {
 
 
       <AttendanceCameraModal
-        open={modalType}
+        open={!!modalType}
         title={modalType === "in" ? "Absen Masuk" : "Absen Keluar"}
         submitLabel={modalType === "in" ? "Absen Masuk" : "Absen Keluar"}
         submitColor={modalType === "in" ? "green" : "red"}

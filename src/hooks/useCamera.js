@@ -9,14 +9,19 @@ export default function useCamera(active) {
 
   const startCamera = useCallback(async () => {
     try {
+      // ⛔ JANGAN start ulang kalau sudah ada stream
+      if (streamRef.current) return;
+
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
       });
+
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
+
       streamRef.current = mediaStream;
-    } catch (err) {
+    } catch {
       Swal.fire(
         "Error",
         "Gagal akses kamera. Izinkan akses kamera di browser.",
@@ -24,6 +29,7 @@ export default function useCamera(active) {
       );
     }
   }, []);
+
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -66,9 +72,19 @@ export default function useCamera(active) {
 
   // otomatis start / stop
   useEffect(() => {
-    if (active) startCamera();
-    return () => stopCamera();
+    if (!active) {
+      stopCamera();
+      return;
+    }
+
+    startCamera();
+
+    // cleanup hanya saat unmount
+    return () => {
+      stopCamera();
+    };
   }, [active, startCamera, stopCamera]);
+
 
   return {
     videoRef,

@@ -3,7 +3,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import { fetchWithAuth } from "@/services/authServices";
 import { useNavigate } from "react-router-dom";
 
-export default function LaporanPencapaianMarketing({ onMenuClick }) {
+export default function LaporanPencapaianMarketing() {
   const navigate = useNavigate();
 
   // ======================
@@ -16,7 +16,7 @@ export default function LaporanPencapaianMarketing({ onMenuClick }) {
   }
 
   const user = JSON.parse(userStr);
-  const kodeAE = user.id; // contoh: AE0004
+  const kodeAE = user.id.toUpperCase(); // contoh: AE0004
 
   // ======================
   // FILTER TANGGAL
@@ -52,7 +52,8 @@ export default function LaporanPencapaianMarketing({ onMenuClick }) {
       const json = await res.json();
 
       const matched = json.data.find(
-        (item) => item.kode_upline === kodeAE
+        (item) =>
+          item.kode_upline?.toUpperCase() === kodeAE
       );
 
       setUplineTotal(matched || null);
@@ -78,8 +79,7 @@ export default function LaporanPencapaianMarketing({ onMenuClick }) {
     <div className="p-6 lg:p-8 space-y-6">
       <PageHeader
         title="Laporan Pencapaian Marketing"
-        description="Laporan laba Otomax berdasarkan pencapaian Anda"
-        onMenuClick={onMenuClick}
+        description="Data Realtime"
       />
 
       {/* FILTER TANGGAL */}
@@ -124,7 +124,7 @@ export default function LaporanPencapaianMarketing({ onMenuClick }) {
               <tr>
                 <th className="border px-4 py-2 text-left">Kode Upline</th>
                 <th className="border px-4 py-2 text-left">Nama</th>
-                <th className="border px-4 py-2 text-right">Total Laba</th>
+                <th className="border px-4 py-2 text-right">Pencapaian</th>
               </tr>
             </thead>
             <tbody>
