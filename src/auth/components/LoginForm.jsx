@@ -50,7 +50,7 @@ export default function LoginForm({ onSubmit }) {
                 onChange={(e) => setEmployeeId(e.target.value)}
                 onKeyDown={handleKeyPress}
                 className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-[#7a0c2e]"
-                placeholder="Contoh: HR-0001"
+                placeholder="Contoh: AE0000"
               />
             </div>
 

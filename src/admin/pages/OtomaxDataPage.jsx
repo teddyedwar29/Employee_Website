@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import OtomaxPivotTable from "@/admin/components/OtomaxPivotTable";
 import PageHeader from "@/components/ui/PageHeader";
-import { API_BASE_URL } from "@/utils/constants";
+import { OTOMAX_API_BASE_URL } from "@/utils/constants";
 import ProfitHarianCard from "@/admin/components/ProfitHarianCard";
 
 export default function OtomaxDataPage({ onMenuClick }) {
@@ -32,6 +32,7 @@ export default function OtomaxDataPage({ onMenuClick }) {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
   // ======================
   // FETCH DATA (PIVOT)
@@ -41,8 +42,10 @@ export default function OtomaxDataPage({ onMenuClick }) {
     setError(null);
 
     try {
-      const url = `${API_BASE_URL}/pivot/laporan/laba` +
-        `?start=${startDate}&end=${endDate}&page=${page}&limit=${limit}`;
+      const url = `${OTOMAX_API_BASE_URL}/pivot/laporan/laba` +
+        `?start=${startDate}&end=${endDate}&page=${page}&limit=${limit}` +
+        (search ? `&search=${encodeURIComponent(search)}` : "");
+
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Gagal memuat data pivot");
@@ -64,7 +67,7 @@ export default function OtomaxDataPage({ onMenuClick }) {
   // fetch data total upline
   const fetchUplineTotals = async () => {
   try {
-    const url = `${API_BASE_URL}/pivot/laporan/upline?start=${startDate}&end=${endDate}`;
+    const url = `${OTOMAX_API_BASE_URL}/pivot/laporan/upline?start=${startDate}&end=${endDate}`;
     const res = await fetch(url);
     const json = await res.json();
 
@@ -90,7 +93,7 @@ export default function OtomaxDataPage({ onMenuClick }) {
   // Reset ke page 1 kalau tanggal berubah
   useEffect(() => {
     setPage(1);
-  }, [startDate, endDate]);
+  }, [startDate, endDate, search]);
 
   // Fetch data saat filter / page berubah
   useEffect(() => {
@@ -98,7 +101,7 @@ export default function OtomaxDataPage({ onMenuClick }) {
       fetchData();
       fetchUplineTotals();
     }
-  }, [startDate, endDate, page]);
+  }, [startDate, endDate, page, search]);
 
   // ======================
   // RENDER
@@ -146,6 +149,20 @@ export default function OtomaxDataPage({ onMenuClick }) {
             className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]"
           />
         </div>
+
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">
+            Cari AE / AK
+          </label>
+          <input
+            type="text"
+            placeholder="Contoh: AE0002 atau AK0041"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]"
+          />
+        </div>
+
       </div>
 
       {/* LOADING */}

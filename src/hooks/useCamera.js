@@ -1,13 +1,13 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Swal from "sweetalert2";
 
 export default function useCamera(active) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [previewImage, setPreviewImage] = useState(null);
-  const [stream, setStream] = useState(null);
+  const streamRef = useRef(null);
 
-  const startCamera = async () => {
+  const startCamera = useCallback(async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
@@ -15,7 +15,7 @@ export default function useCamera(active) {
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
-      setStream(mediaStream);
+      streamRef.current = mediaStream;
     } catch (err) {
       Swal.fire(
         "Error",
@@ -23,16 +23,16 @@ export default function useCamera(active) {
         "error"
       );
     }
-  };
+  }, []);
 
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
     }
-  };
+  }, []);
 
-  const takePhoto = () => {
+  const takePhoto = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
 
     const video = videoRef.current;
@@ -45,14 +45,14 @@ export default function useCamera(active) {
     const dataUrl = canvas.toDataURL("image/jpeg");
     setPreviewImage(dataUrl);
     stopCamera();
-  };
+  }, [stopCamera]);
 
-  const retakePhoto = () => {
+  const retakePhoto = useCallback(() => {
     setPreviewImage(null);
     startCamera();
-  };
+  }, [startCamera]);
 
-  const dataURLtoFile = (dataurl, filename) => {
+  const dataURLtoFile = useCallback((dataurl, filename) => {
     const arr = dataurl.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
     const bstr = atob(arr[1]);
@@ -62,13 +62,13 @@ export default function useCamera(active) {
     while (n--) u8arr[n] = bstr.charCodeAt(n);
 
     return new File([u8arr], filename, { type: mime });
-  };
+  }, []);
 
   // otomatis start / stop
   useEffect(() => {
     if (active) startCamera();
     return () => stopCamera();
-  }, [active]);
+  }, [active, startCamera, stopCamera]);
 
   return {
     videoRef,

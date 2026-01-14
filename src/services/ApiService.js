@@ -46,7 +46,7 @@ export const handleResponse = async (response, options = {}) => {
 export const createEmployee = async (employeeData) => {
   console.log('Mengirim POST ke /api/karyawan dengan data:', employeeData);
   
-  const response = await fetch(`${API_BASE_URL}/karyawan`, { 
+  const response = await fetch(`${API_BASE_URL}/karyawan/`, { 
     method: 'POST',
     headers: { 
       'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ export const getJabatanOptions = async () => {
 // Create Jabatan 
 export const createJabatan = async (jabatanData) => {
   console.log('POST /api/jabatan =>', jabatanData);
-  const response = await fetch(`${API_BASE_URL}/jabatan`, {
+  const response = await fetch(`${API_BASE_URL}/jabatan/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ export const createStatusKerja = async (data) => {
     nama_status: data.nama_status,
   };
 
-  const response = await fetch(`${API_BASE_URL}/status-kerja`, {
+  const response = await fetch(`${API_BASE_URL}/status-kerja/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -267,7 +267,7 @@ export const createAgama = async (data) => {
     nama_agama: data.nama_agama,
   };
 
-  const response = await fetch(`${API_BASE_URL}/agama`, {
+  const response = await fetch(`${API_BASE_URL}/agama/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -305,7 +305,7 @@ export const getDepartemenOptions = async () => {
 };
 
 export const createDepartemen = async (data) => {
-  const res = await fetch(`${API_BASE_URL}/departemen`, {
+  const res = await fetch(`${API_BASE_URL}/departemen/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -342,7 +342,7 @@ export const getKondisiAkunOptions = async () => {
 };
 
 export const createKondisiAkun = async (data) => {
-  const res = await fetch(`${API_BASE_URL}/kondisi-akun`, {
+  const res = await fetch(`${API_BASE_URL}/kondisi-akun/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -388,7 +388,7 @@ export const createGajiSetting = async (payload) => {
   // { departemen_id, jabatan_id, status_kerja_id, gaji_pokok, tunjangan_pokok,
   //   tunjangan_opsional?: [{keterangan, jumlah}], potongan_opsional?: [{keterangan, jumlah}] }
   console.log('POST /api/gaji-setting =>', payload);
-  const res = await fetch(`${API_BASE_URL}/gaji-setting`, {
+  const res = await fetch(`${API_BASE_URL}/gaji-setting/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

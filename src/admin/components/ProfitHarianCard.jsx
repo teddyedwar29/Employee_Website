@@ -1,10 +1,25 @@
 import { useEffect, useState } from "react";
-import { DollarSign } from "lucide-react";
-import { API_BASE_URL } from "@/utils/constants";
+import { RefreshCw  } from "lucide-react";
+import { OTOMAX_API_BASE_URL } from "@/utils/constants";
 
 export default function ProfitHarianCard({ date }) {
   const [totalLaba, setTotalLaba] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [showUpdated, setShowUpdated] = useState(false);
+  const [updatedAt, setUpdatedAt] = useState("");
+
+  const formatDateTime = () => {
+    return new Intl.DateTimeFormat("id-ID", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }).format(new Date());
+  };
+
 
   // Format Rupiah
   const formatRupiah = (number) =>
@@ -18,7 +33,7 @@ export default function ProfitHarianCard({ date }) {
     try {
       setLoading(true);
       const res = await fetch(
-        `${API_BASE_URL}/pivot/laporan/harian?start=${date}&end=${date}`
+        `${OTOMAX_API_BASE_URL}/pivot/laporan/harian?start=${date}&end=${date}`
       );
       const json = await res.json();
 
@@ -27,6 +42,10 @@ export default function ProfitHarianCard({ date }) {
       } else {
         setTotalLaba(0);
       }
+
+      // ⏱️ simpan waktu update
+      setUpdatedAt(formatDateTime());
+
     } catch (err) {
       console.error("Gagal fetch laba harian", err);
       setTotalLaba(0);
@@ -34,6 +53,8 @@ export default function ProfitHarianCard({ date }) {
       setLoading(false);
     }
   };
+
+
 
   useEffect(() => {
     if (date) fetchProfitHarian();
@@ -62,11 +83,29 @@ export default function ProfitHarianCard({ date }) {
           <p className="text-emerald-100 text-xs mt-2">
             Berdasarkan transaksi hari ini ({date})
           </p>
+
+          {updatedAt && (
+            <p className="text-emerald-200 text-[11px] mt-1 italic">
+              Terakhir diperbarui: {updatedAt}
+            </p>
+          )}
         </div>
 
-        <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-sm">
-          <DollarSign className="w-10 h-10" />
-        </div>
+        <button
+          onClick={fetchProfitHarian}
+          disabled={loading}
+          title="Refresh laba hari ini"
+          className={`
+            bg-white/20 p-4 rounded-2xl backdrop-blur-sm
+            transition hover:bg-white/30
+            disabled:opacity-50 disabled:cursor-not-allowed
+          `}
+        >
+          <RefreshCw
+            className={`w-10 h-10 ${loading ? "animate-spin" : ""}`}
+          />
+        </button>
+
       </div>
 
       {loading && (
@@ -74,6 +113,14 @@ export default function ProfitHarianCard({ date }) {
           <div className="h-full bg-white animate-pulse" />
         </div>
       )}
+
+      {showUpdated && (
+        <div className="absolute top-4 right-4 bg-black/75 text-white text-sm px-4 py-2 rounded-lg shadow-lg animate-fade-in">
+          ✅ Data diperbarui<br />
+          <span className="text-xs text-gray-300">{updatedAt}</span>
+        </div>
+      )}
+
     </div>
   );
 }
