@@ -1,5 +1,5 @@
 import { handleResponse } from "@/services/apiService";
-import { API_BASE_URL, BACKEND_BASE_URL } from "@/utils/constants";
+import { API_BASE_URL, BACKEND_BASE_URL, OTOMAX_API_BASE_URL } from "@/utils/constants";
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -37,6 +37,29 @@ export const fetchWithAuth = async (url, options = {}) => {
   }
     return response;
   };
+
+// 🔥 KHUSUS OTOMAX / MSSQL
+export const fetchWithAuthOtomax = async (url, options = {}) => {
+  const token = localStorage.getItem("access_token");
+
+  const headers = new Headers(options.headers || {});
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const response = await fetch(`${OTOMAX_API_BASE_URL}${url}`, {
+    ...options,
+    headers,
+  });
+
+  if (response.status === 401) {
+    localStorage.removeItem("access_token");
+    window.location.href = "/login";
+    throw new Error("Unauthorized");
+  }
+
+  return response;
+};
 
 // =======================
 // LOGIN

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
-import { fetchWithAuth } from "@/services/authServices";
+import { fetchWithAuthOtomax } from "@/services/authServices";
 import { useNavigate } from "react-router-dom";
 
 export default function LaporanPencapaianMarketing() {
@@ -43,8 +43,8 @@ export default function LaporanPencapaianMarketing() {
     setError(null);
 
     try {
-      const res = await fetchWithAuth(
-        `/api/pivot/laporan/upline?start=${startDate}&end=${endDate}&limit=100`
+      const res = await fetchWithAuthOtomax(
+        `/pivot/laporan/upline?start=${startDate}&end=${endDate}&limit=100`
       );
 
       if (!res.ok) throw new Error("Gagal memuat data upline");
