@@ -24,7 +24,7 @@ Employee_Website
 ├─ package-lock.json
 ├─ package.json
 ├─ public
-│  └─ vite.svg
+│  └─ alaska.png
 ├─ README.md
 ├─ src
 │  ├─ admin

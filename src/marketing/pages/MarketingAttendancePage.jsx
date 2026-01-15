@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { X, Camera } from "lucide-react";
+import { X } from "lucide-react";
 import TeamAttendanceDashboard from "@/shared/attendance/TeamAttendanceDashboard";
 import AttendanceCameraModal from "@/shared/attendance/AttendanceCameraModal";
 import { API_BASE_URL } from "@/utils/constants";
@@ -16,8 +16,6 @@ import { handleResponse } from "@/services/apiService";
 import { isToday } from "@/utils/date";
 
 export default function MarketingAttendancePage() {
-
-
 
   const [izinForm, setIzinForm] = useState({
    foto: null,
@@ -43,6 +41,9 @@ export default function MarketingAttendancePage() {
   const [loading, setLoading] = useState(false);
 
   const [hasCheckedIzin, setHasCheckedIzin] = useState(false);
+  const [izinTanggal, setIzinTanggal] = useState(
+    new Date().toLocaleDateString("en-CA")
+  );
 
   // =========================
   // FETCH ABSENSI HARI INI
@@ -249,11 +250,17 @@ const handleSubmitIzin = async () => {
     return;
   }
 
+  if (!izinTanggal) {
+    Swal.fire("Error", "Tanggal izin wajib dipilih", "warning");
+    return;
+  }
+
   const file = dataURLtoFile(previewImage, "izin.jpg");
 
   const formData = new FormData();
   formData.append("foto", file);
   formData.append("keterangan", izinKeterangan);
+  formData.append("tanggal", izinTanggal);
 
   const token = localStorage.getItem("access_token");
 
@@ -373,6 +380,7 @@ const handleSubmitIzin = async () => {
               <button onClick={() => {
                 setIsIzinOpen(false);
                 setIzinKeterangan("");
+                setIzinTanggal(new Date().toLocaleDateString("en-CA"));
               }}>
                 <X size={24} />
               </button>
@@ -425,6 +433,20 @@ const handleSubmitIzin = async () => {
                 * Foto selfie wajib diambil
               </p>
             )}
+
+            {/* ===== TANGGAL IZIN ===== */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Tanggal Izin
+              </label>
+              <input
+                type="date"
+                value={izinTanggal}
+                min={new Date().toLocaleDateString("en-CA")}
+                onChange={(e) => setIzinTanggal(e.target.value)}
+                className="w-full border p-3 rounded-xl"
+              />
+            </div>
 
             {/* ===== KETERANGAN ===== */}
             <textarea
