@@ -4,13 +4,13 @@ import { X, Camera } from "lucide-react";
 import TeamAttendanceDashboard from "@/shared/attendance/TeamAttendanceDashboard";
 import AttendanceCameraModal from "@/shared/attendance/AttendanceCameraModal";
 import { API_BASE_URL } from "@/utils/constants";
-
 import { getMyAbsensi } from "@/services/absensiReportService";
 import useCamera from "@/hooks/useCamera";
 import {
   absenMasukMarketing,
   absenKeluarMarketing,
 } from "@/marketing/services/marketingAbsensiService";
+
 
 import { handleResponse } from "@/services/apiService";
 import { isToday } from "@/utils/date";
@@ -47,14 +47,18 @@ export default function MarketingAttendancePage() {
   // =========================
   // FETCH ABSENSI HARI INI
   // =========================
-useEffect(() => {
-  fetchIzinHariIni();
-  fetchKunjungan();
-}, []);
+  useEffect(() => {
+    fetchIzinHariIni();
+    fetchKunjungan();
+  }, []);
 
-useEffect(() => {
-  fetchAbsensiHariIni();
-}, [hasCheckedIzin]);
+  useEffect(() => {
+    fetchAbsensiHariIni();
+  }, [hasCheckedIzin]);
+
+  useEffect(() => {
+    fetchRingkasanHariIni();
+  }, []);
 
 
 
@@ -96,6 +100,36 @@ useEffect(() => {
       console.error("Gagal fetch absensi:", err);
     }
   };
+
+
+  const fetchRingkasanHariIni = async () => {
+    try {
+      const res = await getMyAbsensi();
+
+      if (!res?.success || !Array.isArray(res.data)) return;
+
+      const today = new Date().toLocaleDateString("en-CA");
+
+      const todayAbsensi = res.data.find(
+        (item) => item.tanggal === today
+      );
+
+      if (!todayAbsensi) return;
+
+      // 🔥 SET DATA DARI API
+      setClockInTime(todayAbsensi.jam_in || null);
+      setClockOutTime(todayAbsensi.jam_out || null);
+
+      if (todayAbsensi.jam_out) {
+        setAttendanceStatus("out");
+      } else if (todayAbsensi.jam_in) {
+        setAttendanceStatus("in");
+      }
+    } catch (err) {
+      console.error("Gagal fetch ringkasan hari ini:", err);
+    }
+  };
+
 
 
 

@@ -409,3 +409,24 @@ export const deleteGajiSetting = async (id) => {
   const res = await fetch(`${API_BASE_URL}/gaji-setting/${id}`, { method: 'DELETE' });
   return handleResponse(res);
 };
+
+// ABSENSI ME
+export const getAbsensiHariIni = async () => {
+  const response = await fetch(`${API_BASE_URL}/absensi/report/me`);
+  return handleResponse(response);
+};
+
+// =======================
+// IZIN (ME)
+// =======================
+export const getMyIzinHistory = async () => {
+  const token = localStorage.getItem("access_token");
+
+  const response = await fetch(`${API_BASE_URL}/izin/my-history`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return handleResponse(response);
+};

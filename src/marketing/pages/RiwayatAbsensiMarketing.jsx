@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { getMyAbsensi } from "@/services/absensiReportService";
+import { getMyIzinHistory } from "@/services/ApiService";
+import { Calendar, Clock, Timer, FileText } from "lucide-react";
 import { BACKEND_BASE_URL } from "@/utils/constants";
 
 export default function RiwayatAbsensiMarketing() {
@@ -11,10 +13,16 @@ export default function RiwayatAbsensiMarketing() {
   // Filter tanggal
   const [tanggalMulai, setTanggalMulai] = useState("");
   const [tanggalAkhir, setTanggalAkhir] = useState("");
+  const [izinHistory, setIzinHistory] = useState([]);
+  const [activeTab, setActiveTab] = useState("absensi");
 
   useEffect(() => {
     fetchRiwayatAbsensi();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "izin") fetchRiwayatIzin();
+  }, [activeTab]);
 
   const fetchRiwayatAbsensi = async () => {
     setLoading(true);
@@ -36,6 +44,19 @@ export default function RiwayatAbsensiMarketing() {
       Swal.fire("Error", "Gagal memuat riwayat absensi", "error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRiwayatIzin = async () => {
+    try {
+      const res = await getMyIzinHistory();
+      if (res.success && Array.isArray(res.data)) {
+        setIzinHistory(res.data);
+      } else {
+        setIzinHistory([]);
+      }
+    } catch {
+      setIzinHistory([]);
     }
   };
 
@@ -104,7 +125,7 @@ export default function RiwayatAbsensiMarketing() {
               type="date"
               value={tanggalMulai}
               onChange={(e) => setTanggalMulai(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#800020] focus:border-[#800020]"
             />
           </div>
           <div>
@@ -113,7 +134,7 @@ export default function RiwayatAbsensiMarketing() {
               type="date"
               value={tanggalAkhir}
               onChange={(e) => setTanggalAkhir(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#800020] focus:border-[#800020]"
             />
           </div>
           <div className="flex items-end">
@@ -130,66 +151,224 @@ export default function RiwayatAbsensiMarketing() {
         </div>
       </div>
 
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+        <div className="flex border-b">
+          <button
+            onClick={() => setActiveTab("absensi")}
+            className={`flex items-center gap-2 px-6 py-4 font-medium ${
+              activeTab === "absensi"
+                ? "text-[#800020] border-b-2 border-[#800020]"
+                : "text-gray-600"
+            }`}
+          >
+            <Calendar size={18} />
+            Riwayat Absensi
+          </button>
+
+          <button
+            onClick={() => setActiveTab("izin")}
+            className={`flex items-center gap-2 px-6 py-4 font-medium ${
+              activeTab === "izin"
+                ? "text-[#800020] border-b-2 border-[#800020]"
+                : "text-gray-600"
+            }`}
+          >
+            <FileText size={18} />
+            Riwayat Izin
+          </button>
+        </div>
+      </div>
+
       {/* LOADING / EMPTY STATE */}
-      {loading ? (
-        <div className="text-center py-10">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-          <p className="mt-4 text-gray-600">Memuat riwayat...</p>
-        </div>
-      ) : filteredRiwayat.length === 0 ? (
-        <div className="text-center py-10 bg-gray-50 rounded-xl">
-          <p className="text-gray-500">Tidak ada riwayat absensi pada rentang tanggal ini</p>
-        </div>
-      ) : (
+      {activeTab === "absensi" && (
         <>
-          {/* DESKTOP - TABEL */}
-          <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+        {loading ? (
+          <div className="text-center py-10">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#800020]"></div>
+            <p className="mt-4 text-gray-600">Memuat riwayat...</p>
+          </div>
+        ) : filteredRiwayat.length === 0 ? (
+          <div className="text-center py-10 bg-gray-50 rounded-xl">
+            <p className="text-gray-500">Tidak ada riwayat absensi pada rentang tanggal ini</p>
+          </div>
+        ) : (
+          <>
+            {/* DESKTOP VIEW - TABEL (Hidden di mobile) */}
+            <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-6 py-4 text-center text-sm font-medium text-gray-700 w-12">
+                        No
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Tanggal</th>
+                      <th className="px-6 py-4 text-center text-sm font-medium text-gray-700">Foto Absen Masuk</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Jam Masuk</th>
+                      <th className="px-6 py-4 text-center text-sm font-medium text-gray-700">Foto Absen Keluar</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Jam Keluar</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Durasi Kerja</th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {filteredRiwayat.map((item, index) => (
+                      <tr key={index} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 text-center text-sm text-gray-600">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900 font-medium">
+                          {formatDate(item.tanggal)}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <img
+                            src={item.foto_in ? `${BACKEND_BASE_URL}/${item.foto_in}` : placeholderFoto}
+                            alt="Absen Masuk"
+                            className="w-12 h-12 rounded-lg object-cover mx-auto border border-gray-200"
+                            onError={(e) => (e.target.src = placeholderFoto)}
+                          />
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {formatTime(item.jam_in) || "--:--"}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <img
+                            src={item.foto_out ? `${BACKEND_BASE_URL}/${item.foto_out}` : placeholderFoto}
+                            alt="Absen Keluar"
+                            className="w-12 h-12 rounded-lg object-cover mx-auto border border-gray-200"
+                            onError={(e) => (e.target.src = placeholderFoto)}
+                          />
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {formatTime(item.jam_out) || "--:--"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {hitungDurasi(item.jam_in, item.jam_out)}
+                        </td>
+                        <td className="px-6 py-4">
+                          {getStatusBadge(item.status)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* MOBILE VIEW - CARDS (Hidden di desktop) */}
+            <div className="lg:hidden space-y-4">
+              {filteredRiwayat.map((item, index) => (
+                <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                  {/* Header Card */}
+                  <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                    <div className="flex items-center gap-2 text-gray-900 font-semibold">
+                      <Calendar size={18} className="text-[#800020]" />
+                      {formatDate(item.tanggal)}
+                    </div>
+                    {getStatusBadge(item.status)}
+                  </div>
+
+                  {/* Foto Absensi */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-2 font-medium">Foto Masuk</p>
+                      <img
+                        src={item.foto_in ? `${BACKEND_BASE_URL}/${item.foto_in}` : placeholderFoto}
+                        alt="Absen Masuk"
+                        className="w-full h-24 rounded-lg object-cover border border-gray-200"
+                        onError={(e) => (e.target.src = placeholderFoto)}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-2 font-medium">Foto Keluar</p>
+                      <img
+                        src={item.foto_out ? `${BACKEND_BASE_URL}/${item.foto_out}` : placeholderFoto}
+                        alt="Absen Keluar"
+                        className="w-full h-24 rounded-lg object-cover border border-gray-200"
+                        onError={(e) => (e.target.src = placeholderFoto)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Info Waktu */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2 bg-green-50 rounded-lg p-3">
+                      <Clock size={16} className="text-green-600" />
+                      <div>
+                        <p className="text-xs text-gray-500">Jam Masuk</p>
+                        <p className="font-semibold text-sm text-gray-900">
+                          {formatTime(item.jam_in) || "--:--"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-orange-50 rounded-lg p-3">
+                      <Clock size={16} className="text-orange-600" />
+                      <div>
+                        <p className="text-xs text-gray-500">Jam Keluar</p>
+                        <p className="font-semibold text-sm text-gray-900">
+                          {formatTime(item.jam_out) || "--:--"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Durasi */}
+                  <div className="mt-3 flex items-center justify-center gap-2 bg-blue-50 rounded-lg p-3">
+                    <Timer size={16} className="text-blue-600" />
+                    <span className="text-xs text-gray-500">Durasi Kerja:</span>
+                    <span className="font-bold text-sm text-blue-900">
+                      {hitungDurasi(item.jam_in, item.jam_out)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </>
+      )}
+
+      {activeTab === "izin" && (
+        <>
+          <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Tanggal</th>
-                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-700">Foto Absen Masuk</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Jam Masuk</th>
-                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-700">Foto Absen Keluar</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Jam Keluar</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Durasi Kerja</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                    <th className="px-6 py-4 text-center text-sm w-12">No</th>
+                    <th className="px-6 py-4 text-left text-sm">Tanggal</th>
+                    <th className="px-6 py-4 text-center text-sm">Jam</th>
+                    <th className="px-6 py-4 text-center text-sm">Foto Bukti</th>
+                    <th className="px-6 py-4 text-left text-sm">Keterangan</th>
+                    <th className="px-6 py-4 text-center text-sm">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredRiwayat.map((item, index) => (
-                    <tr key={index} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-900 font-medium">
+                <tbody className="divide-y">
+                  {izinHistory.map((item,index) => (
+                    <tr key={item.id}>
+                      <td className="px-6 py-4 text-center text-sm text-gray-600">
+                        {index + 1}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
                         {formatDate(item.tanggal)}
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <img
-                          src={item.foto_in ? `${BACKEND_URL}/${item.foto_in}` : placeholderFoto}
-                          alt="Absen Masuk"
-                          className="w-12 h-12 rounded-lg object-cover mx-auto border border-gray-200"
-                          onError={(e) => (e.target.src = placeholderFoto)}
-                        />
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {formatTime(item.jam_in) || "--:--"}
+                      <td className="px-6 py-4 text-center text-sm">
+                        {item.jam}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <img
-                          src={item.foto_out ? `${BACKEND_URL}/${item.foto_out}` : placeholderFoto}
-                          alt="Absen Keluar"
-                          className="w-12 h-12 rounded-lg object-cover mx-auto border border-gray-200"
-                          onError={(e) => (e.target.src = placeholderFoto)}
+                          src={`${BACKEND_BASE_URL}${item.foto}`}
+                          alt="Bukti Izin"
+                          className="w-14 h-14 rounded-lg object-cover mx-auto"
                         />
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {formatTime(item.jam_out) || "--:--"}
+                      <td className="px-6 py-4 text-sm">
+                        {item.keterangan}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {hitungDurasi(item.jam_in, item.jam_out)}
-                      </td>
-                      <td className="px-6 py-4">
-                        {getStatusBadge(item.status)}
+                      <td className="px-6 py-4 text-center">
+                        <span className="px-3 py-1 rounded-full text-xs bg-yellow-100 text-yellow-700">
+                          Disetujui
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -198,57 +377,54 @@ export default function RiwayatAbsensiMarketing() {
             </div>
           </div>
 
-          {/* MOBILE - CARD VIEW */}
-          <div className="lg:hidden space-y-4">
-            {filteredRiwayat.map((item, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-                  <div className="flex items-center gap-2 text-gray-900 font-semibold">
-                    {formatDate(item.tanggal)}
-                  </div>
-                  {getStatusBadge(item.status)}
-                </div>
+          {/* Mobile */}
+           <div className="lg:hidden space-y-4">
+              {izinHistory.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-4"
+                >
+                  {/* HEADER */}
+                  <div className="flex items-center justify-between mb-3 pb-2 border-b">
+                    <div className="flex items-center gap-2 font-semibold text-gray-900">
+                      <span className="text-sm text-gray-500">#{index + 1}</span>
+                      <span>
+                        {formatDate(item.tanggal)}
+                      </span>
+                    </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-gray-500 mb-2 font-medium">Foto Masuk</p>
+                    <span className="px-3 py-1 rounded-full text-xs bg-yellow-100 text-yellow-700">
+                      Disetujui
+                    </span>
+                  </div>
+
+                  {/* FOTO */}
+                  <div className="mb-3">
+                    <p className="text-xs text-gray-500 mb-1">Bukti Izin</p>
                     <img
-                      src={item.foto_in ? `${BACKEND_URL}/${item.foto_in}` : placeholderFoto}
-                      alt="Absen Masuk"
-                      className="w-full h-32 rounded-lg object-cover border border-gray-200"
-                      onError={(e) => (e.target.src = placeholderFoto)}
+                      src={`${BACKEND_BASE_URL}${item.foto}`}
+                      alt="Bukti Izin"
+                      className="w-full h-40 rounded-lg object-cover"
                     />
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500 mb-2 font-medium">Foto Keluar</p>
-                    <img
-                      src={item.foto_out ? `${BACKEND_URL}/${item.foto_out}` : placeholderFoto}
-                      alt="Absen Keluar"
-                      className="w-full h-32 rounded-lg object-cover border border-gray-200"
-                      onError={(e) => (e.target.src = placeholderFoto)}
-                    />
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="bg-green-50 rounded-lg p-3 text-center">
-                    <p className="text-xs text-gray-500">Jam Masuk</p>
-                    <p className="font-bold text-green-700">{formatTime(item.jam_in) || "--:--"}</p>
+                  {/* JAM */}
+                  <div className="flex items-center gap-2 mb-3 text-sm">
+                    <span className="text-gray-500">Jam:</span>
+                    <span className="font-semibold">{item.jam}</span>
                   </div>
-                  <div className="bg-orange-50 rounded-lg p-3 text-center">
-                    <p className="text-xs text-gray-500">Jam Keluar</p>
-                    <p className="font-bold text-orange-700">{formatTime(item.jam_out) || "--:--"}</p>
-                  </div>
-                </div>
 
-                <div className="bg-blue-50 rounded-lg p-3 text-center">
-                  <p className="text-xs text-gray-500">Durasi Kerja</p>
-                  <p className="font-bold text-blue-700 text-lg">{hitungDurasi(item.jam_in, item.jam_out)}</p>
+                  {/* KETERANGAN */}
+                  <div className="bg-gray-50 rounded-lg p-3 text-sm">
+                    <p className="text-gray-500 text-xs mb-1">Keterangan</p>
+                    <p className="text-gray-800">
+                      {item.keterangan || "-"}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </>
+              ))}
+            </div>
+        </>   
       )}
     </div>
   );
