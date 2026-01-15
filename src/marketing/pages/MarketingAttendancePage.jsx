@@ -151,6 +151,18 @@ useEffect(() => {
     stopCamera,
   } = useCamera(isIzinOpen);
 
+  // =========================
+  // DUMMY EMPLOYEE (NANTI JWT)
+  // =========================
+  const userStr = localStorage.getItem("user");
+  const user = userStr ? JSON.parse(userStr) : null;
+
+  const employee = {
+    id: user?.id || "",
+    nama: user?.id?.toUpperCase() || "MARKETING",
+    jabatan: "MARKETING",
+  };
+
 
   // =========================
   // RULE MARKETING
@@ -269,14 +281,6 @@ const handleSubmitIzin = async () => {
   }
 };
 
-  const userStr = localStorage.getItem("user");
-  const user = userStr ? JSON.parse(userStr) : null;
-
-  const employee = {
-    id: user?.id || "",
-    nama: user?.id?.toUpperCase() || "MARKETING",
-    jabatan: "MARKETING",
-  };
 
 
 

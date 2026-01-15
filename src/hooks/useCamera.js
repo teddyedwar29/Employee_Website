@@ -9,7 +9,6 @@ export default function useCamera(active) {
 
   const startCamera = useCallback(async () => {
     try {
-      // ⛔ JANGAN start ulang kalau sudah ada stream
       if (streamRef.current) return;
 
       const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -83,7 +82,7 @@ export default function useCamera(active) {
     return () => {
       stopCamera();
     };
-  }, [active, startCamera, stopCamera]);
+  }, [active]);
 
 
   return {

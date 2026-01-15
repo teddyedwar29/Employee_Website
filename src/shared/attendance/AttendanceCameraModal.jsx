@@ -10,6 +10,7 @@ export default function AttendanceCameraModal({
   onCapture,
   onSubmit,
   onClose,
+  onRetake,
 }) {
   const {
     videoRef,
@@ -74,14 +75,28 @@ export default function AttendanceCameraModal({
             Ambil Foto
           </button>
         ) : (
-          <button
-            type="button"
-            onClick={() => onSubmit(dataURLtoFile(previewImage, "izin.jpg"))}
-            className="w-full bg-[#800020] text-white py-3 rounded-xl font-bold hover:bg-[#900030]"
-          >
-            Gunakan Foto
-          </button>
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => onSubmit(dataURLtoFile(previewImage, "selfie.jpg"))}
+              className="w-full bg-[#800020] text-white py-3 rounded-xl font-bold hover:bg-[#900030]"
+            >
+              Gunakan Foto
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                retakePhoto();
+                onRetake?.();
+              }}
+              className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-300"
+            >
+              Ambil Ulang Foto
+            </button>
+          </div>
         )}
+
       </div>
     );
   }

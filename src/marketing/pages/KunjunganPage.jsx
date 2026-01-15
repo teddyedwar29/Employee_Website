@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import { submitKunjungan } from "@/marketing/services/kunjunganService";
 import { handleResponse } from "@/services/apiService";
 import { API_BASE_URL } from "@/utils/constants";
+import AttendanceCameraModal from "@/shared/attendance/AttendanceCameraModal";
 
 
 
@@ -31,6 +32,8 @@ export default function KunjunganPage() {
   const [locationError, setLocationError] = useState(null);
   const [locationStatus, setLocationStatus] = useState("idle");
   const [locationMessage, setLocationMessage] = useState("");
+  const [openCamera, setOpenCamera] = useState(false);
+  const [photoLocked, setPhotoLocked] = useState(false);
 
 
   const [formData, setFormData] = useState({
@@ -126,16 +129,6 @@ export default function KunjunganPage() {
     );
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setFormData({ ...formData, foto: file });
-
-    const reader = new FileReader();
-    reader.onloadend = () => setPreviewImage(reader.result);
-    reader.readAsDataURL(file);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -174,10 +167,13 @@ export default function KunjunganPage() {
     }
   };
 
+  
+
   const resetForm = () => {
     setFormData({ foto: null, nama_outlet: "", lokasi: "", keterangan: "" });
     setPreviewImage(null);
     setIsModalOpen(false);
+    setPhotoLocked(false);
   };
 
   // Filter pencarian (nama outlet, lokasi, keterangan)
@@ -346,19 +342,42 @@ export default function KunjunganPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="p-6">
-              <label className="block mb-6 cursor-pointer">
-                <input type="file" accept="image/*" hidden onChange={handleImageChange} />
-                <div className="border-dashed border-2 rounded-xl p-8 text-center">
-                  {previewImage ? (
-                    <img src={previewImage} alt="Preview" className="mx-auto rounded-xl max-h-96 w-full object-contain" />
-                  ) : (
-                    <Camera size={48} className="mx-auto text-gray-400 mb-4" />
-                  )}
-                  <p className="text-sm text-gray-500 mt-4">
-                    {previewImage ? "Ganti foto" : "Klik untuk ambil foto"}
+              <div className="mb-6">
+                {!photoLocked && (
+                  <AttendanceCameraModal
+                    embedded
+                    open={true}
+                    title="Foto Selfie Kunjungan"
+                    submitLabel="Gunakan Foto"
+                    submitColor="green"
+                    onSubmit={(file) => {
+                      setFormData({ ...formData, foto: file });
+                      setPreviewImage(URL.createObjectURL(file));
+                      setPhotoLocked(true); // 🔒 kunci foto
+                    }}
+                    onRetake={() => {
+                      setPhotoLocked(false);
+                      setPreviewImage(null);
+                    }}
+                    onClose={() => {}}
+                  />
+                )}
+
+              </div>
+
+              {photoLocked && previewImage && (
+                <div className="mb-6 text-center">
+                  <img
+                    src={previewImage}
+                    alt="Foto Kunjungan"
+                    className="mx-auto rounded-xl max-h-96 object-cover"
+                  />
+                  <p className="text-sm text-green-600 mt-2 font-medium">
+                    ✓ Foto berhasil digunakan
                   </p>
                 </div>
-              </label>
+              )}
+
 
               <input
                 placeholder="Nama Outlet"
