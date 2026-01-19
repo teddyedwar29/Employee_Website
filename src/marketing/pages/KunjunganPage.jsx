@@ -2,15 +2,13 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   MapPin,
-  Camera,
-  Plus,
   X,
   Search,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { submitKunjungan } from "@/marketing/services/kunjunganService";
 import { handleResponse } from "@/services/apiService";
-import { API_BASE_URL } from "@/utils/constants";
+import { API_BASE_URL, BACKEND_BASE_URL } from "@/utils/constants";
 import AttendanceCameraModal from "@/shared/attendance/AttendanceCameraModal";
 
 
@@ -29,10 +27,8 @@ export default function KunjunganPage() {
   const [loading, setLoading] = useState(true);
 
   const [currentLocation, setCurrentLocation] = useState({ latitude: null, longitude: null });
-  const [locationError, setLocationError] = useState(null);
   const [locationStatus, setLocationStatus] = useState("idle");
   const [locationMessage, setLocationMessage] = useState("");
-  const [openCamera, setOpenCamera] = useState(false);
   const [photoLocked, setPhotoLocked] = useState(false);
 
 
@@ -162,11 +158,11 @@ export default function KunjunganPage() {
       setCurrentLocation(null);
       setLocationStatus("idle");
       setLocationMessage("");
-    } catch (err) {
+    } catch  {
       Swal.fire("Error", "Terjadi kesalahan saat menyimpan", "error");
     }
   };
-
+  
   
 
   const resetForm = () => {
@@ -201,16 +197,16 @@ export default function KunjunganPage() {
         <p className="text-sm text-gray-600">
           Kunjungan {isToday ? "Hari Ini" : `Tanggal ${selectedDate}`}
         </p>
-        <p className={`text-4xl font-bold mt-2 ${totalFoto >= 5 ? "text-green-600" : "text-[#800020]"}`}>
-          {totalFoto} {isToday && totalFoto < 5 ? `/ 5` : ""}
+        <p className={`text-4xl font-bold mt-2 ${totalFoto >= 10 ? "text-green-600" : "text-[#800020]"}`}>
+          {totalFoto} {isToday && totalFoto < 10 ? `/ 10` : ""}
         </p>
         {isToday && (
           <p className="text-sm text-gray-600 mt-2">
-            Target minimal: 5 kunjungan per hari
+            Target minimal: 10 kunjungan per hari
           </p>
         )}
 
-        {isToday && totalFoto >= 5 && (
+        {isToday && totalFoto >= 10 && (
           <div className="mt-4">
             <p className="text-green-600 font-semibold mb-3">Target minimal tercapai! 🎉</p>
             <Link
@@ -288,7 +284,7 @@ export default function KunjunganPage() {
               <div className="relative aspect-video bg-gray-100">
                 {item.foto ? (
                   <img
-                    src={`http://localhost:5000${item.foto}`}
+                    src={`${BACKEND_BASE_URL}${item.foto}`}
                     alt={item.nama_outlet || "Kunjungan"}
                     className="w-full h-full object-cover"
                   />

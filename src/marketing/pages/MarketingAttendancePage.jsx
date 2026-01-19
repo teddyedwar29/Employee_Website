@@ -203,7 +203,7 @@ export default function MarketingAttendancePage() {
   // RULE MARKETING
   // =========================
   const canCheckOut =
-    attendanceStatus === "in" && totalKunjungan >= 5;
+    attendanceStatus === "in" && totalKunjungan >= 10;
 
   // =========================
   // HANDLER ABSENSI
@@ -225,7 +225,7 @@ export default function MarketingAttendancePage() {
     if (!canCheckOut) {
       Swal.fire(
         "Belum bisa absen keluar",
-        `Lengkapi kunjungan (${totalKunjungan}/5)`,
+        `Lengkapi kunjungan (${totalKunjungan}/10)`,
         "warning"
       );
       return;
@@ -241,6 +241,8 @@ export default function MarketingAttendancePage() {
     } else {
       Swal.fire("Gagal", res.message, "error");
     }
+
+    console.log("CHECK canCheckOut:", totalKunjungan);
   };
 
 
@@ -342,7 +344,7 @@ const handleSubmitIzin = async () => {
           if (!canCheckOut) {
             Swal.fire(
               "Belum bisa absen keluar",
-              `Lengkapi kunjungan (${totalKunjungan}/5)`,
+              `Lengkapi kunjungan (${totalKunjungan}/10)`,
               "info"
             );
             return;

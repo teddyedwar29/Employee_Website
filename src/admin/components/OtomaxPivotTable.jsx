@@ -69,6 +69,7 @@ export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
         <thead className="bg-[#C65911] text-white">
           <tr>
             <th className="border px-3 py-2">Kode Upline</th>
+            <th className="border px-3 py-2">Nama Upline</th>
             <th className="border px-3 py-2">Kode Reseller</th>
             <th className="border px-3 py-2">Nama Reseller</th>
 
@@ -95,6 +96,9 @@ export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
                     <td className="border px-2 py-1 font-semibold">
                       {index === 0 ? upline : ""}
                     </td>
+                    <td className="border px-2 py-1">
+                      {index === 0 ? uplineTotals[upline]?.nama || "-" : ""}
+                    </td>
 
                     <td className="border px-2 py-1">{row.kode_reseller}</td>
                     <td className="border px-2 py-1">{row.nama_reseller}</td>
@@ -113,7 +117,7 @@ export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
 
                 {/* ROW TOTAL UPLINE */}
                 <tr className="bg-orange-100 font-bold">
-                  <td className="border px-2 py-2" colSpan={3}>
+                  <td className="border px-2 py-2" colSpan={4}>
                     TOTAL {upline}
                   </td>
 
