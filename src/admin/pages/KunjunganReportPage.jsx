@@ -15,6 +15,9 @@ export default function KunjunganReportPage({ onMenuClick }) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  const [previewFoto, setPreviewFoto] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+
 
   const fetchKunjunganReport = async () => {
     setLoading(true);
@@ -194,7 +197,12 @@ export default function KunjunganReportPage({ onMenuClick }) {
                 <img
                 src={item.foto ? `${BACKEND_BASE_URL}${item.foto}` : "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zNS4wMDAxIDM1LjAwMDFDMzUuMDAwMSAzMS42NjY4IDMyLjMzMzQgMjguOTk5OSAyOS4wMDAxIDI4Ljk5OTlIMjEuMDAwMUMxNy42NjY4IDI4Ljk5OTkgMTUuMDAwMSAzMS42NjY4IDE1LjAwMDEgMzUuMDAwMVYzOC4wMDAxQzE1LjAwMDEgNDAuMjA5MSAxNi43OTEgNDIuMDAwMSAxOS4wMDAxIDQyLjAwMDFIMzEuMDAwMUMzMy4yMDkxIDQyLjAwMDEgMzUuMDAwMSA0MC4yMDkxIDM1LjAwMDEgMzguMDAwMVYzNS4wMDAxWiIgc3Ryb2tlPSIjQ0NDQ0NDIiBzdHJva2Utd2lkdGg9IjIiLz4KPGNpcmNsZSBjeD0iMjUiIGN5PSIxOCIgcj0iNyIgZmlsbD0iI0NDQ0NDQyIvPgo8L3N2Zz4K"}
                   alt="Bukti kunjungan"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover cursor-pointer"
+                  onClick={() => {
+                    if (!item.foto) return;
+                    setPreviewFoto(`${BACKEND_BASE_URL}${item.foto}`);
+                    setShowPreview(true);
+                  }}
                   onError={(e) => (e.target.src = "/placeholder.jpg")} // Placeholder kalau error
                 />      
                 <div className="absolute top-2 left-2 bg-black/50 text-white px-3 py-1 rounded-full text-xs">
@@ -225,6 +233,46 @@ export default function KunjunganReportPage({ onMenuClick }) {
           ))}
         </div>
       )}
+
+      {previewFoto && (
+        <div
+          className={`
+            fixed inset-0 z-50 flex items-center justify-center p-4
+            bg-black/70 transition-opacity duration-300
+            ${showPreview ? "opacity-100" : "opacity-0"}
+          `}
+          onClick={() => {
+            setShowPreview(false);
+            setTimeout(() => setPreviewFoto(null), 300);
+          }}
+        >
+          <div
+            className={`
+              bg-white rounded-xl max-w-4xl w-full p-4 relative
+              transform transition-all duration-300
+              ${showPreview ? "scale-100 opacity-100" : "scale-95 opacity-0"}
+            `}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-3 right-3 text-gray-600 hover:text-black text-xl"
+              onClick={() => {
+                setShowPreview(false);
+                setTimeout(() => setPreviewFoto(null), 300);
+              }}
+            >
+              ✕
+            </button>
+
+            <img
+              src={previewFoto}
+              alt="Preview Kunjungan"
+              className="w-full max-h-[80vh] object-contain rounded-lg"
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -13,6 +13,8 @@ export default function AbsensiReportPage({ onMenuClick }) {
   const [absensiList, setAbsensiList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [previewFoto, setPreviewFoto] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const totalItems = filteredList.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -264,6 +266,7 @@ export default function AbsensiReportPage({ onMenuClick }) {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">No</th>
                       <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Tanggal</th>
                       <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">ID Karyawan</th>
                       <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Nama Karyawan</th>
@@ -280,6 +283,10 @@ export default function AbsensiReportPage({ onMenuClick }) {
                 <tbody className="divide-y divide-gray-200">
                   {paginatedList.map((item, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
+                      {/* No */}
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {startIndex + idx + 1}
+                      </td>
                       {/* tanggal */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
                         {formatDate(item.tanggal)}
@@ -310,6 +317,11 @@ export default function AbsensiReportPage({ onMenuClick }) {
                           src={item.foto_in ? `${BACKEND_BASE_URL}/${item.foto_in}` : placeholderFoto}
                           alt="Masuk"
                           className="w-12 h-12 rounded-lg object-cover mx-auto border"
+                          onClick={() => {
+                            if (!item.foto_in) return;
+                            setPreviewFoto(`${BACKEND_BASE_URL}/${item.foto_in}`);
+                            setShowPreview(true);
+                          }}
                           onError={(e) => (e.target.src = placeholderFoto)}
                         />
                       </td>
@@ -319,6 +331,11 @@ export default function AbsensiReportPage({ onMenuClick }) {
                           src={item.foto_out ? `${BACKEND_BASE_URL}/${item.foto_out}` : placeholderFoto}
                           alt="Keluar"
                           className="w-12 h-12 rounded-lg object-cover mx-auto border"
+                          onClick={() => {
+                            if (!item.foto_out) return;
+                            setPreviewFoto(`${BACKEND_BASE_URL}/${item.foto_out}`);
+                            setShowPreview(true);
+                          }}
                           onError={(e) => (e.target.src = placeholderFoto)}
                         />
                       </td>
@@ -349,7 +366,7 @@ export default function AbsensiReportPage({ onMenuClick }) {
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="font-bold text-gray-900">
-                      {formatDate(item.tanggal)}
+                      #{startIndex + idx + 1} • {formatDate(item.tanggal)}
                     </p>
                     <p className="text-xs text-gray-500">
                       ID: {item.id_karyawan || "-"}
@@ -384,6 +401,11 @@ export default function AbsensiReportPage({ onMenuClick }) {
                       src={item.foto_in ? `${BACKEND_BASE_URL}/${item.foto_in}` : placeholderFoto}
                       alt="Masuk"
                       className="w-20 h-20 rounded-lg object-cover border"
+                      onClick={() => {
+                        if (!item.foto_in) return;
+                        setPreviewFoto(`${BACKEND_BASE_URL}/${item.foto_in}`);
+                        setShowPreview(true);
+                      }}
                       onError={(e) => (e.target.src = placeholderFoto)}
                     />
                     <div>
@@ -405,6 +427,11 @@ export default function AbsensiReportPage({ onMenuClick }) {
                       src={item.foto_out ? `${BACKEND_BASE_URL}/${item.foto_out}` : placeholderFoto}
                       alt="Keluar"
                       className="w-20 h-20 rounded-lg object-cover border"
+                      onClick={() => {
+                        if (!item.foto_out) return;
+                        setPreviewFoto(`${BACKEND_BASE_URL}/${item.foto_out}`);
+                        setShowPreview(true);
+                      }}
                       onError={(e) => (e.target.src = placeholderFoto)}
                     />
                     <div>
@@ -439,6 +466,47 @@ export default function AbsensiReportPage({ onMenuClick }) {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+
+      {previewFoto && (
+        <div
+          className={`
+            fixed inset-0 z-50 flex items-center justify-center p-4
+            bg-black/70 transition-opacity duration-300
+            ${showPreview ? "opacity-100" : "opacity-0"}
+          `}
+          onClick={() => {
+            setShowPreview(false);
+            setTimeout(() => setPreviewFoto(null), 300);
+          }}
+        >
+          <div
+            className={`
+              bg-white rounded-xl max-w-3xl w-full p-4 relative
+              transform transition-all duration-300
+              ${showPreview ? "scale-100 opacity-100" : "scale-95 opacity-0"}
+            `}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-3 right-3 text-gray-600 hover:text-black text-xl"
+              onClick={() => {
+                setShowPreview(false);
+                setTimeout(() => setPreviewFoto(null), 300);
+              }}
+            >
+              ✕
+            </button>
+
+            <img
+              src={previewFoto}
+              alt="Preview Absensi"
+              className="w-full max-h-[80vh] object-contain rounded-lg"
+            />
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }
