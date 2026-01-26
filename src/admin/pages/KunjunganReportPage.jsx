@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import { Search, MapPin, Calendar } from "lucide-react";
 import { BACKEND_BASE_URL, API_BASE_URL } from '@/utils/constants';
 import PageHeader from '@/components/ui/PageHeader';
+import { getKategoriKunjungan } from "@/services/ApiService";
+
 
 export default function KunjunganReportPage({ onMenuClick }) {
   const [kunjunganList, setKunjunganList] = useState([]); // Array flat fotos/kunjungan
@@ -17,6 +19,8 @@ export default function KunjunganReportPage({ onMenuClick }) {
 
   const [previewFoto, setPreviewFoto] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [kategoriList, setKategoriList] = useState([]);
+
 
 
   const fetchKunjunganReport = async () => {
@@ -109,6 +113,26 @@ export default function KunjunganReportPage({ onMenuClick }) {
     );
     setFilteredList(filtered);
   }, [searchTerm, kunjunganList]);
+
+  useEffect(() => {
+    const fetchKategori = async () => {
+      try {
+        const res = await getKategoriKunjungan();
+        if (res.status === "success") {
+          setKategoriList(res.data);
+        }
+      } catch (err) {
+        console.error("Gagal fetch kategori kunjungan", err);
+      }
+    };
+
+    fetchKategori();
+  }, []);
+
+  const getNamaKategori = (id) => {
+    const kat = kategoriList.find((k) => k.id === id);
+    return kat?.nama_kategori || "-";
+  };
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString("id-ID", {
@@ -212,6 +236,21 @@ export default function KunjunganReportPage({ onMenuClick }) {
 
               <div className="p-5">
                 <p className="font-bold text-lg text-gray-900">{item.marketingName || "Marketing"}</p>
+                
+                {/* KATEGORI KUNJUNGAN */}
+                {(item.nama_kategori_kunjungan || item.id_kategori_kunjungan) && (
+                  <span className="inline-block mt-2 mb-2 px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
+                    {item.nama_kategori_kunjungan ||
+                      getNamaKategori(item.id_kategori_kunjungan)}
+                  </span>
+                )}
+
+                {/* ISSUE */}
+                {item.issue && (
+                  <p className="text-sm text-gray-700 mb-1">
+                    <span className="font-medium">Issue:</span> {item.issue}
+                  </p>
+                )}
                 <p className="text-sm text-gray-600 mt-1">Jam: {item.jam || "-:-:-"}</p>
                 <p className="text-sm text-gray-600 flex items-center gap-1 mt-2">
                   <MapPin size={16} />

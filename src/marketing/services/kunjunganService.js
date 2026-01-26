@@ -7,6 +7,8 @@ export const submitKunjungan = async ({
   foto,
   latitude,
   longitude,
+  issue,
+  id_kategori_kunjungan,
 }) => {
   const token = localStorage.getItem("access_token");
 
@@ -18,6 +20,8 @@ export const submitKunjungan = async ({
   formData.append("foto", foto);
   formData.append("latitude", latitude);
   formData.append("longitude", longitude);
+  formData.append("issue", issue);
+  formData.append("id_kategori_kunjungan", id_kategori_kunjungan);
 
   // Ganti baris ini:
   const response = await fetchWithAuth("/api/kunjungan/kunjungan", {

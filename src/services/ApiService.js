@@ -430,3 +430,22 @@ export const getMyIzinHistory = async () => {
 
   return handleResponse(response);
 };
+
+
+// =======================
+// KATEGORI KUNJUNGAN
+// =======================
+export const getKategoriKunjungan = async () => {
+  const token = localStorage.getItem("access_token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/kategori-kunjungan/ambil`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return handleResponse(response);
+};

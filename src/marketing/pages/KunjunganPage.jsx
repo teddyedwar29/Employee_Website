@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { submitKunjungan } from "@/marketing/services/kunjunganService";
-import { handleResponse } from "@/services/apiService";
+import { handleResponse, getKategoriKunjungan  } from "@/services/apiService";
 import { API_BASE_URL, BACKEND_BASE_URL } from "@/utils/constants";
 import AttendanceCameraModal from "@/shared/attendance/AttendanceCameraModal";
 
@@ -30,11 +30,14 @@ export default function KunjunganPage() {
   const [locationStatus, setLocationStatus] = useState("idle");
   const [locationMessage, setLocationMessage] = useState("");
   const [photoLocked, setPhotoLocked] = useState(false);
+  const [kategoriList, setKategoriList] = useState([]);
 
 
   const [formData, setFormData] = useState({
     foto: null,
     nama_outlet: "",
+    issue: "",
+    id_kategori_kunjungan: "",
     lokasi: "",
     keterangan: "",
   });
@@ -94,6 +97,27 @@ export default function KunjunganPage() {
     fetchKunjungan(selectedDate);
   }, [selectedDate]);
 
+  useEffect(() => {
+    const loadKategori = async () => {
+      try {
+        const res = await getKategoriKunjungan();
+        if (res.status === "success") {
+          setKategoriList(res.data);
+        }
+      } catch (err) {
+        console.error("Gagal load kategori", err);
+      }
+    };
+
+    loadKategori();
+  }, []);
+
+  const getNamaKategori = (id) => {
+    const kat = kategoriList.find((k) => k.id === id);
+    return kat?.nama_kategori || "-";
+  };
+
+
   // Lokasi
   const requestLocation = () => {
     setLocationStatus("loading");
@@ -134,11 +158,18 @@ export default function KunjunganPage() {
       return;
     }
 
+    if (!formData.issue || !formData.id_kategori_kunjungan) {
+      Swal.fire("Error", "Issue dan kategori kunjungan wajib diisi", "error");
+      return;
+    }
+
     try {
       const res = await submitKunjungan({
         foto: formData.foto,
         latitude: currentLocation?.latitude || null,
         longitude: currentLocation?.longitude || null,
+        issue: formData.issue,
+        id_kategori_kunjungan: formData.id_kategori_kunjungan,
       });
 
       if (!res.success) {
@@ -154,7 +185,7 @@ export default function KunjunganPage() {
       // Reset form
       setIsModalOpen(false);
       setPreviewImage(null);
-      setFormData({ foto: null, nama_outlet: "", lokasi: "", keterangan: "" });
+      setFormData({ foto: null, nama_outlet: "",  issue: "",  id_kategori_kunjungan: "", lokasi: "", keterangan: "" });
       setCurrentLocation(null);
       setLocationStatus("idle");
       setLocationMessage("");
@@ -297,6 +328,17 @@ export default function KunjunganPage() {
 
               <div className="p-5">
                 <h3 className="font-bold text-lg">{item.nama_outlet || "Kunjungan"}</h3>
+                {item.id_kategori_kunjungan && (
+                  <span className="inline-block mt-1 mb-2 px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
+                    {getNamaKategori(item.id_kategori_kunjungan)}
+                  </span>
+                )}
+
+                {item.issue && (
+                  <p className="text-sm text-gray-700 mb-2">
+                    <span className="font-medium">Issue:</span> {item.issue}
+                  </p>
+                )}
                 <p className="text-xs text-gray-600 mb-2 flex items-center gap-1">
                   <MapPin size={12} />
                   {item.latitude && item.longitude ? (
@@ -381,6 +423,33 @@ export default function KunjunganPage() {
                 value={formData.nama_outlet}
                 onChange={(e) => setFormData({ ...formData, nama_outlet: e.target.value })}
               />
+
+              <input
+                placeholder="Issue"
+                className="w-full border p-3 rounded-xl mb-4"
+                value={formData.issue}
+                onChange={(e) =>
+                  setFormData({ ...formData, issue: e.target.value })
+                }
+              />
+
+              <select
+                className="w-full border p-3 rounded-xl mb-4 bg-white"
+                value={formData.id_kategori_kunjungan}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    id_kategori_kunjungan: e.target.value,
+                  })
+                }
+              >
+                <option value="">Pilih Kategori Kunjungan</option>
+                {kategoriList.map((kat) => (
+                  <option key={kat.id} value={kat.id}>
+                    {kat.nama_kategori}
+                  </option>
+                ))}
+              </select>
 
               <textarea
                 placeholder="Keterangan (opsional)"
