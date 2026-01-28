@@ -17,7 +17,6 @@ If you are developing a production application, we recommend using TypeScript wi
 
 
 
-
 ```
 Employee_Website
 ├─ eslint.config.js
@@ -88,7 +87,9 @@ Employee_Website
 │  ├─ main.jsx
 │  ├─ marketing
 │  │  ├─ components
-│  │  │  └─ MarketingAbsensiModal.jsx
+│  │  │  ├─ MarketingAbsensiModal.jsx
+│  │  │  ├─ MarketingProfitCard.jsx
+│  │  │  └─ OtomaxPivotTableMarketing.jsx
 │  │  ├─ config
 │  │  │  └─ marketingMenu.js
 │  │  ├─ layout
@@ -131,6 +132,5 @@ Employee_Website
 │     ├─ constants.js
 │     └─ date.js
 └─ vite.config.js
-
 
 ```
