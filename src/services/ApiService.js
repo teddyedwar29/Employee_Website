@@ -1,5 +1,5 @@
 // File: src/services/apiService.js
-import { BACKEND_BASE_URL, API_BASE_URL } from '@/utils/constants';
+import { BACKEND_BASE_URL, API_BASE_URL, OTOMAX_API_BASE_URL } from '@/utils/constants';
 
 
 import Swal from 'sweetalert2';
@@ -440,6 +440,34 @@ export const getKategoriKunjungan = async () => {
 
   const response = await fetch(
     `${API_BASE_URL}/kategori-kunjungan/ambil`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return handleResponse(response);
+};
+
+
+
+// =======================
+// LAPORAN MASA AKTIF RESELLER
+// =======================
+export const getLaporanMasaAktifReseller = async (params = {}) => {
+  const token = localStorage.getItem("access_token");
+
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(
+      ([_, value]) => value !== undefined && value !== null && value !== ""
+    )
+  );
+
+  const query = new URLSearchParams(cleanParams).toString();
+
+  const response = await fetch(
+    `${OTOMAX_API_BASE_URL}/laporan/masa_aktif/reseller${query ? `?${query}` : ""}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

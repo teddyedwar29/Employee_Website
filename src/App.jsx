@@ -10,6 +10,12 @@ import RiwayatAbsensi from "./operator/pages/RiwayatAbsensi";
 import KunjunganPage from './marketing/pages/KunjunganPage';
 import RiwayatAbsensiMarketing from './marketing/pages/RiwayatAbsensiMarketing';
 import LaporanPencapaianMarketing from './marketing/pages/LaporanPencapaianMarketing';
+import LaporanMasaAktifReseller from './marketing/pages/LaporanMasaAktifReseller';
+import ITLayout from "@/it/layout/ITLayout";
+import ITAttendancePage from "@/it/pages/AttendancePage";
+import ITRiwayatAbsensi from "@/it/pages/RiwayatAbsensi";
+
+
 
 
 
@@ -43,6 +49,20 @@ export default function App() {
           <Route path="riwayat" element={<RiwayatAbsensi />} />
         </Route>
 
+        {/* IT ROUTES */}
+        <Route
+          path="/it"
+          element={
+            <ProtectedRoute allow={["IT"]}>
+              <ITLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="absensi" element={<ITAttendancePage />} />
+          <Route path="riwayat" element={<ITRiwayatAbsensi />} />
+        </Route>
+
+
         {/* MARKETING ROUTES */}
         <Route
           path="/marketing"
@@ -56,6 +76,10 @@ export default function App() {
           <Route path="kunjungan" element={<KunjunganPage />} />
           <Route path="riwayat" element={<RiwayatAbsensiMarketing />} />
           <Route path="laporan" element={<LaporanPencapaianMarketing />} />
+          <Route path="laporan">
+            <Route path="masa-aktif" element={<LaporanMasaAktifReseller />} />
+            <Route path="pencapaian" element={<LaporanPencapaianMarketing />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -2,11 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import MarketingSidebar from "./MarketingSidebar";
+import ITSidebar from "./ITSidebar";
 import { logout } from "@/services/authServices";
 import Swal from "sweetalert2";
-  
-export default function MarketingLayout() {
+
+export default function ITLayout() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ export default function MarketingLayout() {
     try {
       await logout();
     } catch (e) {
-      // walaupun error, kita tetap logout local
+      // walaupun error, tetap logout lokal
     }
 
     localStorage.removeItem("access_token");
@@ -37,7 +37,7 @@ export default function MarketingLayout() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
+      {/* ===== SIDEBAR (SAMA DENGAN MARKETING) ===== */}
       <div
         className={`
           fixed inset-y-0 left-0 z-40 w-56
@@ -47,7 +47,7 @@ export default function MarketingLayout() {
           md:static md:translate-x-0 md:fade-in-up
         `}
       >
-        <MarketingSidebar
+        <ITSidebar
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           onNavigate={() => setIsOpen(false)}
@@ -55,7 +55,7 @@ export default function MarketingLayout() {
         />
       </div>
 
-      {/* Backdrop (mobile only) */}
+      {/* ===== BACKDROP (MOBILE ONLY) ===== */}
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
@@ -63,17 +63,19 @@ export default function MarketingLayout() {
         />
       )}
 
-      {/* Main Content */}
-      <div className="flex-1 min-w-0 flex flex-col">
+      {/* ===== MAIN CONTENT ===== */}
+      <div className="flex-1 flex flex-col">
         {/* Mobile Header */}
         <header className="md:hidden flex items-center gap-3 p-4 bg-white shadow-sm">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition" 
+            className="p-2 rounded-lg hover:bg-gray-100 transition"
           >
             {isOpen ? <X /> : <Menu />}
           </button>
-          <h1 className="font-bold text-gray-800">Portal Karyawan</h1>
+          <h1 className="font-bold text-gray-800">
+            Portal IT
+          </h1>
         </header>
 
         {/* Page Content */}

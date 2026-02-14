@@ -21,6 +21,10 @@ export default function KunjunganReportPage({ onMenuClick }) {
   const [showPreview, setShowPreview] = useState(false);
   const [kategoriList, setKategoriList] = useState([]);
 
+  const [page, setPage] = useState(1);
+  const [limit] = useState(12); // 12 card per halaman
+
+
 
 
   const fetchKunjunganReport = async () => {
@@ -94,6 +98,22 @@ export default function KunjunganReportPage({ onMenuClick }) {
       setLoading(false);
     }
   };
+
+  // ======================
+  // PAGINATION LOGIC
+  // ======================
+  const totalPages = Math.ceil(filteredList.length / limit);
+
+  const paginatedData = filteredList.slice(
+    (page - 1) * limit,
+    page * limit
+  );
+
+  // Reset ke page 1 kalau filter berubah
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, startDate, endDate]);
+
 
   useEffect(() => {
     fetchKunjunganReport();
@@ -215,7 +235,7 @@ export default function KunjunganReportPage({ onMenuClick }) {
       {/* GRID CARD VIEW - MIRIP KUNJUNGANPAGE MARKETING */}
       {!loading && filteredList.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredList.map((item, idx) => (
+          {paginatedData.map((item, idx) => (
             <div key={idx} className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow">
               <div className="relative aspect-video bg-gray-100">
                 <img
@@ -271,7 +291,35 @@ export default function KunjunganReportPage({ onMenuClick }) {
             </div>
           ))}
         </div>
+
+        
       )}
+
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center mt-8">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+            className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <span className="text-sm text-gray-600">
+            Page {page} of {totalPages}
+          </span>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
 
       {previewFoto && (
         <div

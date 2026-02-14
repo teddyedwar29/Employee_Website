@@ -8,7 +8,7 @@ export default function OtomaxPivotTableMarketing({ data = [], totalAll = 0 }) {
     return data.filter(
       (row) =>
         typeof row.kode_reseller === "string" &&
-        row.kode_reseller.startsWith("AK")
+        !row.kode_reseller.toUpperCase().includes("TOTAL")
     );
   }, [data]);
 
@@ -41,12 +41,25 @@ export default function OtomaxPivotTableMarketing({ data = [], totalAll = 0 }) {
   // RENDER
   // ======================
   return (
-    <div className="overflow-x-auto border rounded-xl">
+    <div className="overflow-x-auto">
       <table className="w-full border text-sm border-collapse">
         <thead className="bg-[#C65911] text-white">
           <tr>
-            <th className="border px-3 py-2">Kode AK</th>
-            <th className="border px-3 py-2">Nama Reseller</th>
+            <th
+              className="
+                border px-3 py-2
+              "
+            >
+              Kode Reseller
+            </th>
+
+            <th
+              className="
+                border px-3 py-2
+              "
+            >
+              Nama Reseller
+            </th>
 
             {dateColumns.map((d) => (
               <th key={d} className="border px-3 py-2 text-center">
@@ -61,18 +74,40 @@ export default function OtomaxPivotTableMarketing({ data = [], totalAll = 0 }) {
         <tbody>
           {filteredRows.map((row) => (
             <tr key={row.kode_reseller}>
-              <td className="border px-2 py-1 font-semibold">
+              <td
+                className="
+                  border px-2 py-1
+                "
+              >
                 {row.kode_reseller}
               </td>
-              <td className="border px-2 py-1">
+
+              <td
+                className="
+                  border px-2 py-1
+                "
+              >
                 {row.nama_reseller}
               </td>
 
-              {dateColumns.map((d) => (
-                <td key={d} className="border px-2 py-1 text-right">
-                  {formatNumber(row[d])}
-                </td>
-              ))}
+
+              {dateColumns.map((d) => {
+                const value = Number(row[d] || 0);
+                const isZero = value === 0;
+
+                return (
+                  <td
+                    key={d}
+                    className={`
+                      border px-2 py-1 text-right
+                      ${isZero ? "bg-red-500 text-white font-semibold" : ""}
+                    `}
+                  >
+                    {formatNumber(value)}
+                  </td>
+                );
+              })}
+
 
               <td className="border px-2 py-1 text-right font-bold">
                 {formatNumber(row.grand_total)}
@@ -82,7 +117,7 @@ export default function OtomaxPivotTableMarketing({ data = [], totalAll = 0 }) {
 
           {/* TOTAL */}
           <tr className="bg-orange-100 font-bold">
-            <td className="border px-2 py-2" colSpan={2}>
+            <td className="border px-2 py-2 " colSpan={2}>
               TOTAL
             </td>
 

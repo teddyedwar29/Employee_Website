@@ -135,39 +135,50 @@ export default function LaporanPencapaianMarketing() {
         description="Data Realtime"
       />
 
-      <MarketingProfitCard
-        startDate={startDate}
-        endDate={endDate}
-        kodeUpline={kodeAE}
-      />
+      {/* CARD + FILTER (SETENGAH LEBAR, VERTIKAL) */}
+      <div className="space-y-6">
 
-
-      {/* FILTER TANGGAL */}
-      <div className="bg-white rounded-xl border p-4 flex gap-4 flex-wrap">
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">
-            Tanggal Mulai
-          </label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="px-4 py-2 border rounded-lg"
+        {/* CARD HIJAU */}
+        <div className="w-full lg:w-1/2">
+          <MarketingProfitCard
+            startDate={startDate}
+            endDate={endDate}
+            kodeUpline={kodeAE}
           />
         </div>
 
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">
-            Tanggal Akhir
-          </label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="px-4 py-2 border rounded-lg"
-          />
+        {/* FILTER TANGGAL */}
+        <div className="w-full lg:w-1/2 bg-white rounded-xl border p-4">
+          <div className="flex gap-4 flex-wrap">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Tanggal Mulai
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="px-4 py-2 border rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Tanggal Akhir
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="px-4 py-2 border rounded-lg"
+              />
+            </div>
+          </div>
         </div>
+
       </div>
+
+
 
       {!loading && pivotData.length === 0 && (
         <div className="text-gray-500">
@@ -175,15 +186,19 @@ export default function LaporanPencapaianMarketing() {
         </div>
       )}
 
+    {/* TABLE */}
     {!loading && !error && pivotData.length > 0 && (
-      <div className="bg-white rounded-xl border p-4">
-        <div className="relative">
+      <div className="bg-white rounded-xl border p-4 space-y-4">
+        
+        {/* 🔒 ISOLATED TABLE SCROLL (INI KUNCINYA) */}
+        <div className="overflow-x-auto">
           <OtomaxPivotTableMarketing
             data={pivotData}
             totalAll={uplineTotal?.total_laba || 0}
           />
         </div>
 
+        {/* PAGINATION */}
         {meta && meta.total_pages > 1 && (
           <div className="flex justify-between items-center pt-4">
             <button
@@ -209,6 +224,7 @@ export default function LaporanPencapaianMarketing() {
         )}
       </div>
     )}
+
 
 
 

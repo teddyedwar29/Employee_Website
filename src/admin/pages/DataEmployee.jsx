@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   Plus,
@@ -114,6 +114,25 @@ export default function DataEmployee({
   isLoading, 
   onMenuClick,
 }) {
+  // ======================
+  // PAGINATION
+  // ======================
+  const [page, setPage] = useState(1);
+  const [limit] = useState(9); // 9 card per halaman
+
+  const totalPages = Math.ceil(filteredEmployees.length / limit);
+
+  const paginatedEmployees = filteredEmployees.slice(
+    (page - 1) * limit,
+    page * limit
+  );
+
+  // reset page saat filter/search berubah
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, filterDepartment, filterStatus]);
+
+
   return (
     <>
       <PageHeader
@@ -227,7 +246,7 @@ export default function DataEmployee({
       {/* 5. Employee Cards di-MODIFIKASI: Ganti grid-cols-3 */}
       {/* 'grid-cols-1' (HP), 'lg:grid-cols-2' (Tablet), 'xl:grid-cols-3' (Desktop) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredEmployees.map((emp) => {
+        {paginatedEmployees.map((emp) => {
           const namaJabatan = getJabatanName(emp.id_jabatan_karyawan, jabatanOptions);
           const namaStatus = getStatusName(emp.id_status_kerja_karyawan, statusKerjaOptions);
           const contractInfo = getContractStatusInfo(
@@ -327,6 +346,32 @@ export default function DataEmployee({
           );
         })}
       </div>
+
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center mt-8">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+            className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <span className="text-sm text-gray-600">
+            Page {page} of {totalPages}
+          </span>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
 
       {/* ... (Tampilan "Tidak ada karyawan" tidak diubah) ... */}
       {filteredEmployees.length === 0 && (

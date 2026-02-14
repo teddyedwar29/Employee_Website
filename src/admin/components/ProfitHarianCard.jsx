@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { RefreshCw  } from "lucide-react";
 import { OTOMAX_API_BASE_URL } from "@/utils/constants";
 
-export default function ProfitHarianCard({ date }) {
+export default function ProfitHarianCard({ date, startDate, endDate, selectedMonth, selectedYear }) {
   const [totalLaba, setTotalLaba] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showUpdated, setShowUpdated] = useState(false);
@@ -29,25 +29,56 @@ export default function ProfitHarianCard({ date }) {
       minimumFractionDigits: 0,
     }).format(number);
 
+  const getTodayLocalDate = () => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60 * 1000);
+    return local.toISOString().slice(0, 10);
+  };
+
+  const isToday = date === getTodayLocalDate();
+
+
   const fetchProfitHarian = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        `${OTOMAX_API_BASE_URL}/pivot/laporan/harian?start=${date}&end=${date}`
-      );
+
+      let url = "";
+
+      if (selectedMonth && selectedYear) {
+        // MODE BULANAN
+        const start = `${selectedYear}-${String(selectedMonth).padStart(2, "0")}-01`;
+        const end = new Date(selectedYear, selectedMonth, 0)
+          .toISOString()
+          .slice(0, 10);
+
+        url = `${OTOMAX_API_BASE_URL}/pivot/laporan/bulanan?start=${start}&end=${end}`;
+      }
+      else if (startDate && endDate) {
+        // MODE HARIAN / RANGE (PAKAI ENDPOINT HARIAN)
+        url = `${OTOMAX_API_BASE_URL}/pivot/laporan/harian?start=${startDate}&end=${endDate}`;
+      }
+
+
+
+      const res = await fetch(url);
       const json = await res.json();
 
-      if (json.success && json.data.length > 0) {
-        setTotalLaba(Number(json.data[0].total_laba));
+      if (json.success && json.data && json.data.length > 0) {
+        const total = json.data.reduce(
+          (acc, item) => acc + Number(item.total_laba || 0),
+          0
+        );
+        setTotalLaba(total);
       } else {
         setTotalLaba(0);
       }
 
-      // ⏱️ simpan waktu update
-      setUpdatedAt(formatDateTime());
 
+
+      setUpdatedAt(formatDateTime());
     } catch (err) {
-      console.error("Gagal fetch laba harian", err);
+      console.error("Gagal fetch laba", err);
       setTotalLaba(0);
     } finally {
       setLoading(false);
@@ -55,10 +86,12 @@ export default function ProfitHarianCard({ date }) {
   };
 
 
-
   useEffect(() => {
-    if (date) fetchProfitHarian();
-  }, [date]);
+    fetchProfitHarian();
+  }, [date, startDate, endDate, selectedMonth, selectedYear]);
+
+
+
 
   return (
     <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
@@ -68,9 +101,23 @@ export default function ProfitHarianCard({ date }) {
 
       <div className="relative flex items-center justify-between">
         <div>
-          <p className="text-emerald-100 text-sm font-medium mb-2">
-            Total Laba Hari Ini
+         <p className="text-emerald-100 text-sm font-medium mb-2">
+            {selectedMonth && selectedYear
+              ? `Total Laba ${new Date(
+                  selectedYear,
+                  selectedMonth - 1
+                ).toLocaleDateString("id-ID", {
+                  month: "long",
+                  year: "numeric",
+                })}`
+              : startDate !== endDate
+              ? `Total Laba ${new Date(startDate).toLocaleDateString("id-ID")} - ${new Date(endDate).toLocaleDateString("id-ID")}`
+              : "Total Laba Hari Ini"}
           </p>
+
+
+
+
 
           <h2
             className={`text-4xl font-bold transition-opacity ${
@@ -81,8 +128,22 @@ export default function ProfitHarianCard({ date }) {
           </h2>
 
           <p className="text-emerald-100 text-xs mt-2">
-            Berdasarkan transaksi hari ini ({date})
+            {selectedMonth && selectedYear
+              ? `Berdasarkan transaksi bulan ${new Date(
+                  selectedYear,
+                  selectedMonth - 1
+                ).toLocaleDateString("id-ID", {
+                  month: "long",
+                  year: "numeric",
+                })}`
+              : startDate !== endDate
+              ? `Berdasarkan transaksi ${startDate} s/d ${endDate}`
+              : `Berdasarkan transaksi hari ini (${date})`}
           </p>
+
+
+
+
 
           {updatedAt && (
             <p className="text-emerald-200 text-[11px] mt-1 italic">

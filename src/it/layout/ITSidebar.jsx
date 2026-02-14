@@ -1,8 +1,8 @@
 import { X, LogOut } from "lucide-react";
-import { operatorMenu } from "../config/operatorMenu";
+import { itMenu } from "../config/itMenu";
 import SidebarItem from "../../shared/sidebar/SidebarItems";
 
-export default function OperatorSidebar({
+export default function ITSidebar({
   isOpen,
   setIsOpen,
   onNavigate,
@@ -30,7 +30,7 @@ export default function OperatorSidebar({
         </button>
 
         <h1 className="text-xl font-bold text-gray-800">
-          Portal Operator
+          Portal IT
         </h1>
       </div>
 
@@ -42,7 +42,7 @@ export default function OperatorSidebar({
           scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent
         "
       >
-        {operatorMenu.map((item) => (
+        {itMenu.map((item) => (
           <SidebarItem
             key={item.id}
             icon={item.icon}

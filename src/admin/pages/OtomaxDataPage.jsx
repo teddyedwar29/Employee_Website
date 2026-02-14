@@ -34,6 +34,11 @@ export default function OtomaxDataPage({ onMenuClick }) {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
+const [selectedMonth, setSelectedMonth] = useState("");
+const [selectedYear, setSelectedYear] = useState("");
+
+
+
   // ======================
   // FETCH DATA (PIVOT)
   // ======================
@@ -109,20 +114,19 @@ export default function OtomaxDataPage({ onMenuClick }) {
   return (
     <div className="p-6 lg:p-8 space-y-6">
       <PageHeader
-        title="Pivot Laporan Laba Otomax Harian"
-        description="Laporan laba reseller berdasarkan tanggal hari ini"
+        title="Pivot Laporan Laba"
+        description="Laporan laba reseller berdasarkan filter tanggal"
         onMenuClick={onMenuClick}
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ProfitHarianCard date={startDate} />
+        <ProfitHarianCard 
+          date={startDate}
+          startDate={startDate}
+          endDate={endDate}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+        />
       </div>
-
-      {/* laporan Pivot Harian */}
-
-      <PageHeader
-        title="Pivot Laporan Laba Otomax"
-        description="Laporan laba reseller berdasarkan rentang tanggal"
-      />
 
       {/* FILTER TANGGAL */}
       <div className="bg-white rounded-xl border p-4 flex flex-wrap gap-4 items-end">
@@ -152,6 +156,47 @@ export default function OtomaxDataPage({ onMenuClick }) {
 
         <div>
           <label className="block text-sm text-gray-600 mb-1">
+            Bulan
+          </label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]"
+          >
+            <option value="">Pilih Bulan</option>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {new Date(0, i).toLocaleString("id-ID", { month: "long" })}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">
+            Tahun
+          </label>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#800020]"
+          >
+            <option value="">Pilih Tahun</option>
+            {Array.from({ length: 6 }, (_, i) => {
+              const year = new Date().getFullYear() - 2 + i;
+              return (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+
+
+
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">
             Cari AE / AK
           </label>
           <input
@@ -164,6 +209,7 @@ export default function OtomaxDataPage({ onMenuClick }) {
         </div>
 
       </div>
+
 
       {/* LOADING */}
       {loading && (

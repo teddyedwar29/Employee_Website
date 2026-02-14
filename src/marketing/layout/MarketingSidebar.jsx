@@ -1,4 +1,5 @@
-import { X, LogOut } from "lucide-react";
+import { useState } from "react";
+import { X, LogOut, ChevronDown } from "lucide-react";
 import { marketingMenu } from "../config/marketingMenu";
 import SidebarItem from "../../shared/sidebar/SidebarItems";
 
@@ -8,6 +9,8 @@ export default function MarketingSidebar({
   onNavigate,
   onLogout,
 }) {
+  const [openMenu, setOpenMenu] = useState(null);
+
   return (
     <div
       className={`
@@ -21,7 +24,6 @@ export default function MarketingSidebar({
     >
       {/* ===== HEADER ===== */}
       <div className="relative p-6 pb-4 shrink-0">
-        {/* Close (mobile) */}
         <button
           onClick={() => setIsOpen(false)}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 md:hidden"
@@ -35,22 +37,77 @@ export default function MarketingSidebar({
       </div>
 
       {/* ===== MENU ===== */}
-      <nav
-        className="
-          flex-1 px-4 pb-6 space-y-1
-          overflow-y-auto
-          scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent
-        "
-      >
-        {marketingMenu.map((item) => (
-          <SidebarItem
-            key={item.id}
-            icon={item.icon}
-            label={item.label}
-            to={item.path}
-            onClick={onNavigate}
-          />
-        ))}
+      <nav className="flex-1 px-4 pb-6 space-y-1 overflow-y-auto">
+        {marketingMenu.map((item) => {
+          // ===== DROPDOWN MENU (LAPORAN) =====
+          if (item.children) {
+            return (
+              <div key={item.id}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOpenMenu(openMenu === item.id ? null : item.id)
+                  }
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl
+                            text-gray-700 hover:bg-gray-100 transition"
+                >
+                  {/* KIRI: ICON + LABEL */}
+                  <div className="flex items-center gap-3">
+                    <item.icon size={18} />
+                    <span className="text-sm font-semibold">
+                      {item.label}
+                    </span>
+                  </div>
+
+                  {/* KANAN: PANAH */}
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-200 ${
+                      openMenu === item.id ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+
+                <div
+                    className={`
+                      ml-6 overflow-hidden transition-all duration-300 ease-in-out
+                      ${openMenu === item.id
+                        ? "max-h-40 opacity-100 translate-y-0"
+                        : "max-h-0 opacity-0 -translate-y-1"
+                      }
+                    `}
+                  >
+                    <div className="mt-1 space-y-1">
+                      {item.children.map((child) => (
+                        <SidebarItem
+                          key={child.id}
+                          icon={child.icon}
+                          label={child.label}
+                          to={child.path}
+                          onClick={onNavigate}
+                        />
+                      ))}
+                    </div>
+                </div>
+
+
+
+              </div>
+            );
+          }
+
+          // ===== NORMAL MENU =====
+          return (
+            <SidebarItem
+              key={item.id}
+              icon={item.icon}
+              label={item.label}
+              to={item.path}
+              onClick={onNavigate}
+            />
+          );
+        })}
       </nav>
 
       {/* ===== LOGOUT ===== */}

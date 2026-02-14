@@ -8,7 +8,7 @@ export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
     return data.filter(
       (row) =>
         typeof row.kode_reseller === "string" &&
-        row.kode_reseller.startsWith("AK")
+        !row.kode_reseller.toUpperCase().includes("TOTAL")
     );
   }, [data]);
 
@@ -53,12 +53,6 @@ export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
   const formatNumber = (val) =>
     Number(val || 0).toLocaleString("id-ID");
 
-  const calculateUplineTotal = (rows) => {
-    return rows.reduce((sum, row) => {
-      return sum + Number(row.grand_total || 0);
-    }, 0);
-  };
-
   // ======================
   // RENDER
   // ======================
@@ -86,8 +80,6 @@ export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
         {/* ===== BODY ===== */}
         <tbody>
           {Object.entries(groupedByUpline).map(([upline, rows]) => {
-            const subtotalUpline = calculateUplineTotal(rows);
-
             return (
               <>
                 {rows.map((row, index) => (
@@ -101,13 +93,31 @@ export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
                     </td>
 
                     <td className="border px-2 py-1">{row.kode_reseller}</td>
-                    <td className="border px-2 py-1">{row.nama_reseller}</td>
+                    <td
+                      className="
+                        border px-2 py-1
+                      "
+                    >
+                      {row.nama_reseller}
+                    </td>
 
-                    {dateColumns.map((d) => (
-                      <td key={d} className="border px-2 py-1 text-right">
-                        {formatNumber(row[d])}
-                      </td>
-                    ))}
+
+                    {dateColumns.map((d) => {
+                      const value = Number(row[d] || 0);
+                      const isZero = value === 0;
+
+                      return (
+                        <td
+                          key={d}
+                          className={`
+                            border px-2 py-1 text-right
+                            ${isZero ? "bg-red-500 text-white font-semibold" : ""}
+                          `}
+                        >
+                          {formatNumber(value)}
+                        </td>
+                      );
+                    })}
 
                     <td className="border px-2 py-1 text-right font-bold">
                       {formatNumber(row.grand_total)}
