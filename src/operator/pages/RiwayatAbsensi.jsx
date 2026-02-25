@@ -36,7 +36,6 @@ export default function RiwayatAbsensi() {
         setIzinHistory([]);
       }
     } catch (err) {
-      console.error("Gagal fetch riwayat izin:", err);
       setIzinHistory([]);
     }
   };
@@ -56,7 +55,6 @@ export default function RiwayatAbsensi() {
         setFilteredRiwayat([]);
       }
     } catch (err) {
-      console.error("Error fetch riwayat:", err);
       setRiwayat([]);
       setFilteredRiwayat([]);
       Swal.fire("Error", "Gagal memuat riwayat absensi", "error");

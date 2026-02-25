@@ -60,7 +60,6 @@ const [selectedYear, setSelectedYear] = useState("");
       setData(json.data || []);
       setMeta(json.meta || null);
     } catch (err) {
-      console.error(err);
       setError(err.message);
       setData([]);
       setMeta(null);

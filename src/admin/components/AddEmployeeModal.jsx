@@ -116,14 +116,12 @@ export default function AddEmployeeModal({
       npwp: formData.npwp === '' ? null : formData.npwp,
       status_pajak: formData.status_pajak === '' ? null : formData.status_pajak,
 
-      // 🔴 field baru yang diminta backend
+      // field baru yang diminta backend
       id_agama: formData.id_agama || null,
       id_departemen: formData.id_departemen || null,
       id_kondisi_akun: formData.id_kondisi_akun || null,
  
     };
-
-    console.log('Data yang dikirim ke server:', dataToSubmit);
 
     try {
       await onAddEmployee(dataToSubmit);
@@ -137,7 +135,6 @@ export default function AddEmployeeModal({
 
       onClose();
     } catch (err) {
-      console.error('Error caught:', err);
       setError(err.message || 'Terjadi kesalahan saat menyimpan data.');
     } finally {
       setIsSubmitting(false);

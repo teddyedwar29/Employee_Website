@@ -116,7 +116,6 @@ export default function EmployeeDashboard() {
       } else if (employeeData && Array.isArray(employeeData.data)) {
         setEmployees(employeeData.data);
       } else {
-        console.warn('Data Karyawan dari API bukan array:', employeeData);
         setEmployees([]);
       }
 
@@ -126,7 +125,6 @@ export default function EmployeeDashboard() {
       } else if (jabatanData && Array.isArray(jabatanData.data)) {
         setJabatanOptions(jabatanData.data);
       } else {
-        console.warn('Data Jabatan dari API bukan array:', jabatanData);
         setJabatanOptions([]);
       }
 
@@ -136,7 +134,6 @@ export default function EmployeeDashboard() {
       } else if (statusData && Array.isArray(statusData.data)) {
         setStatusKerjaOptions(statusData.data);
       } else {
-        console.warn('Data Status Kerja dari API bukan array:', statusData);
         setStatusKerjaOptions([]);
       }
 
@@ -146,13 +143,11 @@ export default function EmployeeDashboard() {
       } else if (statusPernikahanData && Array.isArray(statusPernikahanData.data)) {
         setStatusPernikahanOptions(statusPernikahanData.data);
       } else {
-        console.warn('Data Status Pernikahan dari API bukan array:', statusPernikahanData);
         setStatusPernikahanOptions([]);
       }
 
       setError(null);
     } catch (err) {
-      console.error('Gagal mengambil data:', err);
       setError(err.message);
     } finally {
       setIsLoading(false);

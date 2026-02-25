@@ -42,7 +42,6 @@ export default function LaporanMasaAktifReseller() {
 
       const res = await getLaporanMasaAktifReseller(params);
 
-      console.log("API RESPONSE:", res);
 
       if (res?.status && Array.isArray(res.data)) {
         setData(res.data);
@@ -50,11 +49,10 @@ export default function LaporanMasaAktifReseller() {
         setData([]);
       }
     } catch (error) {
-      console.error(error);
       Swal.fire(
-        "Error",
+        `${error}`,
         "Gagal memuat laporan masa aktif reseller",
-        "error"
+        `${error}`
       );
       setData([]);
     } finally {

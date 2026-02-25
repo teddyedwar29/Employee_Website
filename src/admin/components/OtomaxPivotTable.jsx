@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, Fragment } from "react";
 
 export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
   // ======================
@@ -81,7 +81,7 @@ export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
         <tbody>
           {Object.entries(groupedByUpline).map(([upline, rows]) => {
             return (
-              <>
+              <Fragment key={upline}>
                 {rows.map((row, index) => (
                   <tr key={`${upline}-${row.kode_reseller}`}>
                     {/* KODE UPLINE hanya sekali */}
@@ -142,7 +142,7 @@ export default function OtomaxPivotTable({ data = [], uplineTotals = {} }) {
                   </td>
                 </tr>
 
-              </>
+              </Fragment>
             );
           })}
         </tbody>

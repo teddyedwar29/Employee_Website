@@ -1,42 +1,29 @@
 import { handleResponse } from "@/services/apiService";
 import { API_BASE_URL, BACKEND_BASE_URL, OTOMAX_API_BASE_URL } from "@/utils/constants";
 
-let isRefreshing = false;
-let failedQueue = [];
-
-
-const processQueue = (error, token = null) => {
-  failedQueue.forEach(prom => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
-  });
-  
-  failedQueue = [];
-};
 
 export const fetchWithAuth = async (url, options = {}) => {
-  let token = localStorage.getItem("access_token");
+  const token = localStorage.getItem("access_token");
 
   const headers = new Headers(options.headers || {});
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  let response = await fetch(`${BACKEND_BASE_URL}${url}`, {
+  const response = await fetch(`${BACKEND_BASE_URL}${url}`, {
     ...options,
     headers,
   });
 
   if (response.status === 401) {
-    localStorage.removeItem("access_token");
-    window.location.href = "/login";
+    console.warn("Unauthorized detected");
+    // ❌ JANGAN hapus token disini
+    // ❌ JANGAN redirect disini
     throw new Error("Unauthorized");
   }
-    return response;
-  };
+
+  return response;
+};
 
 // 🔥 KHUSUS OTOMAX / MSSQL
 export const fetchWithAuthOtomax = async (url, options = {}) => {

@@ -14,6 +14,8 @@ import LaporanMasaAktifReseller from './marketing/pages/LaporanMasaAktifReseller
 import ITLayout from "@/it/layout/ITLayout";
 import ITAttendancePage from "@/it/pages/AttendancePage";
 import ITRiwayatAbsensi from "@/it/pages/RiwayatAbsensi";
+import OmzetLevelPage from "./operator/pages/OmzetLevelPage";
+import TopProdukLevelPage from './operator/pages/TopProductLevelPage';
 
 
 
@@ -40,13 +42,23 @@ export default function App() {
         <Route
           path="/operator"
           element={
-            <ProtectedRoute allow={["OPERATOR"]}>
+            <ProtectedRoute 
+            allow={[
+              "OPERATOR",
+              { jabatan: "KETUA", departemen: "OPERATOR" }
+            ]}>
               <OperatorLayout />
             </ProtectedRoute>
           }
         >
           <Route path="absensi" element={<AttendancePage />} />
           <Route path="riwayat" element={<RiwayatAbsensi />} />
+
+            {/* ANALYTIC */}
+            <Route path="analytic">
+              <Route path="omzet-level" element={<OmzetLevelPage />} />
+              <Route path="top-produk-level" element={<TopProdukLevelPage />} />
+            </Route>
         </Route>
 
         {/* IT ROUTES */}

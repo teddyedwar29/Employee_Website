@@ -1,4 +1,5 @@
-import { X, LogOut } from "lucide-react";
+import { useState } from "react";
+import { X, LogOut, ChevronDown, BarChart3 } from "lucide-react";
 import { operatorMenu } from "../config/operatorMenu";
 import SidebarItem from "../../shared/sidebar/SidebarItems";
 
@@ -8,6 +9,15 @@ export default function OperatorSidebar({
   onNavigate,
   onLogout,
 }) {
+  const [openMenu, setOpenMenu] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  const isKetuaOperator =
+    user.jabatan?.toUpperCase() === "KETUA" &&
+    user.departemen?.toUpperCase() === "OPERATOR";
+
+
   return (
     <div
       className={`
@@ -21,7 +31,6 @@ export default function OperatorSidebar({
     >
       {/* ===== HEADER ===== */}
       <div className="relative p-6 pb-4 shrink-0">
-        {/* Close (mobile) */}
         <button
           onClick={() => setIsOpen(false)}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 md:hidden"
@@ -35,22 +44,78 @@ export default function OperatorSidebar({
       </div>
 
       {/* ===== MENU ===== */}
-      <nav
-        className="
-          flex-1 px-4 pb-6 space-y-1
-          overflow-y-auto
-          scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent
-        "
-      >
-        {operatorMenu.map((item) => (
-          <SidebarItem
-            key={item.id}
-            icon={item.icon}
-            label={item.label}
-            to={item.to}
-            onClick={onNavigate}
-          />
-        ))}
+      <nav className="flex-1 px-4 pb-6 space-y-1 overflow-y-auto">
+        {operatorMenu.map((item) => {
+
+          //Sembunyikan Analytic jika bukan Ketua Operator
+          if (item.id === "analytic" && !isKetuaOperator) {
+            return null;
+          }
+
+          // ===== DROPDOWN MENU (ANALYTIC) =====
+          if (item.children) {
+            return (
+              <div key={item.id}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOpenMenu(openMenu === item.id ? null : item.id)
+                  }
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl
+                            text-gray-700 hover:bg-gray-100 transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <item.icon size={18} />
+                    <span className="text-sm font-semibold">
+                      {item.label}
+                    </span>
+                  </div>
+
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-200 ${
+                      openMenu === item.id ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                <div
+                  className={`
+                    ml-6 overflow-hidden transition-all duration-300 ease-in-out
+                    ${
+                      openMenu === item.id
+                        ? "max-h-40 opacity-100 translate-y-0"
+                        : "max-h-0 opacity-0 -translate-y-1"
+                    }
+                  `}
+                >
+                  <div className="mt-1 space-y-1">
+                    {item.children.map((child) => (
+                      <SidebarItem
+                        key={child.id}
+                        icon={child.icon}
+                        label={child.label}
+                        to={child.path}
+                        onClick={onNavigate}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          // ===== NORMAL MENU =====
+          return (
+            <SidebarItem
+              key={item.id}
+              icon={item.icon}
+              label={item.label}
+              to={item.path}
+              onClick={onNavigate}
+            />
+          );
+        })}
       </nav>
 
       {/* ===== LOGOUT ===== */}

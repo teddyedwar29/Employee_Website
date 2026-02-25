@@ -84,7 +84,6 @@ export default function KunjunganPage() {
         setTotalFoto(0);
       }
     } catch (err) {
-      console.error("Error fetch kunjungan:", err);
       setKunjungan([]);
       setTotalFoto(0);
     } finally {
@@ -105,7 +104,7 @@ export default function KunjunganPage() {
           setKategoriList(res.data);
         }
       } catch (err) {
-        console.error("Gagal load kategori", err);
+
       }
     };
 

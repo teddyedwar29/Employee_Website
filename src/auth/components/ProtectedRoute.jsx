@@ -16,27 +16,29 @@ export default function ProtectedRoute({ children, allow = [] }) {
     return <Navigate to="/login" replace />;
   }
 
-const userJabatan = user.jabatan;
-const userDepartemen = user.departemen;
+const userJabatan = user.jabatan?.trim().toUpperCase();
+const userDepartemen = user.departemen?.trim().toUpperCase();
+
 
 if (allow.length > 0) {
   const isAllowed = allow.some(rule => {
 
     // === SUPPORT FORMAT LAMA: ["OPERATOR"] ===
     if (typeof rule === "string") {
-      return rule === userJabatan;
+      return rule.toUpperCase() === userJabatan;
     }
 
     // === FORMAT BARU: { jabatan, departemen } ===
     if (typeof rule === "object") {
       const jabatanMatch =
-        !rule.jabatan || rule.jabatan === userJabatan;
+        !rule.jabatan || rule.jabatan.toUpperCase() === userJabatan;
 
       const departemenMatch =
-        !rule.departemen || rule.departemen === userDepartemen;
+        !rule.departemen || rule.departemen.toUpperCase() === userDepartemen;
 
       return jabatanMatch && departemenMatch;
     }
+
 
     return false;
   });

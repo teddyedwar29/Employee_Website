@@ -137,7 +137,6 @@ export default function EditEmployeeModal({
 
       onClose();
     } catch (err) {
-      console.error('Error update karyawan:', err);
       setError(err.message || 'Gagal mengupdate karyawan');
     } finally {
       setIsSubmitting(false);

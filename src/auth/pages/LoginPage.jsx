@@ -36,19 +36,37 @@ export default function LoginPage() {
 
       let path = "/login";
 
-      switch (decoded.jabatan) {
-        case "OPERATOR":
-          path = "/operator/absensi";
-          break;
-        case "MARKETING":
-          path = "/marketing/absensi";
-          break;
-        case "IT":
-          path = "/it/absensi";
-          break;
-        case "KETUA":
+      const jabatan = decoded.jabatan?.toUpperCase();
+      const departemen = decoded.departemen?.toUpperCase();
+
+      // ===== KETUA (LEVEL KHUSUS) =====
+      if (jabatan === "KETUA") {
+        if (departemen === "HRD") {
           path = "/admin/dashboard";
-          break;
+        } 
+        else if (departemen === "OPERATOR") {
+          path = "/operator/absensi";
+        } 
+        else if (departemen === "AREA EKSEKUTIF") {
+          path = "/marketing/absensi";
+        } 
+        else {
+          path = "/login"; // fallback
+        }
+      }
+
+      // ===== NON KETUA =====
+      else if (jabatan === "OPERATOR") {
+        path = "/operator/absensi";
+      }
+      else if (jabatan === "MARKETING") {
+        path = "/marketing/absensi";
+      }
+      else if (jabatan === "IT") {
+        path = "/it/absensi";
+      }
+      else {
+        path = "/login"; // fallback aman
       }
 
       window.location.href = path;

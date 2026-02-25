@@ -58,8 +58,6 @@ export default function AbsensiReportPage({ onMenuClick }) {
 
       if (params.toString()) url += `?${params.toString()}`;
 
-      console.log("Fetching from:", url); // Debug log
-
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -113,7 +111,6 @@ export default function AbsensiReportPage({ onMenuClick }) {
         }
       }
     } catch (err) {
-      console.error("Fetch error:", err);
       Swal.fire({
         icon: "error",
         title: "Gagal Memuat Data",
