@@ -3,6 +3,7 @@ import OtomaxPivotTable from "@/admin/components/OtomaxPivotTable";
 import PageHeader from "@/components/ui/PageHeader";
 import { OTOMAX_API_BASE_URL } from "@/utils/constants";
 import ProfitHarianCard from "@/admin/components/ProfitHarianCard";
+import LabaChart from "@/admin/components/LabaChart";
 
 export default function OtomaxDataPage({ onMenuClick }) {
 
@@ -126,6 +127,15 @@ const [selectedYear, setSelectedYear] = useState("");
           selectedYear={selectedYear}
         />
       </div>
+
+      <LabaChart
+        startDate={startDate}
+        endDate={endDate}
+        selectedMonth={selectedMonth}
+
+        
+        selectedYear={selectedYear}
+      />
 
       {/* FILTER TANGGAL */}
       <div className="bg-white rounded-xl border p-4 flex flex-wrap gap-4 items-end">
