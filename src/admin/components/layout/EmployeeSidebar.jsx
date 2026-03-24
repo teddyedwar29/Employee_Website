@@ -29,8 +29,6 @@ const menuItems = [
   { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
   { id: 'karyawan',  name: 'Data Karyawan', icon: Users, path: '/admin/karyawan' },
   { id: 'berhenti',  name: 'Karyawan Berhenti', icon: UserX, path: '/admin/karyawan-berhenti' },
-  { id: 'laporan',  name: 'Laporan', icon: FileText, path: '/admin/laporan' },
-  { id: 'izin',  name: 'Izin', icon: Clock, path: '/admin/izin' },
   { id: 'otomax-data', name: 'Data Otomax', icon: BarChart3, path: '/admin/otomax-data' },
   { id: 'absensi-report', name: 'Riwayat Absensi', icon: Calendar, path: '/admin/absensi-report' },
   { id: 'kunjungan-report', name: 'Riwayat Kunjungan', icon: MapPin, path: '/admin/kunjungan-report' },
@@ -73,13 +71,6 @@ const masterMenus = [
     icon: UserCircle,
     path: '/admin/master/kondisi-akun',
   },
-    {
-    id: 'gaji-setting',
-    name: 'Gaji Setting',
-    icon: Settings,
-    path: '/admin/master/gaji-setting',
-  },
-
 ];
 
 export default function EmployeeSidebar({ activeMenu, isOpen, setIsOpen }) {

@@ -13,9 +13,6 @@ import MasterStatusPernikahanPage from './master/MasterStatusPernikahanPage';
 import MasterAgamaPage from './master/MasterAgamaPage';
 import MasterDepartemenPage from './master/MasterDepartemenPage';
 import MasterKondisiAkunPage from './master/MasterKondisiAkunPage';
-import MasterGajiSettingPage from './master/MasterGajiSettingPage';
-import ReportPage from './ReportPage';
-import IzinPage from "./IzinPage";
 import AbsensiReportPage from "./AbsensiReportPage";
 import KunjunganReportPage from './KunjunganReportPage';
 import OtomaxDataPage from './OtomaxDataPage';
@@ -168,8 +165,6 @@ export default function EmployeeDashboard() {
     setActiveMenu('master-jabatan');
   } else if (path.includes('/master/status-pernikahan')) {
     setActiveMenu('master-status-pernikahan');
-  } else if (path.includes('/master/gaji-setting')) {
-    setActiveMenu('gaji-setting');
   } else if (path.includes('/master/status-kerja')) {
     setActiveMenu('master-status-kerja');
   } else if (path.includes('/master/agama')) {
@@ -182,10 +177,6 @@ export default function EmployeeDashboard() {
     setActiveMenu('karyawan');
   } else if (path.includes('/otomax-data')) {
     setActiveMenu('otomax-data');
-  } else if (path.includes('/laporan')) {
-    setActiveMenu('laporan');
-  } else if (path.includes('/izin')) {
-    setActiveMenu('izin');  
   } else if (path.includes('/kunjungan-report')) {
     setActiveMenu('kunjungan-report');
   } 
@@ -472,33 +463,13 @@ export default function EmployeeDashboard() {
                   onMenuClick={() => setIsSidebarOpen(true)}
               />);
             }
-            if (activeMenu === 'gaji-setting') {
-              return (
-              <MasterGajiSettingPage 
-                  onMenuClick={() => setIsSidebarOpen(true)}
-              />);
-            }
+
             if (activeMenu === 'otomax-data') {
               return (<
                 OtomaxDataPage onMenuClick={() => setIsSidebarOpen(true)} 
               />);
             }
 
-            if (activeMenu === 'laporan') {
-              return (
-                <ReportPage
-                  employees={employees}
-                  employeesBerhenti={employeesBerhenti}
-                  onMenuClick={() => setIsSidebarOpen(true)}
-                />
-              );
-            }
-
-            if (activeMenu === 'izin') {
-              return <IzinPage 
-              onMenuClick={() => setIsSidebarOpen(true)}
-              />;
-            }
             if (activeMenu === 'kunjungan-report') {
               return <KunjunganReportPage 
               onMenuClick={() => setIsSidebarOpen(true)} />;
