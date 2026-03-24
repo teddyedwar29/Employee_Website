@@ -8,7 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { OTOMAX_API_BASE_URL } from "@/utils/constants";
+import { fetchWithAuthOtomax } from "@/services/authServices";
 
 // =============================================
 // CUSTOM TOOLTIP
@@ -34,62 +34,65 @@ const CustomTooltip = ({ active, payload, label }) => {
 // =============================================
 // MAIN COMPONENT
 // =============================================
-export default function LabaChart({ startDate, endDate, selectedMonth, selectedYear }) {
-  const [chartMode, setChartMode] = useState("Harian"); // "Harian" | "Bulanan"
+export default function MarketingLabaChart({ endDate, kodeUpline }) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // =============================================
-  // FETCH — pakai endpoint yang sudah ada
+  // FETCH — 7 hari ke belakang dari endDate,
+  // filter by kodeUpline (AE)
+  // =============================================
+  // Pakai endpoint yang sama dengan card hijau:
+  // /pivot/laporan/upline, loop per hari selama 7 hari
+  // lalu ambil data yang cocok dengan kodeUpline (AE)
   // =============================================
   const fetchChartData = async () => {
+    if (!endDate || !kodeUpline) return;
+
     setLoading(true);
     setError(null);
 
     try {
-      let url = "";
-
-      if (chartMode === "Harian") {
-        const end = endDate || new Date().toISOString().slice(0, 10);
-        const startObj = new Date(end);
-        startObj.setDate(startObj.getDate() - 6);
-        const start = startObj.toISOString().slice(0, 10);
-
-        url = `${OTOMAX_API_BASE_URL}/pivot/laporan/harian?start=${start}&end=${end}`;
-      } else {
-        if (selectedMonth && selectedYear) {
-          const start = `${selectedYear}-01-01`;
-          const end = `${selectedYear}-12-31`;
-          url = `${OTOMAX_API_BASE_URL}/pivot/laporan/bulanan?start=${start}&end=${end}`;
-        } else {
-          const now = new Date();
-          const endBulan = `${now.getFullYear()}-12-31`;
-          const startBulan = `${now.getFullYear() - 1}-01-01`;
-          url = `${OTOMAX_API_BASE_URL}/pivot/laporan/bulanan?start=${startBulan}&end=${endBulan}`;
-        }
+      // Buat array 7 tanggal: endDate - 6 hari s/d endDate
+      const dates = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(endDate);
+        d.setDate(d.getDate() - i);
+        dates.push(d.toLocaleDateString("en-CA")); // format YYYY-MM-DD
       }
 
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Gagal memuat data grafik");
-      const json = await res.json();
+      // Fetch tiap hari secara paralel
+      const results = await Promise.all(
+        dates.map(async (date) => {
+          const res = await fetchWithAuthOtomax(
+            `/pivot/laporan/upline?start=${date}&end=${date}&limit=100`
+          );
+          if (!res.ok) return { date, laba: 0 };
+          const json = await res.json();
 
-      if (json.success && json.data?.length > 0) {
-        const mapped = json.data.map((item) => {
-          let label = "";
-          if (chartMode === "Harian") {
-            const raw = item.tanggal || item.date || item.periode || "";
-            label = new Date(raw).toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
-          } else {
-            const raw = item.bulan ? `${item.bulan}-01` : "";
-            label = new Date(raw).toLocaleDateString("id-ID", { month: "short", year: "2-digit" });
-          }
-          return { label, laba: Number(item.total_laba || 0) };
-        });
-        setChartData(mapped);
-      } else {
-        setChartData([]);
-      }
+          // Cari data yang cocok dengan kodeUpline (AE)
+          const matched = json.data?.find(
+            (item) => item.kode_upline?.toUpperCase() === kodeUpline.toUpperCase()
+          );
+
+          return {
+            date,
+            laba: matched ? Number(matched.total_laba || 0) : 0,
+          };
+        })
+      );
+
+      // Format label tanggal untuk sumbu X
+      const mappedFinal = results.map((item) => ({
+        label: new Date(item.date).toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "short",
+        }),
+        laba: item.laba,
+      }));
+
+      setChartData(mappedFinal);
     } catch (err) {
       setError(err.message);
       setChartData([]);
@@ -100,7 +103,7 @@ export default function LabaChart({ startDate, endDate, selectedMonth, selectedY
 
   useEffect(() => {
     fetchChartData();
-  }, [chartMode, startDate, endDate, selectedMonth, selectedYear]);
+  }, [endDate, kodeUpline]);
 
   // =============================================
   // SUMMARY STATS
@@ -110,11 +113,9 @@ export default function LabaChart({ startDate, endDate, selectedMonth, selectedY
     const values = chartData.map((d) => d.laba);
     const max = Math.max(...values);
     const min = Math.min(...values);
-    const avg = values.reduce((a, b) => a + b, 0) / values.length;
     return {
       max: { value: max, label: chartData.find((d) => d.laba === max)?.label },
       min: { value: min, label: chartData.find((d) => d.laba === min)?.label },
-      avg: { value: Math.round(avg) },
     };
   }, [chartData]);
 
@@ -137,61 +138,37 @@ export default function LabaChart({ startDate, endDate, selectedMonth, selectedY
   return (
     <div className="bg-white rounded-xl border p-4 sm:p-5 space-y-4">
       {/* Header */}
-      <div className="flex items-start sm:items-center justify-between gap-3">
-        <div>
-          <h3 className="text-sm sm:text-base font-bold text-gray-800">
-            📈 Tren Laba {chartMode === "Harian" ? "7 Hari Terakhir" : "Bulanan"}
-          </h3>
-          <p className="text-xs text-gray-400 mt-0.5">
-            {chartMode === "Harian"
-              ? "Data 7 hari ke belakang dari tanggal akhir filter"
-              : selectedMonth && selectedYear
-              ? `Sepanjang tahun ${selectedYear}`
-              : "Data bulanan tahun ini"}
-          </p>
-        </div>
-
-        {/* Toggle Harian / Bulanan — lebih compact di mobile */}
-        <div className="flex bg-gray-100 rounded-xl p-1 gap-1 shrink-0">
-          {["Harian", "Bulanan"].map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setChartMode(mode)}
-              className={`
-                px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200
-                ${chartMode === mode
-                  ? "bg-emerald-500 text-white shadow-md shadow-emerald-200"
-                  : "text-gray-400 hover:text-gray-600"}
-              `}
-            >
-              {mode}
-            </button>
-          ))}
-        </div>
+      <div>
+        <h3 className="text-sm sm:text-base font-bold text-gray-800">
+          📈 Tren Pencapaian 7 Hari Terakhir
+        </h3>
+        <p className="text-xs text-gray-400 mt-0.5">
+          Data harian pencapaian kamu dalam 7 hari ke belakang
+        </p>
       </div>
 
-      {/* Chart Area */}
+      {/* Chart */}
       {loading ? (
-        <div className="h-44 sm:h-52 flex items-center justify-center text-gray-400 text-sm gap-2">
+        <div className="h-48 sm:h-52 flex items-center justify-center text-gray-400 text-sm gap-2">
           <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
           </svg>
-          Memuat data {chartMode.toLowerCase()}...
+          Memuat data...
         </div>
       ) : error ? (
-        <div className="h-44 sm:h-52 flex items-center justify-center text-red-400 text-sm">
+        <div className="h-48 sm:h-52 flex items-center justify-center text-red-400 text-sm">
           ⚠️ {error}
         </div>
       ) : chartData.length === 0 ? (
-        <div className="h-44 sm:h-52 flex items-center justify-center text-gray-300 text-sm">
+        <div className="h-48 sm:h-52 flex items-center justify-center text-gray-300 text-sm">
           Tidak ada data untuk ditampilkan
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={210}>
+        <ResponsiveContainer width="100%" height={200}>
           <AreaChart data={chartData} margin={{ top: 5, right: 4, left: 0, bottom: 0 }}>
             <defs>
-              <linearGradient id="labaGrad" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="marketingGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
                 <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
               </linearGradient>
@@ -216,24 +193,24 @@ export default function LabaChart({ startDate, endDate, selectedMonth, selectedY
               dataKey="laba"
               stroke="#10b981"
               strokeWidth={2.5}
-              fill="url(#labaGrad)"
-              dot={{ fill: "#10b981", strokeWidth: 2, r: 4, stroke: "white" }}
-              activeDot={{ r: 6, fill: "#10b981", stroke: "white", strokeWidth: 2 }}
+              fill="url(#marketingGrad)"
+              dot={{ fill: "#10b981", strokeWidth: 2, r: 3, stroke: "white" }}
+              activeDot={{ r: 5, fill: "#10b981", stroke: "white", strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>
       )}
 
-      {/* Summary Cards */}
+      {/* Summary — Tertinggi & Terendah */}
       {stats && !loading && (
         <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-50">
-          <div className="bg-emerald-50 rounded-xl px-3 sm:px-4 py-3">
+          <div className="bg-emerald-50 rounded-xl px-3 py-3 sm:px-4">
             <p className="text-xs text-gray-400 mb-1">Tertinggi · {stats.max.label}</p>
             <p className="text-xs sm:text-sm font-bold text-emerald-600 break-words">
               {formatRupiah(stats.max.value)}
             </p>
           </div>
-          <div className="bg-red-50 rounded-xl px-3 sm:px-4 py-3">
+          <div className="bg-red-50 rounded-xl px-3 py-3 sm:px-4">
             <p className="text-xs text-gray-400 mb-1">Terendah · {stats.min.label}</p>
             <p className="text-xs sm:text-sm font-bold text-red-500 break-words">
               {formatRupiah(stats.min.value)}

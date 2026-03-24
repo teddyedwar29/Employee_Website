@@ -4,6 +4,7 @@ import { fetchWithAuthOtomax } from "@/services/authServices";
 import { useNavigate } from "react-router-dom";
 import MarketingProfitCard from "@/marketing/components/MarketingProfitCard";
 import OtomaxPivotTableMarketing from "@/marketing/components/OtomaxPivotTableMarketing";
+import MarketingLabaChart from "@/marketing/components/MarketingLabaChart"; // ← TAMBAHAN
 
 
 export default function LaporanPencapaianMarketing() {
@@ -93,7 +94,7 @@ export default function LaporanPencapaianMarketing() {
       const json = await res.json();
 
       setPivotData(json.data || []);
-      setMeta(json.meta || null); // ✅ META DISIMPAN DI SINI
+      setMeta(json.meta || null);
     } catch (err) {
       console.error(err);
       setError("Gagal memuat data pivot marketing");
@@ -142,6 +143,16 @@ export default function LaporanPencapaianMarketing() {
         <div className="w-full lg:w-1/2">
           <MarketingProfitCard
             startDate={startDate}
+            endDate={endDate}
+            kodeUpline={kodeAE}
+          />
+        </div>
+
+        {/* ====================== */}
+        {/* GRAFIK TREN 7 HARI ← BARU */}
+        {/* ====================== */}
+        <div className="w-full lg:w-1/2">
+          <MarketingLabaChart
             endDate={endDate}
             kodeUpline={kodeAE}
           />
@@ -224,9 +235,6 @@ export default function LaporanPencapaianMarketing() {
         )}
       </div>
     )}
-
-
-
 
 
       {/* ERROR */}
