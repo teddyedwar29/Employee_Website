@@ -35,7 +35,7 @@ export default function KunjunganPage() {
 
   const [formData, setFormData] = useState({
     foto: null,
-    nama_outlet: "",
+    nama_toko: "",
     issue: "",
     id_kategori_kunjungan: "",
     lokasi: "",
@@ -169,6 +169,7 @@ export default function KunjunganPage() {
         longitude: currentLocation?.longitude || null,
         issue: formData.issue,
         id_kategori_kunjungan: formData.id_kategori_kunjungan,
+        nama_toko: formData.nama_toko,
       });
 
       if (!res.success) {
@@ -184,7 +185,7 @@ export default function KunjunganPage() {
       // Reset form
       setIsModalOpen(false);
       setPreviewImage(null);
-      setFormData({ foto: null, nama_outlet: "",  issue: "",  id_kategori_kunjungan: "", lokasi: "", keterangan: "" });
+      setFormData({ foto: null, nama_toko: "",  issue: "",  id_kategori_kunjungan: "", lokasi: "", keterangan: "" });
       setCurrentLocation(null);
       setLocationStatus("idle");
       setLocationMessage("");
@@ -196,17 +197,17 @@ export default function KunjunganPage() {
   
 
   const resetForm = () => {
-    setFormData({ foto: null, nama_outlet: "", lokasi: "", keterangan: "" });
+    setFormData({ foto: null, nama_toko: "", lokasi: "", keterangan: "" });
     setPreviewImage(null);
     setIsModalOpen(false);
     setPhotoLocked(false);
   };
 
-  // Filter pencarian (nama outlet, lokasi, keterangan)
+  // Filter pencarian (nama toko, lokasi, keterangan)
   const filteredData = kunjungan.filter((item) => {
     return (
       !searchTerm ||
-      item.nama_outlet?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.nama_toko?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.lokasi?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.keterangan?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -315,7 +316,7 @@ export default function KunjunganPage() {
                 {item.foto ? (
                   <img
                     src={`${BACKEND_BASE_URL}${item.foto}`}
-                    alt={item.nama_outlet || "Kunjungan"}
+                    alt={item.nama_toko || "Kunjungan"}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -326,7 +327,7 @@ export default function KunjunganPage() {
               </div>
 
               <div className="p-5">
-                <h3 className="font-bold text-lg">{item.nama_outlet || "Kunjungan"}</h3>
+                <h3 className="font-bold text-lg">{item.nama_toko || "Kunjungan"}</h3>
                 {item.id_kategori_kunjungan && (
                   <span className="inline-block mt-1 mb-2 px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
                     {getNamaKategori(item.id_kategori_kunjungan)}
@@ -417,10 +418,10 @@ export default function KunjunganPage() {
 
 
               <input
-                placeholder="Nama Outlet"
+                placeholder="Nama Toko"
                 className="w-full border p-3 rounded-xl mb-4"
-                value={formData.nama_outlet}
-                onChange={(e) => setFormData({ ...formData, nama_outlet: e.target.value })}
+                value={formData.nama_toko}
+                onChange={(e) => setFormData({ ...formData, nama_toko: e.target.value })}
               />
 
               <input

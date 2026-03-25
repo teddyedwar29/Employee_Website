@@ -30,12 +30,13 @@ const generateExcelKunjungan = async (data, bulan, tahun, getNamaKategori) => {
   // ── Lebar kolom
   ws.getColumn(1).width = 5;   // No
   ws.getColumn(2).width = 20;  // Tanggal
-  ws.getColumn(3).width = 20;  // Nama
-  ws.getColumn(4).width = 18;  // Departemen
-  ws.getColumn(5).width = 12;  // ID Karyawan
-  ws.getColumn(6).width = 10;  // Jam
-  ws.getColumn(7).width = 25;  // Issue
-  ws.getColumn(8).width = 22;  // Kategori Kunjungan
+  ws.getColumn(3).width = 12;  // ID Karyawan
+  ws.getColumn(4).width = 20;  // Nama
+  ws.getColumn(5).width = 18;  // Departemen
+  ws.getColumn(6).width = 20;  // Nama Toko
+  ws.getColumn(7).width = 10;  // Jam
+  ws.getColumn(8).width = 25;  // Issue
+  ws.getColumn(9).width = 22;  // Kategori Kunjungan
 
   // ── Helper style
   const styleHeader = (cell) => {
@@ -82,7 +83,7 @@ const generateExcelKunjungan = async (data, bulan, tahun, getNamaKategori) => {
   ws.addRow([]);
 
   // ── Baris 4: Header
-  const headerRow = ws.addRow(["No", "Tanggal", "Nama", "Departemen", "ID Karyawan", "Jam", "Issue", "Kategori Kunjungan"]);
+  const headerRow = ws.addRow(["No", "Tanggal", "ID Karyawan", "Nama", "Departemen", "Nama Toko", "Jam", "Issue", "Kategori Kunjungan"]);
   ws.getRow(4).height = 20;
   headerRow.eachCell((cell) => styleHeader(cell));
 
@@ -92,9 +93,10 @@ const generateExcelKunjungan = async (data, bulan, tahun, getNamaKategori) => {
     const row = ws.addRow([
       idx + 1,
       new Date(item.tanggal).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }),
+      item.id_karyawan || "-",
       item.marketingName || "-",
       item.departemen || "-",
-      item.id_karyawan || "-",
+      item.nama_toko || "-",
       item.jam || "-",
       item.issue || "-",
       item.nama_kategori_kunjungan || getNamaKategori(item.id_kategori_kunjungan) || "-",
